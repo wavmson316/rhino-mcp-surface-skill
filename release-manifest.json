@@ -23,19 +23,9 @@
       "sha256": "e85c45ad80534677a9d55dfed12bcae2b9cbbb86d12ce93c02b9ec43ecc3e1e9"
     },
     {
-      "path": "example-test-results.json",
-      "bytes": 825,
-      "sha256": "f7e13ef25427212af542d43af519be0fe4253760b65eeaa217747f56f98b94e8"
-    },
-    {
       "path": "INSTALL-CHECK.md",
       "bytes": 4298,
       "sha256": "6f183774dde5b69a9e02dcb57ae03ec7bb2c77bf899ea81f424d9c463afe3f13"
-    },
-    {
-      "path": "outline-test-results.json",
-      "bytes": 528,
-      "sha256": "1a6b8f415489bd47dc84870e9d12d89d11cc410e809ba72463407af08f165720"
     },
     {
       "path": "README.en.md",
@@ -46,6 +36,26 @@
       "path": "README.md",
       "bytes": 10936,
       "sha256": "c6185c6883d31e003de0120a722fdce55fd7c3fced2ce6a7b3633ab58c2938e5"
+    },
+    {
+      "path": "SKILL.md",
+      "bytes": 10602,
+      "sha256": "0934cf1bcefd4cc82c2e919a2254cf62cc0dbbf8908567861f73faf686eb9970"
+    },
+    {
+      "path": "VALIDATION.md",
+      "bytes": 10146,
+      "sha256": "af5ff4065d33520f17d7c1652dcd872dc00eff4cc8c0a7cf11e32964d56efdb9"
+    },
+    {
+      "path": "example-test-results.json",
+      "bytes": 825,
+      "sha256": "f7e13ef25427212af542d43af519be0fe4253760b65eeaa217747f56f98b94e8"
+    },
+    {
+      "path": "outline-test-results.json",
+      "bytes": 528,
+      "sha256": "1a6b8f415489bd47dc84870e9d12d89d11cc410e809ba72463407af08f165720"
     },
     {
       "path": "references/01-intent-and-reference.md",
@@ -173,19 +183,9 @@
       "sha256": "3f5be18f91f075097a59a62f7465566392fea5c4f8e7fa2aebdb91e4598e3eb7"
     },
     {
-      "path": "SKILL.md",
-      "bytes": 10602,
-      "sha256": "0934cf1bcefd4cc82c2e919a2254cf62cc0dbbf8908567861f73faf686eb9970"
-    },
-    {
       "path": "templates/modeling-plan.md",
       "bytes": 1342,
       "sha256": "4e31d0dfa86fe9e3d4bfbe876478c1700698f0910cb6e5f6c6457111b5fcf057"
-    },
-    {
-      "path": "VALIDATION.md",
-      "bytes": 10146,
-      "sha256": "af5ff4065d33520f17d7c1652dcd872dc00eff4cc8c0a7cf11e32964d56efdb9"
     }
   ]
 }

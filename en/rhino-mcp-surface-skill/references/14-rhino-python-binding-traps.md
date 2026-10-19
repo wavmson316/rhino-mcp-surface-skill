@@ -82,7 +82,7 @@ for e in brep.Edges:
 
 ```python
 edges = list(brep.Edges)
-idx = [i for i, e in enumerate(edges) if <条件>]
+idx = [i for i, e in enumerate(edges) if <condition>]
 ```
 
 ⚠️ `f.Edges[ei].Index` on a face is equally unreliable — `enumerate` is the safest
@@ -97,7 +97,7 @@ route.
 G.Brep.CreateFilletEdges(brep, [edge_obj, ...], ...)
 
 # ✅ Pass int positional indices
-idx = [i for i, e in enumerate(list(brep.Edges)) if <是竖直边>]
+idx = [i for i, e in enumerate(list(brep.Edges)) if <is a vertical edge>]
 r = G.Brep.CreateFilletEdges(brep, idx, [3.0]*len(idx), None, None,
                              G.BlendType.Fillet, G.RailType.RollingBall, 1.0)
 ```
