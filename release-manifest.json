@@ -1,0 +1,142 @@
+{
+  "version": "1.0.0",
+  "date": "2026-10-19",
+  "checks": {
+    "syntax_and_links": true,
+    "rhino_tests": "45/45",
+    "outline_tests": "17/17"
+  },
+  "note": "SHA256 covers all package files except this manifest. See VALIDATION.md for limits.",
+  "files": [
+    {
+      "path": "CHANGELOG.md",
+      "bytes": 640,
+      "sha256": "443148478c4b46d3c2b4209b341f7be24532116ef28caac2a7610d50a78dae41"
+    },
+    {
+      "path": "INSTALL-CHECK.md",
+      "bytes": 1920,
+      "sha256": "121a72326d5da8ba47fd7772477154c046516a9a4c9c3f06b92c864648988723"
+    },
+    {
+      "path": "outline-test-results.json",
+      "bytes": 528,
+      "sha256": "1a6b8f415489bd47dc84870e9d12d89d11cc410e809ba72463407af08f165720"
+    },
+    {
+      "path": "README.md",
+      "bytes": 2162,
+      "sha256": "e54b6d5728dd5bedd8aa2970c0152a3babf441f89a6a1c44dc6ae7482060edf2"
+    },
+    {
+      "path": "references/01-intent-and-reference.md",
+      "bytes": 2770,
+      "sha256": "f7d1bc83ad223258c96c17066ece8f15bb028071c70046d4695e7d30c44c9b4d"
+    },
+    {
+      "path": "references/02-patch-layout.md",
+      "bytes": 2699,
+      "sha256": "73c6a87aa45b17d7c195f247db6d41a7311ecd64e025796a603349085140c8e7"
+    },
+    {
+      "path": "references/03-construction.md",
+      "bytes": 4646,
+      "sha256": "8e8da9ed7d80a94b08596f40946907e36b16eec20f098253e35759475a774fa2"
+    },
+    {
+      "path": "references/04-continuity-and-validation.md",
+      "bytes": 3262,
+      "sha256": "c2e4c72b1727e37faf5ae7c71782d98dddf706fd04ff4946dc38996fb08bcd96"
+    },
+    {
+      "path": "references/05-mcp-execution.md",
+      "bytes": 3234,
+      "sha256": "340a59dae7b942fe406ab0cffd0484892017e4dbba9d3d35b26837a3125cd223"
+    },
+    {
+      "path": "references/06-complex-regions.md",
+      "bytes": 2843,
+      "sha256": "5ba4439bc4204a392f9463b203c763e3a9af7e9b525e44783cb3caad357a0bb5"
+    },
+    {
+      "path": "references/07-diagnosis.md",
+      "bytes": 2197,
+      "sha256": "61ce860f090dbbbb5effa4517ad76d30dd674823140cb162005ea0c64c615108"
+    },
+    {
+      "path": "references/08-source-audit.md",
+      "bytes": 3042,
+      "sha256": "12293f5e6c46caa362a7395b06ec8b3b94753f806723c5b3fbe614558d3af720"
+    },
+    {
+      "path": "references/09-worked-examples.md",
+      "bytes": 3263,
+      "sha256": "920a7555a6469bd6b0cca8d110b2e94a1a862a1753ec73a5de0815592f80cafc"
+    },
+    {
+      "path": "references/10-parameters-and-recipes.md",
+      "bytes": 4754,
+      "sha256": "185a3756adc691915a875a541077323cdadb7826b074bb297870d0bc1b57fc53"
+    },
+    {
+      "path": "references/11-consumer-electronics.md",
+      "bytes": 3058,
+      "sha256": "e441b6902b1f265ae1d1983efa141300b2ed3329936211f654e753ff1be48863"
+    },
+    {
+      "path": "rhino-test-results.json",
+      "bytes": 4002,
+      "sha256": "e6c4dc88824d88128f7b0bb901b4dde196cb8e8144ffbf9b92bab8a425a1e17d"
+    },
+    {
+      "path": "scripts/audit_geometry.py",
+      "bytes": 2742,
+      "sha256": "79ec59281b3c38f87622d633098c5d1f4772ab2503ab4d76f66316792b93e591"
+    },
+    {
+      "path": "scripts/check_release.py",
+      "bytes": 2027,
+      "sha256": "063970c4b73a832b0cb44daed8c15b2e8e8b04f9c4dc395ea79252373eee0b05"
+    },
+    {
+      "path": "scripts/nbs_geometry.py",
+      "bytes": 9618,
+      "sha256": "3ac0b286fb6be1cf9bfd5d012ee6688c2f9135ec999ab3ea63a3ffe80e31b4b2"
+    },
+    {
+      "path": "scripts/outline_metrics.py",
+      "bytes": 3680,
+      "sha256": "067f037cf41575aed0dd53099e32182b641751c73ad7ce257a6181491fa5d1d7"
+    },
+    {
+      "path": "scripts/sample_seam_g1.py",
+      "bytes": 3977,
+      "sha256": "f099aa1ce33906ef1c3844bb09ac459a947118d4bd8501a7890cb6f6d3b4f666"
+    },
+    {
+      "path": "scripts/smoke_test_rhino.py",
+      "bytes": 9435,
+      "sha256": "160c98897fdfd9b4e26855317edbfbfa0bec77b2b628bb74d6c2889afb569679"
+    },
+    {
+      "path": "scripts/test_outline_metrics.py",
+      "bytes": 2190,
+      "sha256": "d98447ea0e184491692e3c8406ebfa03b73c0c1e48d29158af1079e8baf8a3ac"
+    },
+    {
+      "path": "SKILL.md",
+      "bytes": 6780,
+      "sha256": "edbaa8a9a747717f55bc8f1630b5d577dd0782a8d642a759be3a7c3e5c29167a"
+    },
+    {
+      "path": "templates/modeling-plan.md",
+      "bytes": 1342,
+      "sha256": "4e31d0dfa86fe9e3d4bfbe876478c1700698f0910cb6e5f6c6457111b5fcf057"
+    },
+    {
+      "path": "VALIDATION.md",
+      "bytes": 4144,
+      "sha256": "92503a6fc57048f20eafcb1bf5824d1a94553d0c9c4b9a3ff5fc673f10c7f0cc"
+    }
+  ]
+}

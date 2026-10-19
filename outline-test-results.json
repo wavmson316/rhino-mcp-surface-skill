@@ -1,0 +1,24 @@
+{
+  "passed": 17,
+  "total": 17,
+  "cases": [
+    "identical",
+    "half overlap",
+    "quarter shift",
+    "disjoint",
+    "closed duplicate endpoint",
+    "reversed ring",
+    "circle radius 5",
+    "circle radius 9",
+    "circle radius 10.5",
+    "circle radius 11",
+    "boundary distance",
+    "empty",
+    "collinear",
+    "nonfinite",
+    "bad samples",
+    "fractional samples",
+    "buffer rejected"
+  ],
+  "scope": "Specific simple polygon analytical cases, not arbitrary resolution guarantee"
+}
