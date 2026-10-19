@@ -1,5 +1,5 @@
 {
-  "version": "1.5.0",
+  "version": "1.5.1",
   "language": "zh-CN",
   "date": "2026-10-19",
   "checks": {
@@ -10,7 +10,9 @@
     "procedural_shell": "12/12",
     "live_machine_verified": "2026-10-19",
     "patch_route_rules": true,
-    "patch_with_lines_helper": "UNVERIFIED on live Rhino"
+    "patch_with_lines_helper": "UNVERIFIED on live Rhino",
+    "patch_with_lines_loft": "VERIFIED on live Rhino 8.29",
+    "patch_with_lines_sweep2_network": "command-based, unverified"
   },
   "note": "Skill package: .gitignore is intentionally excluded (Git-only file). Hash list also excludes this manifest and the en/ tree. See VALIDATION.md for tested scope.",
   "files": [
@@ -111,8 +113,8 @@
     },
     {
       "path": "references/14-rhino-python-binding-traps.md",
-      "bytes": 7497,
-      "sha256": "1b77785417dd1443e82d7b4bc29675a78a8a08a201dbc6609399d5d3d13fdb32"
+      "bytes": 11354,
+      "sha256": "f13f8e3f026b28826404f10904939da6ef18272353d0e62db491e3e6b64421d6"
     },
     {
       "path": "references/15-patch-route-and-curve-retention.md",
@@ -156,8 +158,8 @@
     },
     {
       "path": "scripts/patch_with_lines.py",
-      "bytes": 11380,
-      "sha256": "2bd197e1d10f1c52d56b36d77c5bf622ab9cb2a4b52cccbf6713cd1e96a88724"
+      "bytes": 10343,
+      "sha256": "18813ddeda77d0163e88f3d641c57844fb571b9e18ff3f5845305fb1b013c621"
     },
     {
       "path": "scripts/sample_seam_g1.py",
@@ -181,8 +183,8 @@
     },
     {
       "path": "SKILL.md",
-      "bytes": 12527,
-      "sha256": "71e8a8eace3bfbe9707f13ed0a0c0067319fda3e320f01b0ebdaa1f774e8a3c0"
+      "bytes": 13215,
+      "sha256": "7fc4179285f0a8f9f190c2b6530598fac0aad3537fea56914f6027525dbd0b1e"
     },
     {
       "path": "templates/modeling-plan.md",

@@ -190,7 +190,103 @@ rs.Command('_-FilletEdge ...', False)   # ⛔ 卡住不动，等输入回车
 
 ---
 
-## 11. 通用原则
+## 11. ⭐⭐ `Sweep2` 与 `NetworkSrf` 在 RhinoCommon 里根本不存在
+
+**这是最容易白花时间的一条。** 很多人以为"Rhino 命令 = RhinoCommon 方法"，
+然后花半小时找一个不存在的方法。
+
+```python
+G.Brep.CreateSweep2        # ⛔ AttributeError
+G.Brep.CreateNetworkSrf    # ⛔ AttributeError
+G.Surface.CreateSweep2     # ⛔ AttributeError
+```
+
+**实测（Rhino 8.29）**：`Brep.Create*` 的完整列表里没有这两个。
+
+### 11.1 哪些构面有 API，哪些没有
+
+| 命令 | RhinoCommon 方法 | 说明 |
+|---|---|---|
+| `Loft` | ✅ `Brep.CreateFromLoft` | 有 |
+| `EdgeSrf` | ✅ `Brep.CreateEdgeSurface` | 有 |
+| `Patch` | ✅ `Brep.CreatePatch` | 有 |
+| `FilletEdge` | ✅ `Brep.CreateFilletEdges` | 有 |
+| `Extrusion` | ✅ `Extrusion.Create` + `ToBrep` | 是独立类，不是 Brep 方法 |
+| `Revolve` | ✅ `Brep.CreateFromRevSurface` | 有 |
+| ⛔ **`Sweep2`** | ❌ **无** | **只能走命令** |
+| ⛔ **`NetworkSrf`** | ❌ **无** | **只能走命令** |
+| ⛔ `Sweep1` | ⚠️ `Brep.CreateFromSweep*` 存在但语义不同 | 见 §11.3 |
+
+### 11.2 只能走命令时怎么办
+
+⛔ **`rs.Command` 会阻塞 MCP 调用**（见 §10）。可行的做法：
+
+```python
+import rhinoscriptsyntax as rs
+# 1. 把工作副本加进文档（命令只认文档里的对象）
+ids = [doc.Objects.Add(c) for c in working_copies]
+# 2. 用下划线前缀的命令名（与语言无关）
+rs.Command('_-NetworkSrf _SelCrv ' + ','.join(map(str, ids)) + ' _Enter', False)
+# 3. 从文档里捞结果
+```
+
+⚠️ 风险与代价：
+- ⛔ 命令会**消耗输入对象**，它们从场景消失 → 这也是本包坚持"先复制再构面"的原因
+- ⚠️ 异步执行，结果不一定立刻可用 → **必须检查结果**，不能假设成功
+- ⚠️ 命令行选项随版本变化 → ⛔ 不要背选项字符串，用前先 `get_commands` 核实
+
+### 11.3 `Sweep1` 的坑
+
+`Brep.CreateFromSweep` / `CreateFromSweepInParts` 存在，
+但⛔ **它们不是 `Sweep1` 命令的等价物** —— 参数语义和结果拓扑都对不上。
+
+需要严格的 `Sweep1` 行为（标架、扭转、封盖）时，走命令。
+
+---
+
+## 12. ⭐ `doc.Objects.Count` 可能与枚举不一致
+
+```python
+doc.Objects.Count          # 8
+len(list(doc.Objects))     # 0   ← 实际是空的
+```
+
+**实测（Rhino 8.29）**：用 Rhino 命令构造过几何后，`Count` 不刷新，
+枚举却已经是空集。此时 `Delete()` 全部返回 False（无可删对象）。
+
+⚠️ **判定文档是否干净，用枚举而不是 `Count`**：
+
+```python
+clean = len(list(doc.Objects)) == 0        # ✅ 可靠
+# ⛔ doc.Objects.Count == 0                 # 可能骗你
+```
+
+⚠️ 这条在「测试前后对象数量应一致」的断言里尤其重要 —— 用 `Count` 会误判。
+
+### 12.1 `Purge` 需要参数
+
+```python
+doc.Objects.Purge()          # ⛔ No overload ... takes '0' arguments
+```
+
+⛔ 不要凭直觉调用，签名随版本不同。
+
+### 12.2 改过脚本源码后必须 reload
+
+Rhino 的 Python 会**缓存已 import 的模块**。改了 `.py` 重新跑，
+拿到的还是旧代码 —— 而报错行号会指向源码里不匹配的行，非常误导。
+
+```python
+import importlib, patch_with_lines
+importlib.reload(patch_with_lines)      # ✅ 改过源码后必须 reload
+```
+
+⚠️ 或者在文件层面删掉 `__pycache__`。⛔ **不要靠这个发现代码改对了没** ——
+先确认 `module.__file__` 指向你以为的那个文件。
+
+---
+
+## 13. 通用原则
 
 ⛔ **不要靠记忆写 RhinoCommon Python。** 正确姿势：
 
@@ -210,7 +306,7 @@ print(G.Brep.CreateFilletEdges.__doc__)     # 打印所有重载
 
 ---
 
-## 12. 实测通过的片段（可直接抄）
+## 14. 实测通过的片段（可直接抄）
 
 ```python
 import Rhino.Geometry as G
@@ -239,7 +335,7 @@ print(res[0].Faces.Count, res[0].IsValid)
 
 ---
 
-## 13. 来源
+## 15. 来源
 
 本机 Rhino **8.29.26063.11001**、Windows、Rhino 内 Python 3、
 官方 McNeel Rhino MCP Platform **0.3.0.0**（`serverInfo.name == "rhino-mcp"`）。

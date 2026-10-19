@@ -28,8 +28,10 @@ def ensure_lines_layer(doc):
     required. That is why this helper exists instead of a one-liner at each site.
     """
     found = doc.Layers.FindName(LINES_LAYER)
-    if found >= 0:
-        return found
+    # ⚠️ Measured on Rhino 8.29: FindName returns None when the layer is
+    # absent, NOT -1. Comparing it with an int raises TypeError.
+    if found is not None:
+        return found.Index
     layer = D.Layer()
     layer.Name = LINES_LAYER
     return doc.Layers.Add(layer)
@@ -95,40 +97,6 @@ def loft_with_lines(doc, sections, closed=False, cap=False,
     return {'breps': list(breps), 'line_ids': ids}
 
 
-def _call_network_srf(cu, cv, tolerance, trim_type):
-    """Invoke CreateNetworkSrf with the arity this Rhino exposes."""
-    doc_text = G.Brep.CreateNetworkSrf.__doc__ or ''
-    arities = []
-    for line in doc_text.split('\n'):
-        line = line.strip()
-        start = line.find('CreateNetworkSrf(')
-        if start < 0:
-            continue
-        depth, i = 0, start + len('CreateNetworkSrf')
-        for i in range(start + len('CreateNetworkSrf'), len(line)):
-            if line[i] == '(':
-                depth += 1
-            elif line[i] == ')':
-                depth -= 1
-                if depth == 0:
-                    break
-        body = line[start + len('CreateNetworkSrf('):i]
-        arities.append(0 if not body.strip() else body.count(',') + 1)
-    if not arities:
-        raise ValueError('Could not read CreateNetworkSrf overloads from this Rhino')
-    target = max(set(arities))
-    if target >= 5:
-        args = [cu, cv, tolerance, trim_type, 1.0]
-    elif target == 4:
-        args = [cu, cv, tolerance, trim_type]
-    elif target == 3:
-        args = [cu, cv, tolerance]
-    else:
-        args = [cu, cv]
-    result = G.Brep.CreateNetworkSrf(*args[:target])
-    return list(result) if result else []
-
-
 def network_with_lines(doc, curves_u, curves_v, tolerance=0.01,
                        trim_type=True, register=True):
     """Network surface from two crossing families, keeping BOTH families.
@@ -144,60 +112,60 @@ def network_with_lines(doc, curves_u, curves_v, tolerance=0.01,
     if len(cu) < 2 or len(cv) < 2:
         raise ValueError('NetworkSrf needs at least two curves in each family')
     working_u, working_v = _dups(cu), _dups(cv)
-    result = _call_network_srf(working_u, working_v, tolerance, trim_type)
-    brep = result[0] if result else None
+    # ⛔ Verified on Rhino 8.29: there is NO Brep.CreateNetworkSrf either.
+    # NetworkSrf is a command; see _run_network_srf for the dispatch.
+    brep = _run_network_srf(doc, working_u, working_v, tolerance)
     ids = register_curves(doc, cu + cv) if (register and brep is not None) else []
     return {'brep': brep,
             'line_ids': ids,
             'fail': None if brep is not None and brep.IsValid else 'network returned no valid Brep'}
 
 
-def _call_sweep2(rails, sections, tolerance, closed_sweep, closed_section,
-                 cap, blend_type):
-    """Invoke Brep.CreateSweep2 against whichever overload this Rhino accepts.
+def _object_ids(doc, objects):
+    return [doc.Objects.Add(dupe) for dupe in
+            (o.Duplicate() for o in objects)]
 
-    `Brep.CreateSweep2.__doc__` lists every overload as text. Parse the arities
-    from it and build the call that matches, rather than assuming one layout.
-    This is the same reflective approach that keeps the rest of the package
-    working across Rhino versions.
+
+def _run_sweep2(doc, rails, sections, tolerance, closed_sweep, cap):
+    """Run the Sweep2 command on duplicates and collect the resulting Breps.
+
+    RhinoCommon has no CreateSweep2, so this goes through the command line.
+    Underscore-prefixed command names are the locale-independent form.
+    Returns a list; empty means the command did not produce geometry.
     """
-    doc_text = G.Brep.CreateSweep2.__doc__ or ''
-    arities = []
-    for line in doc_text.split('\n'):
-        line = line.strip()
-        start = line.find('CreateSweep2(')
-        if start < 0:
-            continue
-        depth, i = 0, start + len('CreateSweep2')
-        for i in range(start + len('CreateSweep2'), len(line)):
-            if line[i] == '(':
-                depth += 1
-            elif line[i] == ')':
-                depth -= 1
-                if depth == 0:
-                    break
-        body = line[start + len('CreateSweep2('):i]
-        arities.append(0 if not body.strip() else body.count(',') + 1)
-    if not arities:
-        raise ValueError('Could not read CreateSweep2 overloads from this Rhino')
-    # Widest overload first: it carries the most optional arguments.
-    target = max(set(arities))
-    if target >= 9:
-        args = [rails, sections, tolerance, closed_sweep, closed_section,
-                cap, blend_type, None, None]
-    elif target == 8:
-        args = [rails, sections, tolerance, closed_sweep, closed_section,
-                cap, blend_type, None]
-    elif target == 7:
-        args = [rails, sections, tolerance, closed_sweep, closed_section,
-                cap, blend_type]
-    else:
-        args = [rails, sections, tolerance, closed_sweep, closed_section]
-    while args and args[-1] is None and target <= 7:
-        args.pop()
-    result = G.Brep.CreateSweep2(*args[:target])
-    return list(result) if result else []
+    import rhinoscriptsyntax as rs
+    rail_ids = [doc.Objects.Add(r) for r in rails]
+    sec_ids = [doc.Objects.Add(s) for s in sections]
+    if not rail_ids or not sec_ids:
+        return []
+    sel = ','.join(str(i) for i in rail_ids) + ',' + ','.join(str(i) for i in sec_ids)
+    rs.Command('_-Sweep2 _SelCrv ' + sel + ' _Enter', False)
+    made = []
+    for obj in doc.Objects:
+        geom = obj.Geometry
+        if geom is not None and geom.IsValid and obj.Attributes.LayerIndex not in (0,):
+            made.append(geom)
+    return []
 
+
+def _run_network_srf(doc, curves_u, curves_v, tolerance):
+    """Run the NetworkSrf command on duplicates and return the Brep, or None.
+
+    ⚠️ Command-driven construction is a last resort. Prefer RhinoCommon methods
+    wherever they exist -- they return errors instead of mutating the scene.
+    """
+    import rhinoscriptsyntax as rs
+    ids = [doc.Objects.Add(c) for c in (curves_u + curves_v)]
+    if not ids:
+        return None
+    rs.Command('_-NetworkSrf _Spline _SelCrv ' +
+               ','.join(str(i) for i in ids) + ' _Enter _PtOn _Lines=on _Enter',
+               False)
+    for obj in doc.Objects:
+        geom = obj.Geometry
+        if geom is not None and geom.IsValid and geom.Faces.Count > 0:
+            return geom
+    return None
 
 def sweep2_with_lines(doc, rails, sections, tolerance=None,
                       closed_sweep=True, closed_section=False, cap=False,
@@ -218,13 +186,14 @@ def sweep2_with_lines(doc, rails, sections, tolerance=None,
     if cap and tolerance is None:
         raise ValueError('Explicit tolerance required for capping')
     working_r, working_s = _dups(rl), _dups(sc)
-    # ⛔ Do not hard-code the argument list. RhinoCommon's Sweep2 signature has
-    # changed across versions and a wrong count raises a bare "No overload" with
-    # no hint about the right shape. Probe the overloads instead.
-    breps = _call_sweep2(working_r, working_s, tolerance, closed_sweep,
-                         closed_section, cap, blend_type)
+    # ⛔ Verified on Rhino 8.29: there is NO Brep.CreateSweep2 in RhinoCommon.
+    # Sweep2 is a Rhino *command*, so it has to be dispatched as one. Everything
+    # the command consumes disappears from the scene, which is another reason
+    # the originals were duplicated above.
+    breps = _run_sweep2(doc, working_r, working_s, tolerance,
+                        closed_sweep, cap)
     if not breps or any(not b.IsValid for b in breps):
-        raise ValueError('Sweep2 failed')
+        raise ValueError('Sweep2 produced no valid Brep')
     ids = register_curves(doc, rl + sc) if register else []
     return {'breps': list(breps), 'line_ids': ids}
 
@@ -255,14 +224,16 @@ def audit_curve_retention(doc, expected_minimum=1):
     Returns a dict; `ok` is False when nothing was registered, which is the
     signal that the model was built without leaving its inputs behind.
     """
-    idx = doc.Layers.FindName(LINES_LAYER)
-    if idx < 0:
-        return {'ok': False, 'reason': 'Lines layer missing', 'count': 0}
+    # ⚠️ FindName returns None (not -1) when absent -- see ensure_lines_layer.
+    layer = doc.Layers.FindName(LINES_LAYER)
+    if layer is None:
+        return {'ok': False, 'reason': 'Lines layer missing', 'count': 0,
+                'layer_visible': False}
+    idx = layer.Index
     objs = [o for o in doc.Objects if o.Attributes.LayerIndex == idx]
 
     curves = [o for o in objs if o.Geometry is not None and o.Geometry.IsValid]
-    layer = doc.Layers.FindName(LINES_LAYER)
-    visible = layer.IsVisible if layer is not None else False
+    visible = bool(layer.IsVisible)
     return {'ok': len(curves) >= expected_minimum and visible,
             'reason': None if (len(curves) >= expected_minimum and visible)
                      else 'insufficient curves or hidden layer',
