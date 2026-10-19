@@ -1,5 +1,5 @@
 {
-  "version": "1.7.0",
+  "version": "1.7.1",
   "language": "zh-CN",
   "date": "2026-10-19",
   "checks": {
@@ -14,7 +14,8 @@
     "patch_with_lines_loft": "VERIFIED on live Rhino 8.29",
     "patch_with_lines_sweep2_network": "command-based, unverified",
     "bilingual_parity": "15 references + 10 scripts, zh/en aligned",
-    "wheel_skill_absorbed": true
+    "wheel_skill_absorbed": true,
+    "encoding_gate": "check_release rejects U+FFFD and bilingual drift"
   },
   "note": "Skill package: .gitignore is intentionally excluded (Git-only file). Hash list also excludes this manifest and the en/ tree. See VALIDATION.md for tested scope.",
   "files": [
@@ -110,8 +111,8 @@
     },
     {
       "path": "references/13-construction-discipline.md",
-      "bytes": 10677,
-      "sha256": "dc725db9abe199c5d8fce70fabc0d6ae5b147ae8491d89daf19958eabc2d7306"
+      "bytes": 10674,
+      "sha256": "e6413f095d39010be5f6d84dc00f4228a124b34cc274248b6c1c8ba4e951552b"
     },
     {
       "path": "references/14-rhino-python-binding-traps.md",
@@ -144,9 +145,14 @@
       "sha256": "79ec59281b3c38f87622d633098c5d1f4772ab2503ab4d76f66316792b93e591"
     },
     {
+      "path": "scripts/check_encoding.py",
+      "bytes": 2561,
+      "sha256": "6962cfe409b2e359cf4c11b346a9a807711b260502648bf7eacb172bce7dea65"
+    },
+    {
       "path": "scripts/check_release.py",
-      "bytes": 2252,
-      "sha256": "b3ca7109c8060fa71dd9292b72d1ccd56e80a021339035e0bcb5975f342f1911"
+      "bytes": 2853,
+      "sha256": "d3db6bf45885166916363b581e83da93a136cd149cd69f26953a5653094c46a0"
     },
     {
       "path": "scripts/example_closed_shell.py",

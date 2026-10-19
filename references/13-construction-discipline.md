@@ -79,7 +79,7 @@
 
 ⛔ 曲线删掉后**交付物不可编辑**，用户无法改形 —— 这不是最佳实践，是交付要求。
 
-⭐ 实操与图��约定见 [15 构面路线与曲线留存](15-patch-route-and-curve-retention.md)。
+⭐ 实操与图层约定见 [15 构面路线与曲线留存](15-patch-route-and-curve-retention.md)。
 
 ## 2. 成面纪律
 
