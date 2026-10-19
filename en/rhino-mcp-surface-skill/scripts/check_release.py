@@ -28,6 +28,18 @@ def check(root=None):
             if re.search(r'[A-Z]:[\\/]',content):errors.append(rel+': machine-specific absolute path')
         if p.suffix.lower() in {'.pdf','.png','.jpg','.jpeg','.pyc'}:
             errors.append(rel+': non-release media/cache file')
+    # Encoding damage and bilingual drift both slipped through repeatedly;
+    # gate them here so a damaged file cannot reach a release.
+    # Load by path rather than import so this works from any directory.
+    import importlib.util as _ilu
+    _spec = _ilu.spec_from_file_location(
+        'check_encoding', str(Path(__file__).with_name('check_encoding.py')))
+    _enc_mod = _ilu.module_from_spec(_spec)
+    _spec.loader.exec_module(_enc_mod)
+    _enc = _enc_mod.run(str(root))
+    if not _enc['ok']:
+        errors.extend(_enc['errors'])
+
     skill = (root/'SKILL.md').read_text(encoding='utf-8')
     if not skill.startswith('---\nname: rhino-mcp-surface-skill\n'):
         errors.append('Invalid skill frontmatter/name')
