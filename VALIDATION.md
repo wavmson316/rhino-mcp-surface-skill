@@ -9,6 +9,54 @@
 日期：2026-10-19。实测平台为 Windows、Rhino **8.29.26063.11001**、Rhino 内 Python3
 与当前 MCP 连接。无图片阅读；未把旧版"读完全部扫描页"的声明继承为本轮事实。
 
+## 1.4.0 真机实测（2026-10-19）
+
+在**官方 McNeel Rhino MCP Platform 0.3.0.0**（`serverInfo.name == "rhino-mcp"`）
++ **Rhino 8.29.26063.11001** + Windows + Rhino 内 Python 3 上实际运行。
+
+### 实测通过的项目
+
+| 项 | 结果 |
+|---|---|
+| 官方服务握手 | `initialize` 返回 `serverInfo.version = 0.3.0.0`，响应头 `Microsoft-HTTPAPI/2.0` |
+| 端口 | **10502**（HTTP.sys，归属 PID 4）；⚠️ 需 `--noproxy '*'` 绕过本机代理 |
+| 活数据链路 | `get_context` 返回 Perspective 相机位置、objectCount、layerCount、GH 状态 |
+| 工具清单 | `tools/list` 返回 **31 个**，含 `run_python` / `run_command` / `run_csharp` / 13 个 `g1_*` |
+| 文档状态 | `Millimeters` / AbsTol `0.001` / AngleTol `1.0` —— 与本文档记载一致 |
+| 回归测试 | `smoke_test_rhino.run_tests(doc)` → **45/45**（本次亲自在活 Rhino 里跑） |
+| 施工链 | `example_closed_shell` → **12/12**（本次亲自跑，含 0 裸边/0 非流形/朝外/正体积） |
+| 二维指标 | `region_iou` 自比 1.0；`silhouette_iou` 自比 1.0 |
+| `nbs_geometry.make_curve` | degree=3 / spans=1 / cp=4 / len=27.27 —— **CP 数 = 阶数+1 → 单跨** 成立 |
+| 几何构造 | 挤出实体 6 面、solid=True、**体积 48000.0 = 80×50×12 ✅ 精确** |
+
+### ⭐ 实测打出的 13 类绑定坑
+
+已整理为 [14 RhinoCommon Python 绑定坑](references/14-rhino-python-binding-traps.md)。
+这些**编译期不报错、运行时才炸**，静态查文档看不出来。
+
+| 坑 | 症状 |
+|---|---|
+| `BrepFaceList` 无 `__len__` | `len(brep.Faces)` → TypeError |
+| `Brep` 无 `Volume` | 要用 `VolumeMassProperties.Compute(brep).Volume` |
+| `BrepFace` 无 `Edges` | 要用 `f.OuterEdge` 或从 Brep 层取 |
+| `BrepEdge` 无 `Index` | 边索引用 `enumerate` 位置 |
+| `Rhino.Geometry` 无 `Polygon` | 用 `PolylineCurve(Polyline(pts+[pts[0]]))` |
+| `Extrusion.Create` 4 参 | `(curve, plane, height, cap)`，第2参是 Plane 不是 Vector3d |
+| `Extrusion.ToBrep()` 返回单个 Brep | ⛔ 不能 `for f in ext.ToBrep()` |
+| `CreateFilletEdges` 要位置索引 | 且 `BlendType.Fillet`（⛔ 无 `Normal`）、`RailType.RollingBall` |
+| `CreateBooleanDifference` 要公差 | 返回 `Brep[]` |
+| `Guid` 无 `.Id` | `AddBrep` 直接返回 Guid |
+| **`rs.Command` 阻塞** | ⛔ **实测卡死 MCP 调用**，须用 `run_command` 工具 |
+| `_SelEdges` 已不存在 | Rhino 8 命令行选项已变 |
+| `int` 不能隐式转枚举 | Python.NET 3.0 起必须 `G.BlendType.Fillet` |
+
+### ⚠️ 尚未完成
+
+- **`rs.Command` 卡死后未能自动恢复**，需在 Rhino 内手动 Esc 取消。
+  恢复后应重跑一次完整端到端（本次已完成的几何验证不受影响，
+  因全部为内存构造，`doc.Objects.Count` 前后均为 0）。
+- **G2/G3 仍无自动数值检查** —— 这次也没做。
+
 ## 1.2.0 文档变更
 
 | 变更 | 内容 | 是否新增验证 |

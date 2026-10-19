@@ -34,6 +34,18 @@ These circulate widely in textbooks and online examples, but they either raise a
 Mnemonic: the unit/tolerance trio is `ModelUnitSystem` / `ModelAbsoluteTolerance` /
 `ModelAngleToleranceDegrees` — **all three hang off `doc`, all three carry the `Model` prefix, and all three are assigned directly rather than called.**
 
+### ⭐⭐ Geometry API binding traps live in their own reference
+
+The four patterns above are **attribute-level**. The geometry API carries
+13 more that only fail **at runtime** — `BrepFaceList` has no `__len__`,
+`Brep` has no `Volume`, `Extrusion.Create` takes four arguments,
+`CreateFilletEdges` wants positional indices and `BlendType.Fillet`
+(there is no `Normal`), and `rs.Command` blocks the MCP call.
+
+⛔ **Read [14 RhinoCommon Python binding traps](14-rhino-python-binding-traps.md)
+before writing geometry code.** That file was produced by running the code on
+this machine, not by paraphrasing documentation.
+
 ### ⭐ The port is not a constant
 
 The port, path and start-up command change with the plugin version, the launch arguments and what is currently occupied.
@@ -42,6 +54,95 @@ The port, path and start-up command change with the plugin version, the launch a
 The correct approach: run `MCPStart` / `MCPConnect` and **read the banner it prints**,
 or try first and fall back to the address in the banner if the connection fails. When the connection fails, check the port first;
 ⛔ do not suspect the geometry or the command.
+
+### ⭐ The port is not a constant, but the probe is
+
+The port, path and start-up command change with the plugin version, the launch arguments and what is currently occupied.
+⛔ **Any hard-coded port is wrong** — including values measured on this package's development machine.
+
+The correct approach: run `MCPStart` / `MCPConnect` and **read the banner it prints**,
+or try first and fall back to the address in the banner if the connection fails. When the connection fails, check the port first;
+⛔ do not suspect the geometry or the command.
+
+### ⭐ Probing the official RhinoAI 0.3.0 server (measured)
+
+⚠️ **Bypass the HTTP proxy first.** This machine has `http_proxy` set, so
+curl goes through the proxy by default; the proxy returns 502 or a connection
+error, which **looks like a closed port when the port is actually open**.
+
+```bash
+# ⛔ Without --noproxy '*' you get a false negative
+curl -s -m 8 --noproxy '*' -X POST "http://127.0.0.1:<PORT>/" \
+  -H "Content-Type: application/json" \
+  -d '{"jsonrpc":"2.0","id":1,"method":"initialize","params":{
+        "protocolVersion":"2024-11-05","capabilities":{},
+        "clientInfo":{"name":"probe","version":"1.0"}}}'
+```
+
+**The confirmation response from the official server**:
+
+```json
+{"jsonrpc":"2.0","id":1,"result":{
+  "protocolVersion":"2024-11-05",
+  "serverInfo":{"name":"rhino-mcp","version":"0.3.0.0"},
+  "capabilities":{"tools":{"listChanged":false},...}}}
+```
+
+**Response header `Server: Microsoft-HTTPAPI/2.0`** means it runs on HTTP.sys — the
+signature of the official in-Rhino HTTP service.
+
+### ⭐ Three moves to find the port
+
+```bash
+# 1. List local listeners. HTTP.sys ports are owned by PID 4 and are easy to miss.
+netstat -ano | grep LISTENING | grep 127.0.0.1
+
+# 2. PID 4 = HTTP.sys = the in-Rhino service; community builds are separate processes
+# 3. Try initialize on each candidate; look for serverInfo.name == "rhino-mcp"
+```
+
+⚠️ **Measured on this machine**: the official 0.3.0 listens on **10502**;
+community builds commonly use 25105. The two speak **different protocols** —
+⛔ do not carry assumptions from one over to the other.
+
+### ⭐ End-to-end proof: live data, not just a handshake
+
+A successful `initialize` only proves the port is right. Real verification is a
+`tools/call` that returns **live Rhino data**:
+
+```bash
+curl -s -m 15 --noproxy '*' -X POST "http://127.0.0.1:<PORT>/" \
+  -H "Content-Type: application/json" \
+  -d '{"jsonrpc":"2.0","id":2,"method":"tools/call",
+       "params":{"name":"get_context","arguments":{}}}'
+```
+
+It returns `activeViewport` (camera location, display mode), `document`
+(`objectCount`, `layerCount`) and the `grasshopper` array.
+
+⛔ **`objectCount: 0` still counts as connected** — that is a normal empty
+document, not a fault.
+
+### ⭐ The official 0.3.0 tool list (31 tools)
+
+Verified against `tools/list`. **Note there is no `list_slots`** — the mention
+of `list_slots` elsewhere in this package is generic wording; this version has none.
+
+| Category | Tools |
+|---|---|
+| Read | `get_context` `get_selection` `list_objects` `get_viewport_image` `get_commands` |
+| Modify | `run_command` `run_python` `run_csharp` `set_selection` `set_camera` |
+| Files | `open_doc` `save_doc` `close_doc` |
+| View | `zoom_to_object` `zoom_to_layer` `set_layer_material` |
+| Grasshopper | `g1_start` `g1_place_component` `g1_place_slider` `g1_connect` `g1_connect_many` `g1_delete_component` `g1_search_components` `g1_describe_component` `g1_get_canvas_graph` `g1_solve_graph` `g1_apply_graph` `g1_clear_canvas` |
+| router internals | `_router_spawn_listener` `_router_close_listener` `_router_quit_app` |
+
+⛔ **Do not run interactive commands through `run_command`** (they wait for Enter).
+⛔ **Prefer `run_python` over `run_command`** — Rhino command-line options shift
+between versions and locales, while the Python API stays stable.
+
+⚠️ `run_csharp` executes C# directly (Roslyn) and can do things RhinoCommon
+cannot, but ⛔ do not use it unless the user explicitly asks.
 
 ## Geometry helpers
 

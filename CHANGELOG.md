@@ -1,5 +1,25 @@
 # 版本记录
 
+## 1.4.0 — 2026-10-19
+
+**真机实测版本。** 内容来自在官方 Rhino MCP Platform 0.3.0.0 + Rhino 8.29.26063.11001
+上的实际运行，不是文档转述。
+
+- ⭐ **新增 [14 RhinoCommon Python 绑定坑](references/14-rhino-python-binding-traps.md)**：
+  13 类真机才暴露的运行时陷阱，全部附实测代码。
+  包括 `BrepFaceList` 无 `__len__`、`Brep` 无 `Volume`/`BrepFace` 无 `Edges`/
+  `BrepEdge` 无 `Index`、`Rhino.Geometry` 无 `Polygon`、`Extrusion.Create` 的 4 参签名、
+  `CreateFilletEdges` 要位置索引 + `BlendType.Fillet`（无 `Normal`）、
+  `CreateBooleanDifference` 要公差、`Guid` 无 `.Id`、**`rs.Command` 会阻塞 MCP 调用**。
+- **05 执行协议补官方探测姿势**：`--noproxy '*'` 绕过代理、
+  `initialize` 确证响应、`Server: Microsoft-HTTPAPI/2.0` 特征、
+  官方 0.3.0 的 31 个工具清单、端口查找三动作。
+- 实测确认：官方 0.3.0 监听 **10502**（HTTP.sys，PID 4），
+  `serverInfo.name == "rhino-mcp"`。
+
+⚠️ 本机环境有 `http_proxy`，curl 默认走代理会得到**假阴性**
+（看起来像端口没开，其实是代理在挡）。
+
 ## 1.3.0 — 2026-10-19
 
 **功能版本。几何实现与 1.2.0 一致；新增多环二维指标并修正版本声明。**

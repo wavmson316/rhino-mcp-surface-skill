@@ -16,6 +16,7 @@ description: 使用 Rhino MCP 将照片、草图、多视图、尺寸或扫描�
 | 当前问题 | 参考 |
 |---|---|
 | **开工前的顺序铁律与高代价约束** | ⭐ [13 施工纪律](references/13-construction-discipline.md) |
+| **RhinoCommon Python 写法陷阱** | ⭐ [14 绑定坑](references/14-rhino-python-binding-traps.md) |
 | 图片、文字、扫描怎样解释 | [01 输入与意图](references/01-intent-and-reference.md) |
 | 怎样分面、走 UV、处理邻接 | [02 分面](references/02-patch-layout.md) |
 | 曲线与构面命令如何选 | [03 构面](references/03-construction.md) |

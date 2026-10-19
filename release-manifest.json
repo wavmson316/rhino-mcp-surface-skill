@@ -1,5 +1,5 @@
 {
-  "version": "1.3.0",
+  "version": "1.4.0",
   "language": "zh-CN",
   "date": "2026-10-19",
   "checks": {
@@ -7,7 +7,8 @@
     "rhino_baseline": "45/45",
     "outline_baseline": "17/17",
     "region_baseline": "13/13",
-    "procedural_shell": "12/12"
+    "procedural_shell": "12/12",
+    "live_machine_verified": "2026-10-19"
   },
   "note": "Hash list excludes this manifest and the en/ tree. See VALIDATION.md for tested scope.",
   "files": [
@@ -18,8 +19,8 @@
     },
     {
       "path": "CHANGELOG.md",
-      "bytes": 4049,
-      "sha256": "b3b2541069f338a28e36495750c02b0159bfccb8a83f70b4b74aff6643a9f44f"
+      "bytes": 5233,
+      "sha256": "e85c45ad80534677a9d55dfed12bcae2b9cbbb86d12ce93c02b9ec43ecc3e1e9"
     },
     {
       "path": "example-test-results.json",
@@ -68,8 +69,8 @@
     },
     {
       "path": "references/05-mcp-execution.md",
-      "bytes": 4446,
-      "sha256": "c11aa1fa50cdec01da9b969f0526371f1ae74834cd8bccadc69de02f2b040948"
+      "bytes": 8642,
+      "sha256": "da3d9176af6ba81af28bb4b301198cf2ef5bf138741a5a3a978783c3047e8663"
     },
     {
       "path": "references/06-complex-regions.md",
@@ -110,6 +111,11 @@
       "path": "references/13-construction-discipline.md",
       "bytes": 9210,
       "sha256": "933c77b0a07687124cc1172dcc036a7a34a8dcdd2b91238dfddfb268652928cb"
+    },
+    {
+      "path": "references/14-rhino-python-binding-traps.md",
+      "bytes": 7497,
+      "sha256": "1b77785417dd1443e82d7b4bc29675a78a8a08a201dbc6609399d5d3d13fdb32"
     },
     {
       "path": "region-test-results.json",
@@ -168,8 +174,8 @@
     },
     {
       "path": "SKILL.md",
-      "bytes": 10495,
-      "sha256": "552af90246d7da6b032d05010093b5f427aeaff5a70a595f4d52e8fba2730196"
+      "bytes": 10602,
+      "sha256": "0934cf1bcefd4cc82c2e919a2254cf62cc0dbbf8908567861f73faf686eb9970"
     },
     {
       "path": "templates/modeling-plan.md",
@@ -178,8 +184,8 @@
     },
     {
       "path": "VALIDATION.md",
-      "bytes": 7231,
-      "sha256": "45f7b47165cc6f2fb1ea2d347b417bbdc0d71fa12de74e44b65751ced48b6ab8"
+      "bytes": 10146,
+      "sha256": "af5ff4065d33520f17d7c1652dcd872dc00eff4cc8c0a7cf11e32964d56efdb9"
     }
   ]
 }
