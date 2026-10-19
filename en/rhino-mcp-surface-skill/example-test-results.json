@@ -1,0 +1,33 @@
+{
+  "passed": 12,
+  "total": 12,
+  "cases": {
+    "six_named_parent_patches": true,
+    "one_valid_closed_solid": true,
+    "six_joined_faces": true,
+    "zero_naked_edges": true,
+    "zero_nonmanifold_edges": true,
+    "outward_orientation": true,
+    "one_span_each_direction": true,
+    "degree_3_by_4": true,
+    "actual_center_crown_40": true,
+    "positive_volume": true,
+    "invalid_dimensions_rejected": true,
+    "document_unchanged": true
+  },
+  "parameters": {
+    "length": 120.0,
+    "width": 70.0,
+    "height": 40.0,
+    "shoulder_height": 10.0,
+    "units": "Millimeters"
+  },
+  "face_count": 6,
+  "actual_crown_point": [
+    60.0,
+    0.0,
+    40.0
+  ],
+  "limitations": "G0 at shoulder/base; no G2 or wall thickness claim",
+  "reference_image_reconstruction": "NOT TESTED"
+}

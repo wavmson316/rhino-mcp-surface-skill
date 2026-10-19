@@ -1,0 +1,159 @@
+{
+  "version": "1.1.0",
+  "language": "en",
+  "date": "2026-10-19",
+  "checks": {
+    "syntax_and_links": true,
+    "rhino_baseline": "45/45",
+    "outline_baseline": "17/17",
+    "procedural_shell": "12/12"
+  },
+  "note": "Hash list excludes this manifest. See VALIDATION.md for tested scope.",
+  "files": [
+    {
+      "path": "CHANGELOG.md",
+      "bytes": 1062,
+      "sha256": "971a8c11ffe8acdd7b2b02925289a098e3764cdd63d5ebbd4b9631928f1b9c78"
+    },
+    {
+      "path": "example-test-results.json",
+      "bytes": 825,
+      "sha256": "f7e13ef25427212af542d43af519be0fe4253760b65eeaa217747f56f98b94e8"
+    },
+    {
+      "path": "INSTALL-CHECK.md",
+      "bytes": 4377,
+      "sha256": "ad6d3e1d6a60cdbe01c1f53480ae1375d08345ca6266b0b9a7a254fdc45869b7"
+    },
+    {
+      "path": "outline-test-results.json",
+      "bytes": 528,
+      "sha256": "1a6b8f415489bd47dc84870e9d12d89d11cc410e809ba72463407af08f165720"
+    },
+    {
+      "path": "README.md",
+      "bytes": 10725,
+      "sha256": "85cb611d38c182e5104af4cca6fe4fdb74d19e4fcb76edc53ca7831e7838b866"
+    },
+    {
+      "path": "references/01-intent-and-reference.md",
+      "bytes": 2980,
+      "sha256": "0e3d5f657ee5768388cd0d4ae87bb2e82c84ff56ce629254f7a3c7fb2c12af99"
+    },
+    {
+      "path": "references/02-patch-layout.md",
+      "bytes": 2869,
+      "sha256": "548c8c3f98438b0eb7d1d02f1498d4936da31a50d0b1b0b3e49a056b927c3016"
+    },
+    {
+      "path": "references/03-construction.md",
+      "bytes": 5395,
+      "sha256": "a0e0e34ef3fef51d8d0101e5dde499c07ec9060bff158aedb992616fe761201c"
+    },
+    {
+      "path": "references/04-continuity-and-validation.md",
+      "bytes": 3514,
+      "sha256": "ff2d6d32110723bb3d3de3360ac4757c982f20934b78d9b73be655faa312b631"
+    },
+    {
+      "path": "references/05-mcp-execution.md",
+      "bytes": 3235,
+      "sha256": "cf7ba6497b5a50a2878712f744f363af8c68feab7aa15e6b2784cf8ded9c4f39"
+    },
+    {
+      "path": "references/06-complex-regions.md",
+      "bytes": 3319,
+      "sha256": "174c2dfa3598b6a72d8299c435f0c0b65ab80032fe921dc122a5852c7c1cf4ae"
+    },
+    {
+      "path": "references/07-diagnosis.md",
+      "bytes": 2348,
+      "sha256": "525711db88f2a059b8f871ad9ab7684be740ba9c5f262a80bcaee188cc609af1"
+    },
+    {
+      "path": "references/08-source-audit.md",
+      "bytes": 3463,
+      "sha256": "55a642322d228a7086be47244bd1ed8bcb163a99c38162093228ab82e4a9021f"
+    },
+    {
+      "path": "references/09-worked-examples.md",
+      "bytes": 3758,
+      "sha256": "af585b6bd357c0cd83cd87a6a3b889e5b23e37b02244b9156564a5a3ec204dbc"
+    },
+    {
+      "path": "references/10-parameters-and-recipes.md",
+      "bytes": 4806,
+      "sha256": "b21c570d438c89f0a0cc1c0ce21ad099224ef4afa50afbc2b2211b87b5a8a9d6"
+    },
+    {
+      "path": "references/11-consumer-electronics.md",
+      "bytes": 3258,
+      "sha256": "cdf9059c84a3e71bdb827743bbc58651cb65d50c3fc30ce0181892186ad6a7ec"
+    },
+    {
+      "path": "references/12-object-construction-playbooks.md",
+      "bytes": 13409,
+      "sha256": "ebe98852108f955cffd2d3de940878a62c954aafa3f4500d6d927281d7ae16e2"
+    },
+    {
+      "path": "rhino-test-results.json",
+      "bytes": 4002,
+      "sha256": "e6c4dc88824d88128f7b0bb901b4dde196cb8e8144ffbf9b92bab8a425a1e17d"
+    },
+    {
+      "path": "scripts/audit_geometry.py",
+      "bytes": 2742,
+      "sha256": "79ec59281b3c38f87622d633098c5d1f4772ab2503ab4d76f66316792b93e591"
+    },
+    {
+      "path": "scripts/check_release.py",
+      "bytes": 2252,
+      "sha256": "b3ca7109c8060fa71dd9292b72d1ccd56e80a021339035e0bcb5975f342f1911"
+    },
+    {
+      "path": "scripts/example_closed_shell.py",
+      "bytes": 5385,
+      "sha256": "9667599cd290e8736eac3b7bf2ee9c037b9ae0f06c2f842c695aa8153bd2b192"
+    },
+    {
+      "path": "scripts/nbs_geometry.py",
+      "bytes": 9618,
+      "sha256": "3ac0b286fb6be1cf9bfd5d012ee6688c2f9135ec999ab3ea63a3ffe80e31b4b2"
+    },
+    {
+      "path": "scripts/outline_metrics.py",
+      "bytes": 3680,
+      "sha256": "067f037cf41575aed0dd53099e32182b641751c73ad7ce257a6181491fa5d1d7"
+    },
+    {
+      "path": "scripts/sample_seam_g1.py",
+      "bytes": 3977,
+      "sha256": "f099aa1ce33906ef1c3844bb09ac459a947118d4bd8501a7890cb6f6d3b4f666"
+    },
+    {
+      "path": "scripts/smoke_test_rhino.py",
+      "bytes": 9435,
+      "sha256": "160c98897fdfd9b4e26855317edbfbfa0bec77b2b628bb74d6c2889afb569679"
+    },
+    {
+      "path": "scripts/test_outline_metrics.py",
+      "bytes": 2190,
+      "sha256": "d98447ea0e184491692e3c8406ebfa03b73c0c1e48d29158af1079e8baf8a3ac"
+    },
+    {
+      "path": "SKILL.md",
+      "bytes": 8428,
+      "sha256": "4f6659f8bb9c462cb800bf7f9b893cf02f219aa9ea0bd28ff4285bca73c0ac81"
+    },
+    {
+      "path": "templates/modeling-plan.md",
+      "bytes": 1469,
+      "sha256": "5cb47b1b9d4e765b7d6e12def14dc4d08f62fb9d6505f2005c48245e74d012b7"
+    },
+    {
+      "path": "VALIDATION.md",
+      "bytes": 4665,
+      "sha256": "d60646d615c5167919f2b0274d3feba2742aa73d2dddc3b507e5db97b8be8d87"
+    }
+  ]
+}

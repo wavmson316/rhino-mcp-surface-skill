@@ -1,0 +1,189 @@
+{
+  "rhino_version": "8.29.26063.11001",
+  "total": 45,
+  "passed": 45,
+  "cases": [
+    {
+      "case": "coplanar sampled seam",
+      "passed": true
+    },
+    {
+      "case": "same edge ninety degree fold rejected",
+      "passed": true
+    },
+    {
+      "case": "one unit seam gap rejected",
+      "passed": true
+    },
+    {
+      "case": "nonfinite seam tolerance rejected",
+      "passed": true
+    },
+    {
+      "case": "negative edge index rejected",
+      "passed": true
+    },
+    {
+      "case": "fractional sample count rejected",
+      "passed": true
+    },
+    {
+      "case": "open valid face has four naked edges",
+      "passed": true
+    },
+    {
+      "case": "single span per surface direction",
+      "passed": true
+    },
+    {
+      "case": "make control curve",
+      "passed": true
+    },
+    {
+      "case": "repeated knot span counterexample",
+      "passed": true
+    },
+    {
+      "case": "explicit doc ID audit missing object",
+      "passed": true
+    },
+    {
+      "case": "directed endpoint G1",
+      "passed": true
+    },
+    {
+      "case": "ninety degree curve correctly rejected",
+      "passed": true
+    },
+    {
+      "case": "reverse tangent rejected",
+      "passed": true
+    },
+    {
+      "case": "parallel disconnected curves rejected",
+      "passed": true
+    },
+    {
+      "case": "alternate endpoint pairing",
+      "passed": true
+    },
+    {
+      "case": "unknown endpoint pairing rejected",
+      "passed": true
+    },
+    {
+      "case": "single span rebuild with budget",
+      "passed": true
+    },
+    {
+      "case": "missing rebuild budget rejected",
+      "passed": true
+    },
+    {
+      "case": "underfit rebuild rejected",
+      "passed": true
+    },
+    {
+      "case": "closed rebuild rejected",
+      "passed": true
+    },
+    {
+      "case": "closed curve endpoint shortcut rejected",
+      "passed": true
+    },
+    {
+      "case": "exact circle internal knots geometrically tangent",
+      "passed": true
+    },
+    {
+      "case": "exact degree elevation preserves geometry",
+      "passed": true
+    },
+    {
+      "case": "curve quality real properties",
+      "passed": true
+    },
+    {
+      "case": "interpolated curve",
+      "passed": true
+    },
+    {
+      "case": "too few control points rejected",
+      "passed": true
+    },
+    {
+      "case": "four edge surface shuffled directions",
+      "passed": true
+    },
+    {
+      "case": "different degree boundaries permitted",
+      "passed": true
+    },
+    {
+      "case": "three edge surface",
+      "passed": true
+    },
+    {
+      "case": "disconnected boundary rejected",
+      "passed": true
+    },
+    {
+      "case": "ruled surface",
+      "passed": true
+    },
+    {
+      "case": "loft open sections",
+      "passed": true
+    },
+    {
+      "case": "loft planar cap solid",
+      "passed": true
+    },
+    {
+      "case": "cap without tolerance rejected",
+      "passed": true
+    },
+    {
+      "case": "closed loft direction",
+      "passed": true
+    },
+    {
+      "case": "single loft section rejected",
+      "passed": true
+    },
+    {
+      "case": "plane curvature zero",
+      "passed": true
+    },
+    {
+      "case": "sphere principal curvature magnitude",
+      "passed": true
+    },
+    {
+      "case": "surface spans helper",
+      "passed": true
+    },
+    {
+      "case": "reference plane explicit width height",
+      "passed": true
+    },
+    {
+      "case": "reference size rejected",
+      "passed": true
+    },
+    {
+      "case": "periodic construction real properties",
+      "passed": true
+    },
+    {
+      "case": "closed edge pairing explicitly rejected",
+      "passed": true
+    },
+    {
+      "case": "no document geometry or settings changed",
+      "passed": true
+    }
+  ],
+  "document_mutations": 0,
+  "g2": "NOT EVALUATED"
+}

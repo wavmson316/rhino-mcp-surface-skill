@@ -1,22 +1,34 @@
 {
-  "version": "1.0.0",
+  "version": "1.1.0",
+  "language": "zh-CN",
   "date": "2026-10-19",
   "checks": {
     "syntax_and_links": true,
-    "rhino_tests": "45/45",
-    "outline_tests": "17/17"
+    "rhino_baseline": "45/45",
+    "outline_baseline": "17/17",
+    "procedural_shell": "12/12"
   },
-  "note": "SHA256 covers all package files except this manifest. See VALIDATION.md for limits.",
+  "note": "Hash list excludes this manifest. See VALIDATION.md for tested scope.",
   "files": [
     {
+      "path": ".gitignore",
+      "bytes": 54,
+      "sha256": "8f607e77e60a101fc45d1142b97b2203b587caef747d027b5992d3a98f81f10f"
+    },
+    {
       "path": "CHANGELOG.md",
-      "bytes": 640,
-      "sha256": "443148478c4b46d3c2b4209b341f7be24532116ef28caac2a7610d50a78dae41"
+      "bytes": 1201,
+      "sha256": "d94526dc8d37e99bd29a498777ac9a59f5a6415d7d1fa58b425313b380c3f58e"
+    },
+    {
+      "path": "example-test-results.json",
+      "bytes": 825,
+      "sha256": "f7e13ef25427212af542d43af519be0fe4253760b65eeaa217747f56f98b94e8"
     },
     {
       "path": "INSTALL-CHECK.md",
-      "bytes": 1920,
-      "sha256": "121a72326d5da8ba47fd7772477154c046516a9a4c9c3f06b92c864648988723"
+      "bytes": 4230,
+      "sha256": "14a3c70d828c8f2e9ce2d0f9001f452f803c6535609007b0c55a63be51e0a716"
     },
     {
       "path": "outline-test-results.json",
@@ -24,9 +36,14 @@
       "sha256": "1a6b8f415489bd47dc84870e9d12d89d11cc410e809ba72463407af08f165720"
     },
     {
+      "path": "README.en.md",
+      "bytes": 10887,
+      "sha256": "4857bac07d682d21e86e2ff3e162560e99c093bad75759966c7ca00ab17d87b9"
+    },
+    {
       "path": "README.md",
-      "bytes": 2162,
-      "sha256": "e54b6d5728dd5bedd8aa2970c0152a3babf441f89a6a1c44dc6ae7482060edf2"
+      "bytes": 10695,
+      "sha256": "2e18eb432f60fe2db05b2eb053f2091ac63efd5908160f3753269976440ef96b"
     },
     {
       "path": "references/01-intent-and-reference.md",
@@ -84,6 +101,11 @@
       "sha256": "e441b6902b1f265ae1d1983efa141300b2ed3329936211f654e753ff1be48863"
     },
     {
+      "path": "references/12-object-construction-playbooks.md",
+      "bytes": 13688,
+      "sha256": "e3df71b5a04647da590fdad22d0bffe32441cb6563f681b89bee2b07251948e1"
+    },
+    {
       "path": "rhino-test-results.json",
       "bytes": 4002,
       "sha256": "e6c4dc88824d88128f7b0bb901b4dde196cb8e8144ffbf9b92bab8a425a1e17d"
@@ -95,8 +117,13 @@
     },
     {
       "path": "scripts/check_release.py",
-      "bytes": 2027,
-      "sha256": "063970c4b73a832b0cb44daed8c15b2e8e8b04f9c4dc395ea79252373eee0b05"
+      "bytes": 2252,
+      "sha256": "b3ca7109c8060fa71dd9292b72d1ccd56e80a021339035e0bcb5975f342f1911"
+    },
+    {
+      "path": "scripts/example_closed_shell.py",
+      "bytes": 5385,
+      "sha256": "9667599cd290e8736eac3b7bf2ee9c037b9ae0f06c2f842c695aa8153bd2b192"
     },
     {
       "path": "scripts/nbs_geometry.py",
@@ -125,8 +152,8 @@
     },
     {
       "path": "SKILL.md",
-      "bytes": 6780,
-      "sha256": "edbaa8a9a747717f55bc8f1630b5d577dd0782a8d642a759be3a7c3e5c29167a"
+      "bytes": 7237,
+      "sha256": "6c1577c55b6b19b06709b87659fb2af57e0df8e7dee86bcada513ff155e1491e"
     },
     {
       "path": "templates/modeling-plan.md",
@@ -135,8 +162,8 @@
     },
     {
       "path": "VALIDATION.md",
-      "bytes": 4144,
-      "sha256": "92503a6fc57048f20eafcb1bf5824d1a94553d0c9c4b9a3ff5fc673f10c7f0cc"
+      "bytes": 4909,
+      "sha256": "7242321cb9115901da2e051e1aaf5f33e171b4a1ba1399e764834e75b43c321c"
     }
   ]
 }

@@ -10,7 +10,10 @@ from urllib.parse import unquote
 def check(root=None):
     root = Path(root) if root else Path(__file__).resolve().parents[1]
     errors = []
-    files = [p for p in root.rglob('*') if p.is_file() and '__pycache__' not in p.parts]
+    # The repository also carries a separately installable English package.
+    # Check each package independently; never traverse Git internals or caches.
+    files = [p for p in root.rglob('*') if p.is_file() and
+             not any(part in {'.git', '__pycache__', 'en'} for part in p.relative_to(root).parts)]
     for p in files:
         rel = p.relative_to(root).as_posix()
         if p.suffix == '.py':

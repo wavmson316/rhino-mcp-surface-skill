@@ -7,6 +7,8 @@ description: 使用 Rhino MCP 将照片、草图、多视图、尺寸或扫描�
 
 把用户意图转成形状正确、结构可控、证据明确的几何。命令成功只是施工结果，不能代替形体与质量验收。
 
+适配 McNeel [Rhino MCP Platform / RhinoAI](https://github.com/mcneel/RhinoAI)，插件 `Rhino-MCP-Platform`；实测 Windows + Rhino8.29 + Rhino Python3。连接方式与版本边界见 [安装指南](INSTALL-CHECK.md)。
+
 ## 读取与执行
 
 先读本页；按任务读取下表，避免每次把全部参考装入上下文。普通可逆操作直接完成，不要求用户逐阶段批准。核心尺寸、装配或设计意图确有歧义才提问，同时推进不依赖答案的部分。
@@ -26,6 +28,8 @@ description: 使用 Rhino MCP 将照片、草图、多视图、尺寸或扫描�
 | 壳体、按钮、装配与重复特征 | [11 消费产品](references/11-consumer-electronics.md) |
 
 首次接入读 [安装自检](INSTALL-CHECK.md)。全过程记录到 [项目模板](templates/modeling-plan.md)。
+
+复杂物品开工前还必须读 [物品分面与逐步施工剧本](references/12-object-construction-playbooks.md)，输出曲线ID、面块/边界/邻接、具体输入及阶段出口；仅列命令名不算施工计划。
 
 ## 必守边界
 
