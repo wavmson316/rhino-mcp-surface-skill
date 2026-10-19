@@ -1,5 +1,5 @@
 {
-  "version": "1.4.0",
+  "version": "1.5.0",
   "language": "zh-CN",
   "date": "2026-10-19",
   "checks": {
@@ -8,7 +8,9 @@
     "outline_baseline": "17/17",
     "region_baseline": "13/13",
     "procedural_shell": "12/12",
-    "live_machine_verified": "2026-10-19"
+    "live_machine_verified": "2026-10-19",
+    "patch_route_rules": true,
+    "patch_with_lines_helper": "UNVERIFIED on live Rhino"
   },
   "note": "Skill package: .gitignore is intentionally excluded (Git-only file). Hash list also excludes this manifest and the en/ tree. See VALIDATION.md for tested scope.",
   "files": [
@@ -54,8 +56,8 @@
     },
     {
       "path": "references/03-construction.md",
-      "bytes": 6471,
-      "sha256": "3ee96575bfae8297fb841e4ba80d0bd7d66a3f9fadee1f824f9bb2564b527800"
+      "bytes": 7126,
+      "sha256": "0a1f21b881e974fc00805f93db52d20835c95fe82ba104a0dc40070edc61860f"
     },
     {
       "path": "references/04-continuity-and-validation.md",
@@ -84,8 +86,8 @@
     },
     {
       "path": "references/09-worked-examples.md",
-      "bytes": 3263,
-      "sha256": "920a7555a6469bd6b0cca8d110b2e94a1a862a1753ec73a5de0815592f80cafc"
+      "bytes": 3308,
+      "sha256": "ac884711c5d3db725ffcc8f88a28dc4afb034222158fe8fc4b1bf6700313b86d"
     },
     {
       "path": "references/10-parameters-and-recipes.md",
@@ -99,18 +101,23 @@
     },
     {
       "path": "references/12-object-construction-playbooks.md",
-      "bytes": 13688,
-      "sha256": "e3df71b5a04647da590fdad22d0bffe32441cb6563f681b89bee2b07251948e1"
+      "bytes": 14164,
+      "sha256": "ff0a41f1d04ef7299cbb0f99d184d950e50a3fd22a9917cc8184e818386d06ef"
     },
     {
       "path": "references/13-construction-discipline.md",
-      "bytes": 9210,
-      "sha256": "933c77b0a07687124cc1172dcc036a7a34a8dcdd2b91238dfddfb268652928cb"
+      "bytes": 10677,
+      "sha256": "dc725db9abe199c5d8fce70fabc0d6ae5b147ae8491d89daf19958eabc2d7306"
     },
     {
       "path": "references/14-rhino-python-binding-traps.md",
       "bytes": 7497,
       "sha256": "1b77785417dd1443e82d7b4bc29675a78a8a08a201dbc6609399d5d3d13fdb32"
+    },
+    {
+      "path": "references/15-patch-route-and-curve-retention.md",
+      "bytes": 10240,
+      "sha256": "71b62be6b0d4d8e3868702ed903166d1280080250dd64a57270541a66d84c64c"
     },
     {
       "path": "region-test-results.json",
@@ -148,6 +155,11 @@
       "sha256": "fddcf96a499b8340c39f5682a37e39d59e829a080ff2bfe74fa2aa59448d347b"
     },
     {
+      "path": "scripts/patch_with_lines.py",
+      "bytes": 11380,
+      "sha256": "2bd197e1d10f1c52d56b36d77c5bf622ab9cb2a4b52cccbf6713cd1e96a88724"
+    },
+    {
       "path": "scripts/sample_seam_g1.py",
       "bytes": 4369,
       "sha256": "6dcdefd1ce75b1d1fa27a8f6a7cc602374542fdca08176aa9b52c24cf8774776"
@@ -169,8 +181,8 @@
     },
     {
       "path": "SKILL.md",
-      "bytes": 10602,
-      "sha256": "0934cf1bcefd4cc82c2e919a2254cf62cc0dbbf8908567861f73faf686eb9970"
+      "bytes": 12527,
+      "sha256": "71e8a8eace3bfbe9707f13ed0a0c0067319fda3e320f01b0ebdaa1f774e8a3c0"
     },
     {
       "path": "templates/modeling-plan.md",
