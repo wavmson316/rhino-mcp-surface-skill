@@ -1,120 +1,120 @@
-# 产品壳体、按钮与装配迁移
+# Product shells, buttons, and assembly transfer
 
-## 先看几何特征
+## Start from the geometric features
 
-消费电子既有平面箱体，也有高光双曲率壳、人体工学凹区和复杂分叉。汽车也有解析零件。按参考和用途选形体/G级，不按产品名称固定G1或“平面+小圆角”。
+Consumer electronics range from flat-sided boxes to high-gloss double-curvature shells, ergonomic recesses, and complex branching. Cars have analytic parts too. Choose the form and G level from the reference and the purpose — do not lock into G1 or "flat face plus small fillet" because of the product category.
 
-本章借鉴翻盖手机、摄像机案例：共享母面、装配基准、过渡截面和细节依赖。路由器/空调等是迁移模板，未经真实参考的端到端验证。
+This chapter borrows from the flip-phone and camera cases: shared parent surfaces, assembly datums, transition sections, and detail dependencies. The router and air-conditioner cases are transfer templates, not end-to-end validations against real references.
 
-## 主壳策略
+## Main shell strategy
 
-| 特征 | 候选 | 重点 |
+| Feature | Candidates | What to watch |
 |---|---|---|
-| 平板加侧壁 | PlanarSrf/Extrude/圆角 | 平面保持、角区顺序 |
-| 微鼓盖 | 少截面Loft/可控母面 | 拱高、最大体量、反射 |
-| 倾斜侧壁 | 倾斜挤出/直纹/双轨 | 拔模方向与真实角度 |
-| 深凹握持区 | 独立凹底+宽过渡 | 局部改形不要牵扯顶面 |
-| 接触/装配面 | 共享基准母面派生 | 间隙、干涉与活动范围 |
+| Flat face with side wall | PlanarSrf / Extrude / fillet | Planarity preservation, corner ordering |
+| Low-dome cover | Few-section Loft / controllable parent surface | Crown height, maximum volume, reflection |
+| Sloped side wall | Sloped extrude / straight grain / dual rail | Draft direction and the real angle |
+| Deep recessed grip zone | Independent recess base plus a wide transition | Local reshaping must not drag the top face |
+| Contact / assembly faces | Derived from a shared datum parent surface | Clearance, interference, and range of motion |
 
-侧面适当超出再trim是求交手法，不保证自动G1/G2。挤出方向常为Degree1、两排CP，但U/V实际读取；若要编辑可精确升阶，不必开启可变形模式。升到Degree3四排并保护一端三排是特定局部方案，不能代表所有接缝G2。
+Letting the side wall overshoot and then trimming is a boolean-intersection technique — it does not guarantee automatic G1/G2. The extrusion direction is often Degree 1 with two rows of CPs, but read the actual U/V values; if you need to edit, elevate the degree precisely rather than enabling Deformable mode. Elevating to Degree 3 for four rows and protecting three rows at one end is a specific local scheme — it does not stand in for G2 on every seam.
 
-### ⭐ 平面与侧面的衔接：高低错位 + Trim
+### ⭐ Joining a flat face to a side wall: offset in height, then Trim
 
-**不要用一个曲面硬接平面与侧面。** 教材做法：
-
-```
-1. 侧面故意做到比底面更高
-2. 用平面的轮廓线 Trim 掉高出的部分
-3. 两部分自然衔接
-```
-
-⚠️ 直接相邻的平面与侧面交界线是**锐利**的，仍需圆滑（见下）。
-
-### ⭐ `Extrude` 挤出面补G2自由度
-
-`Extrude` 的 V 向只有 2 个 CP。与相邻 `Extrude` 面保持 G2 的教材做法：
+**Do not try to force a flat face and a side wall together with one surface.** The textbook approach:
 
 ```
-ChangeDegree：U 向阶数不变，V 向 1 → 3 阶
-→ V 向 CP 从 2 个变 4 个（3 个保持曲率保 G2，1 个改形）
+1. Build the side wall deliberately taller than the base face
+2. Trim away the excess using the flat face's outline curve
+3. The two parts then meet naturally
 ```
 
-⚠️ 这是**特定局部方案**，不代表所有接缝都能这样达到 G2。
+⚠️ The boundary between directly adjacent flat and side walls is **sharp**, and still needs blending (see below).
+
+### ⭐ Adding the degrees of freedom for G2 on an Extrude face
+
+`Extrude` produces only 2 CPs in the V direction. The textbook approach for holding G2 against a neighbouring `Extrude` face:
+
+```
+ChangeDegree: leave the U degree unchanged, raise V from degree 1 → degree 3
+→ V CPs go from 2 to 4 (3 of them preserve curvature to hold G2, 1 reshapes)
+```
+
+⚠️ This is a **specific local scheme**. It does not mean every seam can reach G2 this way.
 
 ---
 
-## 鼓面按钮与推拉键
+## Domed buttons and slider keys
 
-轮廓、拱高、边软硬分别控制。直线+半圆是精确G1轮廓；高光需求可用G2过渡并验差。正面可用Loft/截面母面，Patch仅作近似候选；微鼓三排法条件见 [参数配方](10-parameters-and-recipes.md)。推拉键凸台、外轮廓、止挡与侧壁独立处理，别为"统一顺滑"消掉功能棱边。
+Outline, crown height, and edge softness are controlled separately. Straight lines plus semicircles give an exact G1 outline; where gloss demands it, use a G2 transition and verify the error. The face can come from Loft or from section parent surfaces, with Patch only as an approximate candidate; see [Parameter recipes](10-parameters-and-recipes.md) for the conditions on the three-row low-dome method. Handle the slider boss, outer outline, end stop, and side wall independently — do not erase functional hard edges in the name of "one uniformly smooth line".
 
-### ⭐ 轮廓G 级二选一
+### ⭐ Two ways to get the outline continuity
 
-| 做法 | 连续性 | 建议 |
+| Approach | Continuity | Recommendation |
 |---|---|---|
-| 两条平行线 + 两端各一半圆 | **G1**（精确） | ⛔ **优先用这个**，便于后续改尺寸 |
-| `Blend` 在两端做圆滑过渡 | **G2** | 仅高光面、可见度高时 |
+| Two parallel lines plus a semicircle at each end | **G1** (exact) | ⛔ **Prefer this one** — it stays easy to resize later |
+| `Blend` to round both ends | **G2** | Only for glossy surfaces and highly visible cases |
 
-⚠️ 按键会频繁改尺寸，⛔ 一上来就G2 会拖慢修改。
+⚠️ Button dimensions change frequently, so ⛔ starting at G2 slows every revision down.
 
-### ⭐ 完整按键配方（7 步）
+### ⭐ Full button recipe (7 steps)
 
 ```
-1. 绘轮廓（直线+半圆 = G1）
-2. Extrude 挤成侧面（键 C 加盖做实体）
-3. Split 用直线把轮廓分成对称两半
-4. Loft 两条分割线 → 平面
-5. ChangeDegree 把 U 向降到 2 阶（D 按需）→ 3 排 CP
-6. 只移中间那排（⛔ 首尾两个不能选）→ 鼓起表面
-7. Pipe → Split/Trim → BlendSrf → 缝隙圆滑
+1. Draw the outline (straight lines + semicircles = G1)
+2. Extrude into a side wall (press C to cap it, making a solid)
+3. Split the outline into two symmetric halves with a straight line
+4. Loft the two split curves → flat surface
+5. ChangeDegree to drop the U direction to degree 2 (press D as needed) → 3 rows of CPs
+6. Move only the middle row (⛔ the first and last cannot be selected) → domed surface
+7. Pipe → Split/Trim → BlendSrf → smooth the seam
 ```
 
-⚠️ `Patch` 做按键正面时**不要选 `Adjust tangency`**。
+⚠️ When using `Patch` for a button face, **do not select `Adjust tangency`**.
 
 ---
 
-## 变宽过渡与渐消
+## Variable-width transitions and fading
 
-检查边配对与截面后试bulge/Same height shapes。若仍失控，可从多个试验Blend提取适合截面再Sweep2，真实面边带Curvature条件。平均曲率、法截面和反射一起看，不用固定色标判全部通过。
+After checking edge pairing and sections, trial bulge / Same height shapes. If it still runs away, extract a suitable section from several trial blends and then Sweep2, setting Curvature conditions on the real face-edge band. Read mean curvature, normal sections, and reflection together — do not let a fixed colour scale certify the whole surface.
 
-### ⭐ 边缘圆滑标准链
+### ⭐ The standard chain for a blended edge
 
 ```
-Intersect → Join → Pipe(Cap关) → ExtendSrf(T,S) → SplitSrf → Blend → Sweep2
+Intersect → Join → Pipe (Cap off) → ExtendSrf (T, S) → SplitSrf → Blend → Sweep2
 ```
 
-| 步骤 | 关键 | ⛔ 后果 |
+| Step | Key action | ⛔ Consequence |
 |---|---|---|
-| `Pipe` | **键 `C` 关 Cap**（默认 Yes）| 圆管封盖，无法穿透修剪 |
-| `ExtendSrf` | 键 `T` → `S`（Smooth）| 圆管没穿透，修剪失败 |
-| `BlendSrf` | 先用默认 Bulge，⛔ 别急拖滑杆 | — |
+| `Pipe` | **press `C` to turn Cap off** (default Yes) | The pipe is capped and cannot pass through to trim |
+| `ExtendSrf` | press `T` → `S` (Smooth) | The pipe does not reach through and the trim fails |
+| `BlendSrf` | Start with the default Bulge, ⛔ do not rush to drag the slider | — |
 
-### ⭐ `BlendSrf` 扭曲的正解
+### ⭐ The correct fix for a twisted BlendSrf
 
-**现象**：曲面中间鼓起扭曲，高光异常。**根因**：默认保持混接比例，窄处CP 跟着缩小。
+**Symptom**: the middle of the surface bulges and twists, and the highlight goes wrong. **Root cause**: the default preserves the blend proportion, so the CPs shrink in at the narrow section.
 
-**正解**：勾选 **`Same height shapes`**，⛔ 不调整滑杆。
+**Correct fix**: tick **`Same height shapes`** and ⛔ leave the slider alone.
 
-⛔ 不要用"加点"或"拖滑杆"治扭曲——滑杆调的是 bulge 强度，治不了根部畸变。
+⛔ Do not treat a twist with "add points" or "drag the slider" — the slider controls bulge strength and cannot correct distortion at the root.
 
-### ⭐ `Setpt` 的正确用法
+### ⭐ Correct use of Setpt
 
-⛔ 只对齐最外一排 → 外轮廓对了但**内部仍扭曲**。
-✅ **从中间开始，所有排都对齐**。
+⛔ Aligning only the outermost row → the outer outline is right but **the interior is still twisted**.
+✅ **Start from the middle and align every row.**
 
-### ⭐ `BlendSrf` 选边效率
+### ⭐ Efficient edge selection in BlendSrf
 
-边界线**选中后不能取消**。选多边时先选一条再**键 `A`** 选中所有相连边。
+A selected boundary curve **cannot be deselected**. To select multiple edges, pick one first, then **press `A`** to select all connected edges.
 
-## 分件、装配和重复特征
+## Part division, assembly, and repeated features
 
-先整机体块、轴线和接口位置；再分件细化。上/下壳与盖板可共享外形母面再切分，保留未修剪副本。运动天线、导风板、铰链按独立部件和旋转轴表达，检查至少闭合/打开或极限位置的干涉。
+Establish the overall volume, axes, and interface positions first; refine the individual parts afterwards. Upper and lower shells and cover plates can share an exterior parent surface and then be split, keeping an untrimmed copy. Moving antennas, louvers, and hinges are expressed as separate parts on their own rotation axes — check for interference at least at the closed and open positions, or at the limit positions.
 
-重复孔/格栅先验证一个单元，检查边缘余量、最小壁厚和孔方向，再阵列/参数化。曲面UV映射不保证等弧长，Flow也需查缩放；渐变间距可正确，不强制所有图案等距。大阵列最后生成并隔离显示，不必所有任务用GH或实体建出每个孔。
+For repeated holes and grilles, validate one cell first and check the edge margin, minimum wall thickness, and hole direction before patterning or parameterising. Surface UV mapping does not guarantee equal arc length, and Flow needs its scaling checked as well; a varying spacing can be perfectly correct, so do not force every pattern to be equidistant. Generate large arrays last and isolate them for display — not every task needs GH, nor needs every hole built as a solid.
 
-## 制造需求分支
+## Manufacturing branches
 
-制造实体需要真实壁厚、分型、拔模、装配间隙和工艺半径；缩率由材料牌号、方向和工艺确定，不自动套ABS/PC统一比例。外观概念可以先不建螺柱/卡扣，并说明这些未设计。缩放内层仅作外观近似，不叫等厚。
+Manufacturing solids need true wall thickness, parting lines, draft, assembly clearance, and process radii. Shrinkage rate comes from the material grade, direction, and process — there is no universal ABS/PC ratio to apply automatically. An appearance concept may legitimately omit screw bosses and snap-fits, provided you record that these were not designed. Scaling an inner layer is only an appearance approximation; do not call it constant thickness.
 
-## 检查重点
+## Inspection focus
 
-主剪影与负空间、盖面拱高、边带渐宽/渐消、G级证据、运动件独立与间隙、孔阵列边缘、材料厚度与倒扣。小面可放大Zebra/EMap，曲率色谱需适合尺度；没有“消费电子唯一可靠质检工具”。
+Primary silhouette and negative space, cover crown height, variable-width band and fade, evidence for each G level, independence and clearance of moving parts, hole-array edges, material thickness and undercuts. Small faces can be magnified for Zebra / EMap, and the curvature map range must suit the scale. There is no "single reliable consumer-electronics inspection tool".

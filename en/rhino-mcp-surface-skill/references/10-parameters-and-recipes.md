@@ -1,303 +1,303 @@
-# 参数预算与可迁移配方
+# Parameter budgets and transferable recipes
 
-本章给出可直接采用的数值，同时对每个值标注**来源、适用条件与失效信号**。
-没有任何数值是普适标准；每条都说明了它在什么条件下会失效。
+This chapter gives numbers you can put to work immediately, and labels every one of them with its **source, its applicability conditions, and its failure signal**.
+No value here is a universal standard; each one states the conditions under which it stops holding.
 
-## 数值类型先分清
+## Start by sorting the value categories
 
-| 类型 | 例子 | 如何采用 |
+| Category | Examples | How to adopt it |
 |---|---|---|
-| 输入事实 | 图纸尺寸、材料规格 | 校核单位和版本后作为约束 |
-| 项目预算 | 接缝、拟合、角度误差 | 明确定义与目标，再设置工具 |
-| 探索起点 | 概念过渡宽度、显示网格 | 试面和指标验证后调整 |
-| 教材案例 | Patch刚度、Pipe量规半径 | 保留上下文，不能自动迁移 |
-| 工程标准 | 厂商接缝、拔模、缩率 | 需规范来源/版本；没有则未确定 |
+| Input fact | Drawing dimensions, material specification | Check units and revision, then treat as a constraint |
+| Project budget | Seam, fit, angular error | Define the intent and target first, then set the tool |
+| Exploration starting point | Concept transition width, display mesh | Adjust after trial surfaces and metric verification |
+| Textbook case | Patch stiffness, Pipe gauge radius | Keep the context attached; it does not transfer by itself |
+| Engineering standard | Vendor seam, draft angle, shrinkage rate | Needs a specification source and version; without one it is undetermined |
 
-⭐ **本版相比纯原则化的一版补回了什么**：第三~五类过去只写"不可迁移"，
-现在每类给出**可用的起点值 + 出处 + 何时必须换**。目的是让你能开工，
-而不是让你在"没有值"和"盲目照抄"之间二选一。
+⭐ **What this edition adds back over the purely principled version**: categories three through five used to say only "not transferable". Each now supplies **a usable starting value, where it came from, and when it must be replaced**. The goal is to let you begin work, not to force a choice between "no value" and "copy this blindly".
 
 ---
 
-## 单位换算与探索设置
+## Unit conversion and exploration settings
 
-### 换算表（同一物理量的不同表示）
+### Conversion table (one physical quantity, several representations)
 
-| 物理量 | mm文档 | cm文档 | m文档 | inch文档 |
+| Quantity | mm document | cm document | m document | inch document |
 |---|---|---|---|---|
 | 0.01 mm | `0.01` | `0.001` | `0.00001` | `0.0003937` |
 
-⚠️ 改变单位时明确是否缩放坐标、参考和长度公差；**角度无须按长度缩放，曲率按长度倒数换算**。
+⚠️ When you change units, state explicitly whether coordinates, reference geometry, and length tolerances are also scaled; **angles do not scale with length, while curvature converts as the reciprocal of length**.
 
-### 探索预算（毫米制、100–1000 mm 普通外观）
+### Exploration budget (metric, ordinary appearance work at 100–1000 mm)
 
-| 项 | 起点 | 适用条件 | 何时必须改 |
+| Item | Starting point | Applicability conditions | When it must change |
 |---|---|---|---|
-| 文档绝对公差 | `0.01 mm` | 常规外观概念 | ⛔ 不覆盖用户既有设置；实物尺寸 < 1 mm 的产品要重定 |
-| 接缝距离容差 | `0.01 mm` | 同一文档内 | 零件有装配间隙要求时改用间隙值 |
-| 切平面角公差 | `0.1°` | 高光面外观 | 结构面可放宽；⛔ 别当作制造公差 |
-| 形状拟合容差 | 单独定义 | 模糊照片 | 模糊图的拟合误差往往**远大于**接缝容差，两者不冲突 |
+| Document absolute tolerance | `0.01 mm` | Routine appearance concept work | ⛔ Does not override an existing user setting; products with physical features under 1 mm need a different figure |
+| Seam distance tolerance | `0.01 mm` | Within one document | Switch to the actual clearance value when the part carries an assembly gap requirement |
+| Tangent-plane angle tolerance | `0.1°` | Glossy appearance surfaces | Structural faces may be looser; ⛔ do not treat it as a manufacturing tolerance |
+| Shape fit tolerance | Define separately | Blurred photographs | Fit error on a blurred image is often **far larger** than the seam tolerance — the two do not conflict |
 
-⚠️ **文档公差不是制造公差**。它是几何运算的分辨下限，不是零件验收标准。
+⚠️ **A document tolerance is not a manufacturing tolerance.** It is the resolution floor for geometric operations, not the acceptance standard for the part.
 
-### 尺度换算的边界
+### Where scale conversion stops
 
-**只适用于相似概念形体。**
+**It applies only to similar concept forms.**
 
-| 可换算 ✅ | 不可换算 ❌ |
+| Convertible ✅ | Not convertible ❌ |
 |---|---|
-| 概念过渡宽度、圆角半径、凹槽深度（随外形缩放）| 真实壁厚（由结构/工艺定）|
-| 视觉缝宽、翻边深度 | 装配间隙（由供应链定）|
-| 显示网格密度 | 材料缩率（由材料牌号+方向定） |
+| Concept transition width, fillet radius, groove depth (they scale with the overall form) | True wall thickness (set by structure and process) |
+| Visible seam width, flange depth | Assembly clearance (set by the supply chain) |
+| Display mesh density | Material shrinkage rate (set by material grade plus direction) |
 
-⛔ **不要拿汽车总长与音箱总长的比例去推算壁厚。** 公式：
+⛔ **Do not derive wall thickness from the ratio of car length to speaker length.** The formula:
+
 ```
-你的半径 = 参考值 × (你的模型平均尺寸 ÷ 原案例平均尺寸)
+your radius = reference value × (your model's average dimension ÷ the original case's average dimension)
 ```
-⚠️ 缩放后必须复验：圆角半径小于绝对公差 × 10 时 Rhino 会出问题。
+
+⚠️ Always re-verify after scaling: Rhino starts to misbehave when a fillet radius falls below absolute tolerance × 10.
 
 ---
 
-## MatchSrf配方
+## MatchSrf recipes
 
-输入：可调整源面、目标面真实边、主从、连续性及各项容差。
+Inputs: the adjustable source surface, the target surface's real edges, master/slave assignment, target continuity, and each tolerance.
 
-1. 记录原面和邻接边，检查自然/修剪边、对应与角点。
-2. 初始差距太大先调体量，避免用匹配硬拉。
-3. 按目标选Position/Tangency/Curvature；选择另一端保持要求。
-4. Preserve iso可作试验，按形体比较Automatic/目标iso/垂直边策略；不要求所有UV相同。
-5. 两侧允许改时才Average；部分长短边匹配可试closest points，并检查覆盖。
-6. Refine与手动InsertKnot分别试验，控制新增自由度；复查所有旧边与面内公平性。
+1. Record the original surface and its adjacent edges; check natural and trimmed edges, correspondence, and corner points.
+2. If the starting discrepancy is too large, fix the volume first. Do not use the match to drag the shape into place.
+3. Choose Position/Tangency/Curvature per the target; choose the preservation requirement for the other end.
+4. Preserve iso can be used as an experiment. Compare Automatic, target-iso, and perpendicular-edge strategies against the form. Do not require identical UV on all edges.
+5. Use Average only when both sides are allowed to move; for partially unequal long and short edges, try closest points and check coverage.
+6. Trial Refine and manual InsertKnot separately, keep added degrees of freedom under control, then re-check all old edges and fairness inside the surface.
 
-### 实测容差锚点
+### Measured tolerance anchors
 
-| 项 | 教材对话框实拍值 | 出处 | 说明 |
+| Item | Textbook dialog screenshot value | Source | Note |
 |---|---|---|---|
-| Distance | `0.001 units` |清华版 p46 图3.44 + p220 图9.219（两处一致） | 教材操作时的对话框状态 |
-| Tangency | `1.0°` | 同上 | |
-| Curvature | `0.05 %` | 同上 | ⛔ **不是无量纲厂标** |
-| Preserve other end | `Position` | 同上 | |
-| Match edges by | `closest points` | 同上 | 两边不等长时启用 |
+| Distance | `0.001 units` | Qinghua edition, p.46, fig. 3.44 + p.220, fig. 9.219 (identical in both) | The dialog state during the textbook's worked session |
+| Tangency | `1.0°` | same | |
+| Curvature | `0.05 %` | same | ⛔ **Not a dimensionless OEM standard** |
+| Preserve other end | `Position` | same | |
+| Match edges by | `closest points` | same | Enabled when the two edges differ in length |
 
-⚠️ 这些是**打开对话框时的预置值**，随软件版本/用户偏好/`Remember` 设置变化。
-执行前先读自己的对话框，⛔ 不要把这个值当"正确容差"——
-**它只说明"对话框长这样"**。真正的容差要由你的项目公差决定。
+⚠️ These are **the preset values present when the dialog opens**. They shift with the software version, user preferences, and the `Remember` setting.
+Read your own dialog before you run anything, and ⛔ do not treat this value as "the correct tolerance" —
+**it only records what the dialog looked like**. The real tolerance has to come from your project's tolerance budget.
 
-### ⭐ CP 数不足时的正解
+### ⭐ The correct fix when you run out of CPs
 
-`Refine match` 不是禁用项，但它**不能解决自由度不足**：
-
-```
-CP 数不足 → Refine match 会大量加点且仍达不到目标连续性
-         → 正解：Setpt 对齐对应控制点 + InsertKnot（键 S）分段补点
-```
-
-⚠️ CP 数是否够，看 `SpanCount` 与匹配方向的阶数兼容性，⛔ 不靠点数猜。
-
-### ⭐ 判断"Match 失败"的第一件事
-
-⛔ **不要猛加 CP。** 先查：
+`Refine match` is not a disabled option, but it **cannot solve insufficient degrees of freedom**:
 
 ```
-1. 输入曲线的阶数、CP 数、偏差是否达标
-2. 匹配两端阶数是否兼容
-3. CP 数够不够（不足 → Setpt + InsertKnot）
-4. 以上都正常仍失败 → 换匹配方向，或拆成两段匹配
+too few CPs → Refine match adds many points and still misses the target continuity
+            → correct fix: Setpt to align corresponding control points + InsertKnot (press S) to add points span by span
 ```
 
-加 CP 只会让控制点拥挤、反射更差，**自由度不足不是靠加点解决的**。
+⚠️ Whether you have enough CPs is decided by `SpanCount` compatibility with the degree in the matching direction, ⛔ not by counting points.
+
+### ⭐ The first thing to check when a match fails
+
+⛔ **Do not start piling on CPs.** Check in this order:
+
+```
+1. Input curve degree, CP count, deviation — are they all in spec?
+2. Are the degrees at the two matching ends compatible?
+3. Are there enough CPs? (too few → Setpt + InsertKnot)
+4. All of the above are fine and it still fails → change the matching direction, or match in two segments
+```
+
+Adding CPs only crowds the control net and makes the reflection worse. **Insufficient degrees of freedom is not solved by adding points.**
 
 ---
 
-## Pipe切带后桥接
+## Pipe-cut bands and bridging
 
-适用：两母面交会，允许切出足够过渡域，不要求最终过渡严格固定半径。
+Applies when: two parent surfaces meet, you are allowed to cut out enough transition domain, and the final transition is not required to be a strict fixed radius.
 
 ```text
-Intersect检查交线 → 必要时Join相关交线段
-→ Pipe构造切割量规 → 延伸量规到越过目标边界
-→ Split/Trim母面，保留所需两侧
-→ A: BlendSrf；或B: 设计截面+Sweep2并设真实面边连续性
-→ 验接缝、带宽、内部曲率和角区
+Intersect to find the intersection curve → Join related curve segments if needed
+→ Pipe to build the cutting gauge → extend the gauge past the target boundary
+→ Split/Trim the parent surfaces, keeping the sides you need
+→ A: BlendSrf; or B: design sections + Sweep2 with real face-edge continuity set
+→ check seam, band width, interior curvature, and corner regions
 ```
 
-Join交线不是Join母面，二者都不自动提高连续性。
+Joining the intersection curve is not joining the parent surfaces, and neither one raises continuity automatically.
 
-### ⭐ 两个必须记住的操作点
+### ⭐ Two operating facts you must remember
 
-| 事项 | 事实 | 后果 |
+| Item | Fact | Consequence |
 |---|---|---|
-| **`Pipe` 的 Cap 默认 Yes** | 做量规时**键 `C` 关掉** | 不关则圆管两端封盖，无法穿透修剪 |
-| **半径取值** | 教材案例 ≈ 未来圆滑宽的 `2/3` | ⚠️ 局部案例，**不保证等宽**；实际按需要的过渡域试验 |
+| **`Pipe` Cap defaults to Yes** | **press `C` to turn Cap off** when building a gauge | Left on, the pipe is capped at both ends and cannot pass through to trim |
+| **Radius value** | One textbook case used roughly `2/3` of the intended blend width | ⚠️ A local case, **not a guarantee of constant width**; work from the transition domain you actually need |
 
-⚠️ 有封盖的切割体也可切面，⛔ 不能断言"Cap=Yes 就一定不能切"。
-但**做量规时关掉 Cap 更容易延伸和修剪**——这是操作便利，不是原理要求。
+⚠️ A capped cutting solid can still trim a surface, so ⛔ it is not correct to assert "Cap=Yes means it can never cut".
+That said, **turning Cap off while building a gauge makes extending and trimming easier** — that is an operating convenience, not a geometric requirement.
 
-### ⭐ BlendSrf 的"选中不能取消"
+### ⭐ BlendSrf selections cannot be undone
 
-`BlendSrf` 的边界线**选中后无法取消**。逐条选错一条就得重来。
+Once a boundary curve is selected in `BlendSrf`, **it cannot be deselected**. Picking one wrong edge means starting over.
 
 ```
-选多边的正确做法：先选一条 → 键 A 选中所有相连边界线
+The correct way to select multiple edges: select one → press A to select all connected boundary curves
 ```
 
-⚠️ 这是操作效率问题，不是几何原理，但会实际拖慢施工。
+⚠️ This is an efficiency problem, not a geometry principle, but it will visibly slow you down on the job.
 
 ---
 
-## 微鼓按钮候选
+## Low-dome button candidates
 
-输入：轮廓、拱高、侧壁、目标边缘软硬。
+Inputs: outline, crown height, side wall, and the target softness of the edges.
 
-### ⭐ 轮廓 G 级二选一（教材明确给出）
+### ⭐ Two ways to get the outline continuity (the textbook states both)
 
-| 做法 | 连续性 | 用在哪 |
+| Approach | Continuity | Where to use it |
 |---|---|---|
-| 两条平行线 + 两端各一个半圆 | **G1**（精确） | ⛔ **绝大多数按键够用**，且便于后续改尺寸 |
-| `Blend` 命令在两端做圆滑过渡 | **G2** | 高光面、可见度高的按键 |
+| Two parallel lines plus a semicircle at each end | **G1** (exact) | ⛔ **Enough for the overwhelming majority of buttons**, and easy to resize later |
+| `Blend` command to round both ends | **G2** | Glossy surfaces, highly visible buttons |
 
-⚠️ **不要一上来就 G2**。按键会频繁改尺寸，G2 约束会拖慢修改。
+⚠️ **Do not start at G2.** Button dimensions change frequently, and G2 constraints slow every revision down.
 
-### ⭐ 三排法做微鼓盖
+### ⭐ The three-row method for a low dome
 
-把盖面横向建成单跨 Degree 2 → 得到 3 排控制点 → **只拖中间那一排**。
+Build the cover surface across its width as a single-span Degree 2 → you get 3 rows of control points → **drag only the middle row**.
 
-⚠️ 三排法会改变端部导数；⛔ 不能保证两端 G2。需要端部曲率控制时用更多自由度。
+⚠️ The three-row method changes the end derivatives, so ⛔ it cannot guarantee G2 at both ends. Use more degrees of freedom when you need curvature control at the ends.
 
-### 完整按键配方（教材7 步）
+### Full button recipe (the textbook's 7 steps)
 
 ```
-1. 绘按键轮廓（直线+半圆 = G1）
-2. Extrude 挤成侧面（键C = 加盖，做实体）
-3. Split 用直线把轮廓分成对称两半
-4. Loft 两条分割线 → 平面
-5. ChangeDegree 把 U向降到 2 阶（D 键按需）→ 3 排 CP
-6. 只移中间那排（⛔ 首尾两个不能选）→ 鼓起表面
-7. Pipe → Split/Trim → BlendSrf → 缝隙圆滑
+1. Draw the button outline (straight lines + semicircles = G1)
+2. Extrude into a side wall (press C to cap it, making a solid)
+3. Split the outline into two symmetric halves with a straight line
+4. Loft the two split curves → flat surface
+5. ChangeDegree to drop the U direction to degree 2 (press D as needed) → 3 rows of CPs
+6. Move only the middle row (⛔ the first and last cannot be selected) → domed surface
+7. Pipe → Split/Trim → BlendSrf → smooth the seam
 ```
 
-⚠️ `Patch` 做按键正面时**不要选 `Adjust tangency`**（教材明确提示）。
+⚠️ When using `Patch` for a button face, **do not select `Adjust tangency`** (the textbook flags this explicitly).
 
 ---
 
 ## Patch / Network
 
-### ⭐ Patch 的本质缺陷不是"质量差"
+### ⭐ Patch's real defect is not "poor quality"
 
-`Patch` 生成的曲面**控制点数与输入曲线无关**。这是**拓扑自由度丢失**——
-它让后续的 `MatchSrf`、编辑和加节点都卡住。
+The control point count of a `Patch` surface is **unrelated to the input curves**. That is a **loss of topological degrees of freedom** —
+it blocks everything downstream: `MatchSrf`, editing, and knot insertion.
 
-⛔ **高光主面不要用 Patch。** 它的正确用途是：初始化中心体量、填角区，然后**必须重新验收**。
+⛔ **Do not use Patch for a primary glossy face.** Its correct use is: initialise the central volume, fill corner regions, and then **re-verify from scratch**.
 
-⚠️ `Patch` 的点距是长度量，`spans`/`stiffness` 按数据与尺度试验。
-教材旧例的 `spans=2`/`stiffness=0.1` 只说明那一个近似鼓面的设置。
+⚠️ Patch's point distance is a length quantity; trial `spans`/`stiffness` against your data and scale.
+The `spans=2`/`stiffness=0.1` in the textbook's older example only records the settings for that one approximated dome.
 
 ### NetworkSrf
 
-先检查两族交点、顺序和边连续性输入语义。拟合容差越宽通常输出越简洁但偏差可能增大；
-记录实际输出并验差，⛔ 不能把 `0.01`/`1`/`10` 当跨单位的固定档位。
+First check the two families of intersections, their order, and the input semantics for edge continuity. A looser fit tolerance usually yields a simpler output but may increase deviation;
+record the actual output and verify the error. ⛔ Do not treat `0.01`/`1`/`10` as fixed rungs that hold across units.
 
-**必设**：**Edge curve**（边缘曲线）控制——它决定输出面的边线精度。
+**Must set**: **Edge curve** control — it determines the edge-line accuracy of the output surface.
 
 ---
 
-## 网格与输出
+## Meshing and output
 
-### ⭐ 两个必须实测确认的量
+### ⭐ Two quantities you must confirm by measurement
 
-| 项 | 教材公式 | 说明 |
+| Item | Textbook formula | Note |
 |---|---|---|
-| **最小边长** | `模型平均尺寸 ÷ 1000` | ⛔ 这是经验公式，**不是硬标准**；要按弦高/角度/接缝/面数预算重新定 |
-| **最大角度** | `10.0`（**绝对值**） | 不随模型尺寸变 |
+| **Minimum edge length** | `average model dimension ÷ 1000` | ⛔ This is a rule of thumb, **not a hard standard**; re-derive it against your chord-height, angle, seam, and face-count budget |
+| **Maximum angle** | `10.0` (**absolute**) | Does not vary with model size |
 
-⚠️ 教材 `÷1000` 规则的**失效信号**：最短边过大时局部需要的细化被截断。
-出现"细部出不来"就重定，不要死守公式。
+⚠️ The **failure signal** for the textbook `÷1000` rule: when the shortest edge comes out too large, the refinement a local region needs gets cut off.
+If detail refuses to appear, re-derive the value instead of defending the formula.
 
-### 探索起点
+### Exploration starting point
 
-毫米制外观预览可先试**弦高 0.05 mm、角度 10°**，再放大关键区核验。
-这是**探索值**，超小特征、打印或工程交换需重定。
+For a metric appearance preview, try **chord height 0.05 mm and angle 10°** first, then zoom into the critical regions to verify.
+These are **exploration values**; re-derive them for very small features, printing, or engineering exchange.
 
-### 导出前必做
+### Mandatory before export
 
 ```
 UnifyMeshNormals → Weld → Check → Audit → Audit3dmFile
 ```
 
-⚠️ `Weld` 语义要按当前版本核实——Rhino 的网格 Weld 与其他软件按距离合点**未必同义**。
-⛔ 不要照抄别的软件的合点阈值。
+⚠️ Verify `Weld` semantics against your current version — Rhino's mesh Weld and other packages' distance-based point merging **are not necessarily the same operation**.
+⛔ Do not copy another package's merge threshold.
 
-⚠️ 输出 STL 等**不可靠携带单位**的格式时，必须随附单位说明。
+⚠️ When emitting formats such as STL that **do not reliably carry units**, you must state the units alongside.
 
 ---
 
-## 曲线/构面实测起点
+## Measured starting points for curves and surface construction
 
-| 项 | 起点 | 出处/条件 |
+| Item | Starting point | Source / condition |
 |---|---|---|
-| 开放曲线 CP 数 | `= 阶数 + 1`（→ 单跨） | 一般情形；⛔ 闭合/周期不适用，周期曲线 CP 数 = 阶数值 |
-| **跨度** | ⛔ **读 `SpanCount`**，不要算 `CP数 − 阶数` | 重复节点与周期结构会破坏该关系 |
-| 重建偏差 | 逐阶试到 **Max deviation < 0.1 mm** | 英文车书实测；⛔ 不要一律套"5 阶 6 点"（直线会过拟合成波浪）|
-| **对边阶数** | **必须一致**再 `EdgeSrf` | ⛔ 不一致时软件用内部节点补偿，结果是**变形而非报错** |
-| 平直段 CP | **必须共线** | ⛔ 不共线 → 直段鼓包（教材两处独立强调）|
+| CP count, open curve | `= degree + 1` (→ single span) | General case; ⛔ does not apply to closed or periodic curves, where CP count = degree |
+| **Span count** | ⛔ **Read `SpanCount`** — do not compute `CP count − degree` | Repeated knots and periodic structure break that relationship |
+| Rebuild deviation | Step through degrees until **Max deviation < 0.1 mm** | Measured in the English car book; ⛔ do not blanket-apply "degree 5, 6 points" (a straight line overfits into a wave) |
+| **Opposite edge degrees** | **Must match** before `EdgeSrf` | ⛔ When they differ the software compensates with interior knots, and the result is **distortion rather than an error message** |
+| Straight-run CPs | **Must be collinear** | ⛔ Non-collinear → a bulge in the straight run (the textbook stresses this in two independent places) |
 
-### ⭐ 相交处的控制点纪律
+### ⭐ Control point discipline at an intersection
 
-**相交处末端 3 排控制点决定曲面曲率；其余排可自由编辑而不破坏连续性。**
+**The last 3 rows of control points at an intersection determine surface curvature; the remaining rows can be edited freely without breaking continuity.**
 
-| 可自由动 | ⛔ 不能动 |
+| Free to move | ⛔ Do not move |
 |---|---|
-| 第 4 排及以外 | **相交处末端 3 排** |
+| Row 4 and beyond | **The last 3 rows at the intersection** |
 
-⚠️ 这是**受限情形的施工规则**（同阶、权重一致、参数尺度可比时成立），
-⛔ **不是任意 NURBS 的数学证明**。原理上要谨慎，施工时按3 排操作。
+⚠️ This is a **construction rule for a constrained situation** (it holds when degrees match, weights agree, and parameter scales are comparable),
+⛔ **not a mathematical proof for arbitrary NURBS**. Be careful about the principle, but operate by the 3-row rule on the job.
 
-### ⭐ 圆角尺寸必须匹配零件尺度
+### ⭐ Fillet size must match part scale
 
-教材 620 页实测的圆角范围是 **0.1 ~ 90 mm**，跨度近千倍——
-**这个分布本身就是"不能一个值走天下"的证据**。
+Across 620 pages, the textbook's measured fillet range is **0.1 ~ 90 mm** — a spread of nearly a thousand to one.
+**That distribution is itself the evidence that no single value travels everywhere.**
 
-| 零件 | 教材案例值 | 出处 |
+| Part | Textbook case value | Source |
 |---|---|---|
-| 镜片/玻璃 | `1 mm OffsetSrf` + Fillet `0.5~1` | 英文车书 p365 |
-| 钣金缝 | 缝宽 `3 mm` / 深度 `6 mm` | 英文车书 p382 |
-| 后视镜根部 | `90 mm` | 英文车书 |
-| 硬表面棱 | `16 mm` | 清华版 p146 |
-| 硬表面提阶 | `ChangeDegree` → **4 阶** | 清华版 p171 |
+| Lens / glass | `1 mm OffsetSrf` + Fillet `0.5~1` | English car book, p.365 |
+| Sheet-metal seam | seam width `3 mm` / depth `6 mm` | English car book, p.382 |
+| Mirror root | `90 mm` | English car book |
+| Hard-surface edge | `16 mm` | Qinghua edition, p.146 |
+| Hard-surface degree elevation | `ChangeDegree` → **degree 4** | Qinghua edition, p.171 |
 
-⚠️ 以上**全部是汽车案例**。换品类按上文尺度公式换算并复验。
-⚠️ **可视缝宽、翻边深度、板厚是三件事**，⛔ 不可把 6 mm 视觉挤出当真实钣金厚度。
+⚠️ **Every value above is an automotive case.** Convert for a different product category using the scale formula above, then re-verify.
+⚠️ **Visible seam width, flange depth, and sheet thickness are three different things** — ⛔ you cannot treat a 6 mm visual extrusion as real sheet-metal thickness.
 
 ---
 
-## 曲率验证锚点
+## Curvature verification anchors
 
-### ⭐ 曲率色谱参数
+### ⭐ Curvature map parameters
 
-| 项 | 教材实拍值 |
+| Item | Textbook screenshot value |
 |---|---|
 | Style | `Mean` |
 | Curvature range | `0.1` |
 | Show isocurves / Adjust Mesh | ✔ |
 
-⚠️ 固定色标不能判全部通过——平均曲率、法截面和反射要一起看。
+⚠️ A fixed colour scale cannot certify a pass across the board — mean curvature, normal sections, and reflection all have to be read together.
 
-### ⭐ 什么时候必须跑
+### ⭐ When you must run it
 
 ```
-每个基础曲面建成后立即跑 CurvatureAnalysis
+Run CurvatureAnalysis immediately after every base surface is built
 ```
 
-| 色谱形态 | 判断 | 动作 |
+| Map pattern | Verdict | Action |
 |---|---|---|
-| 规则均匀 | 反射可接受 | 进入下一阶段 |
-| 局部色带/不规则 | ⛔ **反射会有问题** | **立刻修**，不要留到细节深入后 |
+| Regular and even | Reflection is acceptable | Move to the next stage |
+| Local banding / irregularity | ⛔ **Reflection will be wrong** | **Fix it immediately** — do not defer until you are deep into the details |
 
-⚠️ 面定型后再改形状代价极高，**基础面阶段是唯一便宜的质量窗口**。
+⚠️ Changing shape after surfaces are locked in is extremely expensive. **The base-surface stage is the only cheap quality window you will get.**
 
 ---
 
-## 剪影 IoU（唯一可数字化的还原度检查）
+## Silhouette IoU (the only digitalisable fidelity check)
 
 ```python
 import sys; sys.path.insert(0, str(skill_root / 'scripts'))
@@ -305,64 +305,64 @@ from outline_metrics import silhouette_iou
 r = silhouette_iou(model_outline, photo_outline)
 ```
 
-### 已用解析理论值验证（17 项测试）
+### Validated against analytic theoretical values (17 tests)
 
-| 用例 | 实测 | 理论 |
+| Case | Measured | Theoretical |
 |---|---|---|
-| 自比 | 1.0000 | 1.0000 |
-| 同心圆 R11/R10 | 0.8262 | 100/121 = 0.8264 |
-| 同心圆 R5/R10 | 0.2500 | 0.2500 |
-| 方水平半重叠 | 0.3350 | 1/3 = 0.3333 |
+| Self-comparison | 1.0000 | 1.0000 |
+| Concentric circles R11/R10 | 0.8262 | 100/121 = 0.8264 |
+| Concentric circles R5/R10 | 0.2500 | 0.2500 |
+| Two squares, half-overlapping horizontally | 0.3350 | 1/3 = 0.3333 |
 
-### ⭐ 三个必须知道的陷阱
+### ⭐ Three traps you have to know about
 
-| 陷阱 | 后果 |
+| Trap | Consequence |
 |---|---|
-| ⛔ 用点集Jaccard 而非栅格化 | 缩放副本的所有采样点都落在另一轮廓内，**10% 尺寸误差看起来像满分** |
-| ⛔ 边界点歧义未处理 | 圆周 40 点只20 个判内部，IoU 崩塌（须加容差）|
-| ⚠️ **IoU ≠ 尺寸精度** | 同心圆缩放 r 倍 → IoU = r²。**尺寸差 10% 时 IoU 仍有 0.83** |
+| ⛔ Using point-set Jaccard instead of rasterising | Every sampled point of a scaled copy falls inside the other outline, so **a 10% size error looks like a perfect score** |
+| ⛔ Leaving boundary-point ambiguity unresolved | Of 40 points on a circle only 20 register as inside and the IoU collapses (a tolerance must be added) |
+| ⚠️ **IoU ≠ dimensional accuracy** | Scale concentric circles by r → IoU = r². **At a 10% size difference the IoU is still 0.83** |
 
-⚠️ IoU 只对**一个投影**有效；透视照片必须先固定相机再比。
+⚠️ IoU is only valid for **one projection**; a perspective photograph must have its camera fixed before you compare.
 
 ---
 
-## 对本包代码的最小调用
+## Minimal calls into this package's code
 
 ```python
-# 显式doc；数据在Rhino宿主内准备，不修改文档。
+# doc passed explicitly; prepare the data inside the Rhino host, do not modify the document.
 from nbs_geometry import rebuild_to_single_span, edge_srf_4
 candidate = rebuild_to_single_span(curve, degree=3, doc=doc,
                                    max_deviation=fit_budget)
 face = edge_srf_4(doc, c1, c2, c3, c4)
 ```
 
-候选重建失败不代表输入噪声；可能单跨不够表达。可调CV布局、多跨或分段，不能强行用高Degree冒充准确。
+A failed candidate rebuild does not mean the input is noisy — a single span may simply be unable to express it. Adjust the CV layout, use multiple spans, or work in segments. Do not force a high Degree and pass it off as accuracy.
 
 ---
 
-## Class-A：⚠️ 汽车专属，不是通用标准
+## Class-A: ⚠️ automotive-specific, not a general standard
 
-下表来自**汽车主机厂体系**（1–2 mm 级钣金覆盖件）。
+The table below comes from an **automotive house-standard system** (1–2 mm class sheet-metal covering panels).
 
-| 指标 | 通用 | 严格厂标 |
+| Metric | General | Strict house standard |
 |---|---|---|
-| 相邻面间隙 | ≤0.005 mm | ≤0.001 mm |
-| 切率改变 | ≤0.16° | ≤0.10° |
-| 曲率改变 | ≤0.05 | ≤0.02（BMW/VW）、0.03（丰田）|
-| 中轴对称面 | G3 | G3 |
-| 曲面 CP | UV 6~8 个，阶 ≤6 | 同 |
-| 大面偏差 | ≤3 mm | 同 |
+| Gap between adjacent surfaces | ≤0.005 mm | ≤0.001 mm |
+| Tangent change | ≤0.16° | ≤0.10° |
+| Curvature change | ≤0.05 | ≤0.02 (BMW/VW), 0.03 (Toyota) |
+| Centre-plane symmetric surface | G3 | G3 |
+| Surface CPs | 6~8 in UV, degree ≤6 | same |
+| Large-panel deviation | ≤3 mm | same |
 
-⛔ **适用范围警告**：做家电、玩具、家具、电子产品时这套公差往往**过严**——
-注塑件单件公差常在 0.1–0.3 mm 量级，小玩具 0.5 mm 可能就够。
-**引用前先确认你的产品属于哪个制造体系**，优先采用该体系的实际规范。
+⛔ **Scope warning**: applied to appliances, toys, furniture, and consumer electronics, this tolerance set is usually **too strict** —
+single-piece injection moulding tolerance commonly sits at the 0.1–0.3 mm level, and 0.5 mm may already be enough for a small toy.
+**Confirm which manufacturing system your product belongs to before quoting any of this**, and prefer that system's actual specification.
 
-⚠️ "曲率差 0.05"必须说明**单位和定义**——曲率是长度的倒数，不是无量纲厂标。
+⚠️ "Curvature difference 0.05" must always state its **unit and definition** — curvature is the reciprocal of a length, not a dimensionless house standard.
 
 ---
 
-## 授权与来源
+## Licensing and sources
 
-本章数值来自《Rhino3D工业级造型与设计》第3 版（365/365 页逐页视觉精读）与
-《3D Car Modeling with Rhinoceros》624 页，以及本机Rhino 8.29 实测。
-页码区分印刷页/PDF 页（清华版 PDF页 = 书内页 + 23）。本包不附扫描件。
+The values in this chapter come from *Rhino3D Industrial Modeling and Design*, 3rd edition (page-by-page visual close reading of all 365/365 pages),
+*3D Car Modeling with Rhinoceros*, 624 pages, plus measurements taken on this machine with Rhino 8.29.
+Page citations distinguish printed pages from PDF pages (Qinghua edition PDF page = printed page + 23). No scans are distributed with this package.

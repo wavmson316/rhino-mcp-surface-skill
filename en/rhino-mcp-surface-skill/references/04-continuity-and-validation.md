@@ -1,105 +1,101 @@
-# 连续性与验收
+# Continuity and acceptance
 
-## 目标和证据
+## Targets and evidence
 
-G0为位置匹配；G1为切向/切平面匹配且两侧形成合理邻域；G2为适当参数对应下二阶几何匹配。G3涉及更高阶变化。按每条接缝用途定目标，平面/结构件/高光面可以各不相同。
+G0 is positional matching; G1 is tangent or tangent-plane matching with a sensible neighbourhood on both sides; G2 is second-order geometric matching under a suitable parameter correspondence. G3 involves higher-order variation. Set the target per seam according to what that seam is for — planar surfaces, structural parts and gloss surfaces can each need different levels.
 
-公共边曲线相同仍可两面折90°；法线一致只支持切平面检查；斑马纹顺也不能证明数值G2。平面与相切圆柱就是G1而非G2反例。零曲率可真实满足G2，不是"假G2"；还要看设计是否被压平。
+Two surfaces can share an identical boundary curve and still meet at 90°; agreeing normals only support a tangent-plane check; zebra lines that run smoothly do not prove numerical G2. A plane meeting a tangent cylinder is a counterexample: that is G1, not G2. Zero curvature can genuinely satisfy G2 — that is not a "fake G2" — but you still have to check whether the design has been flattened.
 
-### ⭐ 判 G2 的三个错误做法
+### ⭐ Three wrong ways to judge G2
 
-| 错误 | 为什么错 |
+| Wrong | Why it is wrong |
 |---|---|
-| 用公共边曲线曲率判两面 G2 | 边只描述边，两侧横向曲率根本没测 |
-| 两侧法线一致就报 G2 | 法线一致只支持 G1 |
-| 曲率向量取 `abs(dot)` 通过 | ⛔ 相反曲率方向不能取绝对值消除 |
+| Judging G2 from the curvature of the shared boundary curve | The curve only describes the edge; the cross-curvature on either side was never measured |
+| Reporting G2 because the normals agree on both sides | Agreeing normals only support G1 |
+| Passing a curvature-vector test by taking `abs(dot)` | ⛔ Opposite curvature directions must not be cancelled by taking the absolute value |
 
-⚠️ 对照：`abs(dot)` 用在**无向切平面**比较上是**正确的**（`sample_seam_g1.py` 就是这么做），
-用在**曲率向量**上才是错的。两者不能混。
+⚠️ For contrast: `abs(dot)` is **correct** for comparing **undirected tangent planes** (`sample_seam_g1.py` does exactly that). It is only wrong on **curvature vectors**. The two must not be mixed.
 
-### ⭐ 明暗交界处不强求 G2
+### ⭐ Do not demand G2 at the shade boundary
 
-**那里本就是设计意图上的转折，强求会毁掉设计。**
+**There is a break in design intent at that location, and forcing continuity there destroys the design.**
 
-⚠️ 这与"明暗交界不能当分面依据"是**两件事**：前者说它是光照产物不能据此分面，
-后者说那个位置本就该有转折、不要抹平。
+⚠️ This and "the shade boundary cannot be used as a patch boundary" are **two different things**: the first says it is a product of lighting and you cannot derive patches from it; the second says that location is genuinely supposed to turn, and you should not smooth it away.
 
-## 面接缝数值检查
+## Numerical checks on surface seams
 
-选实际面与相邻边，核对端点与整边对应。双向最近点只是诊断，需查覆盖、单调、闭合接缝、折返与两侧邻域；参数均匀采样会漏局部节点/角点缺陷。
+Select the actual surfaces and adjacent edges, and check the endpoints against the whole-edge correspondence. A bidirectional closest-point result is only a diagnostic; you must still check coverage, monotonicity, closing seams, reversals and the neighbourhoods on both sides. Uniform parameter sampling misses local knot and corner defects.
 
-`sample_seam_g1.py`仅给出有限采样位置和无向切平面夹角，不判G2、不证明无反折。法线相反可能只是面方向相反，工程实体方向要另查。样本失败不能跳过后报通过。
+`sample_seam_g1.py` reports only a finite set of sampled positions and the undirected tangent-plane angle. It does not judge G2 and does not prove the absence of an inflection reversal. Opposed normals may only mean the surfaces are oriented in opposite directions; for engineering solids, direction must be checked separately. A failing sample must not be skipped and then reported as a pass.
 
-可靠G2需当前版本已核实的边连续性分析，或共同切平面基底中的二阶/形算子比较，处理法线方向、权重、参数尺度和奇点。只比两个主曲率数值仍缺主方向。没有可靠方法时写"G2目标，数值未验证"。
+Reliable G2 requires an edge continuity analysis verified on the current version, or a comparison of second-order / shape operators in a common tangent-plane basis, handling normal direction, weights, parameter scale and singularities. Comparing only the two principal curvature values still leaves out the principal directions. Without a reliable method, write "G2 target, not numerically verified".
 
-### ⭐ 什么时候必须跑曲率检查
+### ⭐ When a curvature check is mandatory
 
 ```
-每个基础曲面建成后立即跑 CurvatureAnalysis
+Run CurvatureAnalysis immediately after each base surface is built
 ```
 
-| 色谱形态 | 判断 | 动作 |
+| Colour map pattern | Judgement | Action |
 |---|---|---|
-| 规则均匀 | 反射可接受 | 进入下一阶段 |
-| 局部色带/不规则 | ⛔ 反射会有问题 | **立刻修**，不要留到细节深入后 |
+| Regular and even | Reflection acceptable | Move to the next stage |
+| Local bands / irregular | ⛔ Reflection will have problems | **Fix it now** — do not defer until the details are well advanced |
 
-⚠️ 面定型后再改代价极高，**基础面阶段是唯一便宜的质量窗口**。
-⚠️ **小面产品 `Zebra`/`EMap` 分辨不足**，必须逐面曲率分析。色谱参数见参数手册。
+⚠️ Changes after a surface is signed off are extremely expensive. **The base-surface stage is the only cheap quality window.**
+⚠️ **Zebra/EMap lacks resolution on small products**, so per-surface curvature analysis is mandatory. See the parameter reference for the colour map settings.
 
-## 匹配策略
+## Matching strategy
 
-固定主面，调整从面；两者允许动时可Average。选择是否保另一端、iso方向策略、closest points及Refine；无永远正确的开关组合。Refine可提高拟合能力也可能点数膨胀，应比较效果、结构与变形；手动插节点也是候选。多边冲突时考虑整体约束或重分区，不无限逐边Match。
+Fix the master surface and adjust the slave. When both are allowed to move, use Average. Decide whether to hold the far end, the iso-direction strategy, closest points and Refine; there is no permanently correct combination of toggles. Refine can improve the fit but can also inflate the point count, so compare the result, the structure and the deformation; manual knot insertion is also a candidate. When edges conflict, consider overall constraints or a new patch layout rather than matching edge after edge indefinitely.
 
-### ⭐ 匹配失败先查输入，不要猛加 CP
+### ⭐ When matching fails, check the input — do not pile on CPs
 
 ```
-1. 输入曲线的阶数、CP 数、偏差是否达标
-2. 匹配两端阶数是否兼容
-3. CP 数够不够
-4. 以上都正常仍失败 → 换匹配方向，或拆成两段匹配
+1. Are the degree, CP count and deviation of the input curves acceptable?
+2. Are the degrees at the two matched ends compatible?
+3. Is the CP count sufficient?
+4. If all of the above are fine and it still fails → change the matching direction, or split it into two matches
 ```
 
-⛔ 加 CP 只会让控制点拥挤、反射更差——**自由度不足不是靠加点能解决的**。
-`Refine` 能增加自由度但**不能解决自由度根本不足**。
+⛔ Adding CPs only crowds the control points and makes the reflection worse — **insufficient degrees of freedom cannot be solved by adding points.**
+`Refine` can add degrees of freedom but **cannot solve a fundamental shortage of them**.
 
-### ⭐ 对接 Match 的常见准备
+### ⭐ Common preparation for edge-to-edge matching
 
-| 事项 | 规则 |
+| Item | Rule |
 |---|---|
-| 修剪边难匹配 | 用未修剪母面、延伸母面、重新安排自然边或加过渡带 |
-| `ShrinkTrimmedSrf` | 可能影响可恢复范围，不是通用前处理 |
-| `RebuildEdges` | 主要修复边表示，**不会公平底层面**，二者都不是通用前处理 |
-| `BlendSrf` 选中后不能取消 | 选多边时先选一条再**键 `A`** |
-| 对话框预置值 | 教材实拍 `0.001 units / 1.0° / 0.05%`，⛔ 但那是**软件预置状态不是正确容差** |
+| Trimmed edges are hard to match | Use the untrimmed parent surface, extend the parent surface, rearrange the natural edges, or add a transition band |
+| `ShrinkTrimmedSrf` | Can affect the recoverable range; it is not a general-purpose preprocessing step |
+| `RebuildEdges` | Mainly repairs edge representation and **will not fair the underlying surfaces**; neither is general-purpose preprocessing |
+| `BlendSrf` cannot be deselected once picked | When selecting multiple edges, pick the first one and then **press `A`** |
+| Dialog preset values | A textbook photo shows `0.001 units / 1.0° / 0.05%`, ⛔ but those are **software defaults, not correct tolerances** |
 
-镜像先验证边在对称面、切平面相容，目标需要时检查曲率；可用临时镜像件配对。
+For mirroring, first verify that the edge lies on the symmetry plane and that the tangent planes are compatible, and check curvature where the target requires it; a temporary mirror copy can be used for the matching.
 
-### ⭐ 镜像的时机
+### ⭐ When to mirror
 
-`Mirror` **只是几何复制，不改变接缝处的连续性**。
-想在中轴得到 G2，必须**镜像前**把那侧匹配好：
+`Mirror` **only copies the geometry; it does not change the continuity at the seam**.
+To get G2 on the centreline, you must achieve the match on that side **before mirroring**:
 
 ```
-先镜像一份 → 用它 MatchSrf 原面到 G2 → 删镜像件 → 重新 Mirror
+Mirror a copy → use it to MatchSrf the original surface up to G2 → delete the mirror → Mirror again
 ```
 
-⚠️ 镜像不自动光顺，也不必强制所有中轴 G3——目标来自用户与项目。
+⚠️ Mirroring does not smooth anything automatically, and you do not have to force G3 on every centreline — the target comes from the user and the project.
 
-## 公差预算
+## Tolerance budget
 
-分别定义单位、文档绝对/角度公差、参考拟合、接缝距离、法线夹角、曲率误差、制造约束。曲率单位1/长度；相对差近零不稳定，需绝对阈值及定义。已有公差读取后保留；新项目起点见 [参数手册](10-parameters-and-recipes.md)。
+Define units, document absolute/angular tolerances, reference fit, seam distance, normal angle, curvature error and manufacturing constraints separately. Curvature has units of 1/length; a relative difference near zero is unstable, so an absolute threshold and its definition are required. Where tolerances already exist, read and keep them; for starting points on a new project see the [parameter reference](10-parameters-and-recipes.md).
 
-CAD接缝误差不等于实物制造尺寸公差。Class-A是形体、反射、控制结构与项目规范综合要求；无可追溯标准不认证某厂A面。
+A CAD seam error is not the same as a physical manufacturing dimensional tolerance. Class-A is a combined requirement covering shape, reflection, control structure and project specifications; without a traceable standard, do not certify a supplier's Class-A surface.
 
-## 四类验收并列
+## Four parallel acceptance tracks
 
-| 类别 | 内容 |
+| Track | Content |
 |---|---|
-| 形状 | 固定相机剪影、锚点、主截面、负空间、关键细节；数据条件和误差方法 |
-| 结构 | 有效性、面数、真实span/Degree/CP、奇异边、裸边、非流形、实体方向 |
-| 公平与接缝 | 多方向Zebra/EMap、截面曲率、曲率色谱、各边G级证据 |
-| 工程 | 厚度、偏移自交、间隙、装配/运动、拔模、输出往返 |
+| Shape | Fixed-camera silhouettes, anchor points, primary sections, negative space, key details; data conditions and the error method |
+| Structure | Validity, face count, true span/Degree/CP, singular edges, naked edges, non-manifold edges, solid orientation |
+| Fairness and seams | Zebra/EMap from multiple directions, section curvature, curvature colour maps, per-edge G-level evidence |
+| Engineering | Thickness, offset self-intersection, clearances, assembly/motion, draft, export round-trip |
 
-反射分析要足够细的显示/分析网格；色谱范围与单位固定。平均曲率色彩均匀不能证明无问题，平均值还会掩盖鞍形信息。小件也可放大观察Zebra，不禁止任何一种有效诊断。
-
-开放面是否合格看合同；未Join的相接Brep仍有裸边。实体需查有效水密和方向；外观壳面可合法开放。网格导出查弦高、角度、法线、裂缝及锐边；Rhino Weld按角度语义使用，不以绝对距离公差代替。
+Reflection analysis needs a display/analysis mesh fine enough for the job; the colour map range and units must be fixed. An even mean-curvature colouring does not prove the absence of problems, and averaging also hides saddle information. Small parts can be magnified for the Zebra check; no valid diagnostic is forbidden. Whether an open surface is acceptable is a contract question; adjacent Breps that have not been joined still have naked edges. Solids require a check for valid watertightness and orientation; an appearance shell is legitimately allowed to stay open. For mesh export, check chord height, angles, normals, cracks and sharp edges; Rhino Weld is used by its angle semantics, and an absolute distance tolerance must not be substituted for it.

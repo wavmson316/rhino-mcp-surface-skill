@@ -1,40 +1,40 @@
-# 版本记录
+# Changelog
 
 ## 1.2.0 — 2026-10-19
 
-**文档版本。代码与几何行为与 1.1.0 完全一致，测试结果不变。**
+**Documentation release. The code and geometric behavior are exactly identical to 1.1.0, and the test results are unchanged.**
 
-- 新增 [13 施工纪律](references/13-construction-discipline.md)：开工三件事、三条顺序铁律、
-  以及成面/曲线/3C/连续性/验收环节的不可逆约束（每条附失效信号与出处）。
-- 扩充 [10 参数](references/10-parameters-and-recipes.md)：
-  在五类数值分类框架下增加单位换算表、探索预算、MatchSrf 实测容差锚点、边缘圆滑链、按键配方、
-  圆角实测表、Class-A 适用范围警告、IoU 三个实现陷阱。
-  **每个数值标注来源、适用条件与失效信号**，不作为制造标准或恒定默认。
-- `03` 增补三排法适用边界、`EdgeSrf` 对边阶数检查、`ChangeDegree` 两种模式的用途区分、
-  `ExtrudeCrv`/`Extrude` 选项。
-- `04` 增补判 G2 的三个错误做法、明暗交界不强求 G2 的理由、匹配失败先查输入、
-  镜像时机、CurvatureAnalysis 时机。
-- `05` 增补四个在Rhino 8 实测被证伪的 API 写法（`doc.Units.SetUnits` 等）
-  与端口纪律。
-- `07` 增补17 条实测症状与卡死时的上游回退路径。
-- `11` 增补高低错位分面、`Extrude` 提阶补G2、边缘圆滑链、`Same height shapes`
-  扭曲正解、`Setpt` 中段对齐、按键 7 步配方。
-- `SKILL.md` 增读参数分流、顺序三件事与三条铁律、Stage 3–6 检查项。
+- Added [13 construction-discipline rules](references/13-construction-discipline.md): three things to do before starting, three ordering rules,
+  and the irreversible constraints for the surfacing, curve, 3C, continuity, and acceptance stages (each with its failure signal and source).
+- Expanded [10 parameters](references/10-parameters-and-recipes.md):
+  within the five-category numeric classification framework, added unit conversion tables, exploration budgets, measured MatchSrf tolerance anchors, edge-smoothing chains, key recipes,
+  measured fillet tables, a Class-A scope warning, and three IoU implementation pitfalls.
+  **Every figure is labelled with its source, applicability conditions, and failure signal**, and is not a manufacturing standard or a permanent default.
+- `03`: added the applicable boundaries of the three-row method, `EdgeSrf` opposite-edge degree checks, the distinction between the two `ChangeDegree` modes,
+  and `ExtrudeCrv`/`Extrude` options.
+- `04`: added three wrong approaches to judging G2, why the light–dark boundary does not demand G2, checking inputs first when matching fails,
+  mirror timing, and CurvatureAnalysis timing.
+- `05`: added four API forms disproven by actual testing in Rhino 8 (`doc.Units.SetUnits` and similar)
+  and port discipline.
+- `07`: added 17 measured symptoms and the upstream fallback paths for hangs.
+- `11`: added offset patch planning, `Extrude` degree elevation to recover G2, edge-smoothing chains, the correct interpretation of a twisting `Same height shapes`,
+  mid-section alignment in `Setpt`, and the 7-step key recipe.
+- `SKILL.md`: additional reading on parameter routing, the three ordered steps and three rules, and the Stage 3–6 check items.
 
-**未新增任何平台或建模验证声明**；测试结果仍为 45/45、17/17、12/12。
+**No new platform or modeling validation claim was added**; the test results remain 45/45, 17/17, and 12/12.
 
 ## 1.1.0 — 2026-10-19
 
-- 新增物品分面/逐步施工剧本、曲线与面块合同、任务验收门，以及12项实测的封闭壳母形构造脚本。
-- 补充中文/英文完整首页，明确 Rhino8、McNeel Rhino MCP Platform、router/connector 与安装步骤。
-- 新增完整英文技能正文、12篇参考、安装、自检、项目模板、验证和更新说明。
-- 分别提供中文/英文安装包，共用同一技能ID与几何实现；二选一安装。
-- 本次为文档/分发更新，不新增几何或平台验证声明。
+- Added object patch planning and step-by-step construction playbooks, curve and patch contracts, task acceptance gates, and a closed-shell parent-form construction script with 12 measured checks.
+- Completed the Chinese and English overview pages, clarifying Rhino 8, McNeel Rhino MCP Platform, router/connector, and the installation steps.
+- Added the complete English skill body, 12 references, installation, self-checks, a project template, validation notes, and update instructions.
+- Chinese and English packages are provided separately, sharing the same skill ID and geometry implementation; install one or the other.
+- This is a documentation and distribution update, adding no geometry or platform validation claim.
 
 ## 1.0.0 — 2026-10-19
 
-- 统一入口与12篇参考：按几何约束、用途和证据分流；移除品类硬限定与互相矛盾的规则。
-- 修正Degree/跨度/周期/圆/升阶/Refine/Offset/投影/网格Weld等表述；案例配方补适用条件。
-- 修复重建、EdgeSrf、Loft、曲率与曲线G1助手；删除未验证的放图命令拼接入口，以明确几何输入替代。
-- 二维轮廓指标独立为普通Python模块，补边界条件；扩展Rhino内存验证与发布检查。
-- 分开实测、案例与未验证项目；发布包不依赖工作区、图片或外部旧知识图谱。
+- Unified the entry point and 12 references, routing them by geometric constraint, purpose, and evidence; removed hard category restrictions and mutually contradictory rules.
+- Corrected statements about Degree/span/period/circle/degree elevation/Refine/Offset/projection/mesh Weld; added applicability conditions to the case recipes.
+- Fixed the rebuild, EdgeSrf, Loft, curvature, and curve G1 helpers; removed the unverified view-placement command concatenation entry point and replaced it with explicit geometric input.
+- Made the 2D outline metrics an independent ordinary Python module and added boundary conditions; expanded Rhino in-memory validation and release checks.
+- Separated measured results, cases, and unverified items; the release package depends on no workspace, images, or external legacy knowledge graph.

@@ -1,79 +1,76 @@
-# 1.2.0 发布验证记录
+# 1.2.0 release validation record
 
-1.2.0 **只改文档**：把已验证的具体数值、施工纪律与 API 勘误补回正文，
-新增 [13 施工纪律](references/13-construction-discipline.md)。
-**代码、测试与几何行为与 1.1.0 完全一致，不新增任何平台或建模验证声明。**
+1.2.0 is a **documentation-only release**: verified figures, construction discipline, and API errata were restored to the body text, and [13 construction-discipline rules](references/13-construction-discipline.md) were added. **The code, tests, and geometric behavior are exactly identical to 1.1.0; no new platform or modeling validation claim is added.**
 
-下列几何实测均来自 1.0.0/1.1.0：Rhino 内存回归 45/45、二维指标 17/17、施工链 12/12。
+The geometry results below all come from 1.0.0/1.1.0: Rhino in-memory regression 45/45, 2D metrics 17/17, construction chain 12/12.
 
-日期：2026-10-19。实测平台为 Windows、Rhino **8.29.26063.11001**、Rhino 内 Python3
-与当前 MCP 连接。无图片阅读；未把旧版"读完全部扫描页"的声明继承为本轮事实。
+Date: 2026-10-19. The tested platform was Windows, Rhino **8.29.26063.11001**, Rhino's internal Python 3, and the current MCP connection. No image reading was performed; the old claim of having "read every scan page" is not carried forward as a fact for this round.
 
-## 1.2.0 文档变更
+## 1.2.0 documentation changes
 
-| 变更 | 内容 | 是否新增验证 |
+| Change | Content | New validation added? |
 |---|---|---|
-| `10-parameters` 重写 | 五类数值框架保留，补回单位换算表、探索预算、MatchSrf 实测容差锚点、按键配方、圆角表、IoU 陷阱、Class-A 适用范围警告 | ❌ 纯文档 |
-| `13-construction-discipline.md` 新增 | 开工三件事、三条顺序铁律、成面/曲线/3C/连续性/验收的不可逆约束 | ❌ 纯文档 |
-| `03` / `04` / `05` / `07` / `11` 增补 | 三排法边界、Deformable 用途、判 G2 三错、CurvatureAnalysis 时机、API 勘误、端口纪律、症状表 | ❌ 纯文档 |
-| `SKILL.md` | 增读参数分流、顺序三件事与三条铁律、Stage 3–6 的检查项 | ❌ 纯文档 |
+| `10-parameters` rewritten | The five-category numeric framework is retained, and unit conversion tables, exploration budgets, measured MatchSrf tolerance anchors, key recipes, fillet tables, IoU pitfalls, and a Class-A scope warning were restored | ❌ Documentation only |
+| `13-construction-discipline.md` added | Three things to do before starting, three ordering rules, and the irreversible constraints for surfacing, curves, 3C, continuity, and acceptance | ❌ Documentation only |
+| Additions to `03` / `04` / `05` / `07` / `11` | Three-row method boundaries, Deformable usage, three G2 misjudgement errors, CurvatureAnalysis timing, API errata, port discipline, symptom table | ❌ Documentation only |
+| `SKILL.md` | Additional reading on parameter routing, the three ordered steps and three rules, and the check items for Stage 3–6 | ❌ Documentation only |
 
-⚠️ 补回的数值全部标注了**来源、适用条件与失效信号**，不作为制造标准或恒定默认。
-⚠️ `Class-A` 一节加了适用范围警告——它属于汽车主机厂体系，
-⛔ 不适用于家电/玩具/家具（注塑件公差常在 0.1–0.3 mm 量级）。
+⚠️ Every restored figure is labelled with its **source, applicability conditions, and failure signal**, and is not a manufacturing standard or a permanent default.
+⚠️ The `Class-A` section gained a scope warning — it belongs to the automotive OEM system,
+⛔ and does not apply to appliances, toys, or furniture (where injection-moulded tolerances are often in the 0.1–0.3 mm range).
 
-## 自动测试
+## Automated tests
 
-| 范围 | 结果 | 可核对证据 |
+| Scope | Result | Verifiable evidence |
 |---|---|---|
-| Rhino内存几何回归 | **45/45** | [rhino-test-results.json](rhino-test-results.json)、[测试代码](scripts/smoke_test_rhino.py) |
-| 独立二维指标 | **17/17** | [outline-test-results.json](outline-test-results.json)、[测试代码](scripts/test_outline_metrics.py) |
-| 程序化封闭壳母形 | **12/12** | [example-test-results.json](example-test-results.json)、[代码](scripts/example_closed_shell.py) |
-| Python语法、Markdown本地文件链接、入口与分发检查 | 发布时运行 | [check_release.py](scripts/check_release.py)、发布 manifest |
+| Rhino in-memory geometry regression | **45/45** | [rhino-test-results.json](rhino-test-results.json)、[test code](scripts/smoke_test_rhino.py) |
+| Standalone 2D metrics | **17/17** | [outline-test-results.json](outline-test-results.json)、[test code](scripts/test_outline_metrics.py) |
+| Programmatic closed-shell parent form | **12/12** | [example-test-results.json](example-test-results.json)、[code](scripts/example_closed_shell.py) |
+| Python syntax, local Markdown file links, entry point, and distribution checks | Run at release time | [check_release.py](scripts/check_release.py), release manifest |
 
-Rhino测试未添加、删除或编辑文档对象；测试前后对象数量、单位与公差设置一致。测试结果 JSON 中的日期/版本代表本次执行，不保证其他版本自动通过。安装后可按 [自检步骤](INSTALL-CHECK.md) 重跑。
+The Rhino tests add, delete, or edit no document objects; object counts, units, and tolerance settings are identical before and after. The dates and versions in the test result JSON represent this run and do not guarantee that other versions pass automatically. After installation you can re-run them following the [self-check steps](INSTALL-CHECK.md).
 
-## Rhino覆盖内容
+## What the Rhino tests cover
 
-- 面接缝：共面相接、同边90°折面、1单位间隙；负索引、非整数采样数和非有限公差拒绝；闭合边明确拒绝，要求接缝感知配对策略。
-- 结构审计：有效开放面与4条裸边、实际U/V跨度、重复结点导致CP−Degree不等于SpanCount、显式文档缺失对象报告。
-- 曲线：控制点与插值、周期构造、精确圆内部几何切向、精确升阶保形、真实属性。
-- 重建：正确重载与单跨候选、显式偏差预算、缺预算拒绝、折线低阶欠拟合拒绝、闭合输入拒绝。
-- 曲线连接：同向相接通过、90°折角拒绝、180°反向拒绝、平行但断开拒绝、另一端点配对、未知模式拒绝、闭合快捷检查拒绝。
-- 构面：三边面、四边面、边方向/顺序、不同Degree边、断开边界拒绝、直纹面、开放Loft、封盖实体、闭合Loft方向、输入不足与无封盖公差拒绝。
-- 曲率：平面零曲率、球面主曲率量级；显式参考平面宽高与非法尺寸。
+- Surface seams: coplanar contact, same-side 90° folds, a 1-unit gap; rejection of negative indices, non-integer sample counts, and non-finite tolerances; closed edges explicitly rejected, requiring a seam-aware pairing strategy.
+- Structural audit: valid open surfaces with 4 naked edges, actual U/V spans, repeated knots causing CP−Degree ≠ SpanCount, and explicit reports of missing document objects.
+- Curves: control points and interpolation, periodic construction, interior geometry tangency of exact circles, shape-preserving exact degree elevation, and true properties.
+- Rebuild: correct overload selection and single-span candidates, explicit deviation budgets, rejection when no budget is supplied, rejection of underfit polyline/low-degree cases, and rejection of closed inputs.
+- Curve joining: same-direction contact passes; 90° corner, 180° reversal, and parallel-but-disconnected cases are rejected; opposite-endpoint pairing, unknown mode rejection, and closed-shape shortcut-check rejection.
+- Surfacing: three-edge surfaces, four-edge surfaces, edge direction/order, edges of differing Degree, disconnected-boundary rejection, ruled surfaces, open Loft, capped solid, closed Loft direction, and rejection on insufficient input or missing cap tolerance.
+- Curvature: planar zero curvature, spherical principal curvature magnitudes; explicit reference-plane width/height and illegal dimension handling.
 
-## 二维指标覆盖内容
+## What the 2D metrics cover
 
-同轮廓、重叠矩形、分离、重复首尾点、反向轮廓、四组同心圆解析面积比、边界距离、空/退化/非有限输入、非法分辨率和旧buffer行为拒绝。
+Identical outlines, overlapping rectangles, separated shapes, repeated closing points, reversed outlines, analytical area ratios for four sets of concentric circles, boundary distance, empty/degenerate/non-finite inputs, illegal resolutions, and legacy buffer-behaviour rejection.
 
-误差阈值仅用于这些测试实例，不承诺任意轮廓在任意栅格分辨率下相同误差。薄小特征需要更高分辨率与局部指标。当前仅支持单个简单多边形外环，不支持孔、多组件或自交；调用方应保证输入拓扑合法。
+The error thresholds apply only to these test instances; no claim is made that an arbitrary outline yields the same error at any raster resolution. Thin, small features need higher resolution and local metrics. Only a single simple polygon outer ring is supported — holes, multiple components, and self-intersections are not; callers must ensure the input topology is valid.
 
-## ⭐ 已知实现陷阱（写入参数篇，避免误用）
+## ⭐ Known implementation pitfalls (written into the parameters reference to prevent misuse)
 
-| 陷阱 | 后果 |
+| Pitfall | Consequence |
 |---|---|
-| 用点集 Jaccard 而非栅格化算 IoU | 缩放副本的所有采样点都落在另一轮廓内，**10% 尺寸误差看起来像满分** |
-| 射线法未处理边界点歧义 | 圆周 40 点只 20 个判内部，IoU 崩塌 |
-| 把 IoU 当尺寸精度 | 同心圆缩放 r 倍 → IoU = r²，**尺寸差 10% 时 IoU 仍有 0.83** |
+| Using point-set Jaccard instead of rasterisation to compute IoU | Every sampled point of a scaled copy falls inside the other outline, so **a 10% size error looks like a perfect score** |
+| Ray casting does not handle on-boundary point ambiguity | Of 40 points on a circle only 20 are classified as inside, and IoU collapses |
+| Treating IoU as dimensional accuracy | Scaling concentric circles by r gives IoU = r², so **at a 10% size difference IoU is still 0.83** |
 
-## 明确未验证或不提供认证
+## Explicitly unverified or not certified
 
-1. **全域面间G2/G3数值认证。** 接缝脚本只采样位置与无向切平面，不查二阶形算子，不证明无反折/重叠。
-2. **真实图片→完整模型的端到端还原质量。** 范例是推理模板，不能称已造好模型。未知相机/尺度与背面仍需任务内处理。
-3. **制造可行性。** 壁厚、自交、拔模、分型、工艺缩率、装配运动及任何车厂标准，需逐项目验证。
-4. **STEP/IGES/STL往返与材料/图层保真。** 本轮未进行实际交换测试。
-5. **全部Rhino原生命令选项矩阵、GH组件、其他MCP插件、Rhino6/7或其他平台。** 用当前环境发现和最小试验核实。
-6. 曲率函数评估最近底层面，不识别修剪可见域，不自动转换为实体外法向符号；单点评估不能代表面公平。
-7. 曲线距离检查是Rhino数值估计，不是精确Hausdorff界；高度局部化特征还需加密/独立检查。
-8. **参数篇中标注为"教材案例"的圆角值与公差**未在实物零件上验证，仅为书中操作记录。
+1. **Full-domain inter-surface G2/G3 numerical certification.** The seam script samples only position and the unoriented tangent plane; it does not examine the second-order form operator and does not prove the absence of folds or overlap.
+2. **End-to-end reconstruction quality from a real photograph to a complete model.** The examples are reasoning templates and cannot be described as a finished model. Unknown camera, scale, and back-side conditions still require in-task handling.
+3. **Manufacturability.** Wall thickness, self-intersection, draft, parting lines, process shrinkage, assembly motion, and any OEM standard require per-project verification.
+4. **STEP/IGES/STL round-tripping and material/layer fidelity.** No actual exchange test was performed in this round.
+5. **The full option matrix of all Rhino native commands, GH components, other MCP plugins, Rhino 6/7, or other platforms.** Verify by capability discovery in the current environment and minimal experiments.
+6. The curvature function evaluates the nearest underlying surface; it does not identify the trimmed visible domain and does not automatically convert to an outward solid normal. A single-point evaluation cannot represent surface fairness.
+7. The curve distance check is a Rhino numerical estimate, not an exact Hausdorff bound; highly localised features require denser sampling or independent checks.
+8. **Fillet values and tolerances marked as "textbook cases" in the parameters reference** were not verified on physical parts; they are operation records from the book only.
 
-## 从旧版修复的发布阻断项（1.1.0 记录）
+## Release blockers fixed from earlier versions (recorded in 1.1.0)
 
-修复错误Rebuild重载、不存在的Surface.CreateEdgeSrf、错误Loft重载、不存在的曲率方法；修复Unitize返回布尔值被当点积，使90°曲线误报0°的问题。旧六项冒烟没有覆盖这些公开助手，故不能证明整个旧工具包正确。新测试对每类发布入口和关键反例分别执行。
+Fixed the wrong Rebuild overload, the non-existent `Surface.CreateEdgeSrf`, the wrong Loft overload, and the non-existent curvature method; fixed Unitize returning a boolean that was treated as a dot product, which caused 90° curves to report 0°. The old six smoke cases did not cover these public helpers, so they could not demonstrate that the entire older toolkit was correct. The new tests exercise each class of release entry point and each critical counterexample separately.
 
-删除未经验证的放图命令字符串助手；保留显式参考平面几何函数。二维指标拆成无Rhino依赖模块。主入口与12篇参考统一到带条件的方法，旧知识图谱不再作为执行依赖。
+The unverified command-string helper for placing views was removed; explicit reference-plane geometry functions were retained. The 2D metrics were split into a module with no Rhino dependency. The main entry point and 12 references were unified on conditional methods, and the old knowledge graph is no longer an execution dependency.
 
-## 1.1.0 新增：物品施工链验证
+## 1.1.0 addition: object construction chain validation
 
-[example_closed_shell.py](scripts/example_closed_shell.py)按明确尺寸在内存中构建双曲率盖、四个派生直纹壁、平底并合成有效实体，实际曲面中心高度40。**12/12**通过，见[结果](example-test-results.json)与[详细剧本](references/12-object-construction-playbooks.md)。检查6块母面、有效封闭体、边状态、朝向、Degree/Span、实际拱高、正体积、错误输入及文档未变。它不验证G2、壁厚、注塑或参考图相似度。
+[example_closed_shell.py](scripts/example_closed_shell.py) builds a double-curved crown, four derived ruled walls, and a flat bottom in memory at explicit dimensions, then joins them into a valid solid, with an actual surface centre height of 40. **12/12** pass; see the [results](example-test-results.json) and the [detailed playbook](references/12-object-construction-playbooks.md). It checks the 6 parent surfaces, the valid closed body, edge state, orientation, Degree/Span, the actual crown height, positive volume, error inputs, and that the document is unchanged. It does not validate G2, wall thickness, injection moulding, or similarity to a reference image.

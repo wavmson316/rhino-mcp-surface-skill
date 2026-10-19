@@ -1,224 +1,223 @@
-# 施工纪律与顺序铁律
+# Construction Discipline and Ordering Rules
 
-本章收录**顺序敏感、代价高、事后难补救**的规则。
-每条给出：事实 → 为什么 → 失效信号 → 出处。
+This chapter collects the rules that are **order-sensitive, expensive, and hard to repair after the fact**.
+Each entry gives: fact → why → failure signal → source.
 
-⛔ 这些不是"最佳实践建议"，是**做不到就要付出不可逆代价**的操作约束。
+⛔ These are not "best practice suggestions". They are operational constraints where failure costs something irreversible.
 
 ---
 
-## 0. 开工前三件事（顺序不可颠倒）
+## 0. Three things before you start (order cannot be reversed)
 
-| # | 动作 | 不做的后果 |
+| # | Action | Cost of skipping it |
 |---|---|---|
-| 1 | **确认单位制**（mm / inch / 抽象 units） | 同一本书里两台车的同一个「2」相差 **30 倍** |
-| 2 | **有真实尺寸就定标；没有就问用户** | 比例失真，**全部白做** |
-| 3 | **分面草图先画完再开软件** | NURBS 事后补救**极难**，拆面连带破坏已建接缝 |
+| 1 | **Confirm the unit system** (mm / inch / abstract units) | The same "2" on two cars in the same book differs by **30×** |
+| 2 | **If real dimensions exist, set the scale; if not, ask the user** | Proportions are wrong, **all the work is wasted** |
+| 3 | **Finish the patch layout sketch before opening the software** | NURBS layout errors are **extremely hard** to fix later, and splitting patches tears the seams you already built |
 
-⚠️ 第 3 条的根源：NURBS 的布局错误无法靠加点解决。
-⛔ **这是全流程唯一真正不可逆的环节**，所以值得先花十分钟画草图。
+⚠️ The root of rule 3: NURBS layout errors cannot be fixed by adding points.
+⛔ **This is the only genuinely irreversible step in the whole process**, which is why it is worth spending ten minutes on a sketch first.
 
-⚠️ 没有尺寸时**该问就问，但不要停工**：
-明确声明尺度未确定 → 建归一化/假设尺度的可修改模型 → 在报告里列出待确认项。
-⛔ 既不要硬编毫米精度，也不要因为没有尺寸就完全不动手。
+⚠️ When dimensions are missing, **ask — but do not stop working**:
+state explicitly that scale is undetermined → build a normalized or assumed-scale model that is easy to revise → list the open items in the report.
+⛔ Neither invent millimeter precision nor refuse to start just because dimensions are missing.
 
 ---
 
-## 1. ⭐ 三条顺序铁律
+## 1. ⭐ Three ordering rules
 
-违反顺序**不会报错**，但会做出无法补救的模型。
+Breaking the order **produces no error message**, only a model that cannot be repaired.
 
-### 铁律 1：母面 → 凹槽 → 操作凹槽 → 倒角 → 缝隙圆滑
+### Rule 1: base surface → recess → operate the recess → chamfer → gap blend
 
 ```
-母面 → 凹槽/缺口 → 操作凹槽 → 倒角 → 缝隙圆滑
+base surface → recess/notch → operate the recess → chamfer → gap blend
 ```
 
-| 顺序颠倒 | 后果 |
+| Order reversed | Consequence |
 |---|---|
-| 倒角后再开槽 | 槽口无法参与圆角 |
-| 圆滑后再做凹槽 | 圆滑面把凹槽**入口封死**，⛔ 不可逆 |
+| Chamfer first, then cut the slot | The slot opening can no longer participate in the fillet |
+| Blend first, then build the recess | The blended surface seals the **entrance to the recess**, ⛔ irreversible |
 
-### 铁律 2：先大圆角，后小圆角
+### Rule 2: large fillets first, small fillets second
 
-⛔ 小圆角会被大圆角吞掉。
+⛔ Small fillets get swallowed by the large ones.
 
-### 铁律 3：不对称产品必须"齐头并进"建模
+### Rule 3: asymmetric products must be modeled "in parallel"
 
-⛔ **不能分件做完再装配**——那样无法在过程中调整各部分的比例与结构关系。
+⛔ **You cannot finish the parts separately and then assemble them** — that way the proportions and structural relationships between the parts can no longer be adjusted during the process.
 
-配套：**先定主轴骨架**，以主轴为中心线逐步建立周围基础曲面，
-**最后才做按钮小件**。
+Companion rule: **establish the primary-axis skeleton first**, then build the surrounding base surfaces progressively around that axis,
+and **do the small button parts last**.
 
 ---
 
-## 2. 成面纪律
+## 2. Surface creation discipline
 
-| 规则 | 为什么 | 失效信号 |
+| Rule | Why | Failure signal |
 |---|---|---|
-| **对边阶数必须一致**再 `EdgeSrf` | 不一致时软件用**内部节点补偿** | ⛔ 结果是**变形而非报错**，极难定位 |
-| **平直段所有 CP 必须共线** | 否则该段曲率不为零 | ⛔ 直段鼓包，Zebra 立即显形 |
-| **相交处末端 3 排 CP⛔ 不能动** | 它们决定该处曲率 | 误改 → 连续性直接断裂 |
-| **其余排可自由编辑** | 不影响该边连续性 | — |
-| **不要用硬表面棱覆盖曲率问题** | 真实锐边是设计决定 | 高光出现意外折痕 |
+| **Matching degrees on opposite edges** are required before `EdgeSrf` | When they differ the software compensates with **interior knots** | ⛔ The result is **distortion, not an error message**, and it is extremely hard to locate |
+| **All CPs on a straight run must be collinear** | Otherwise curvature on that run is non-zero | ⛔ The straight run bulges, and Zebra shows it immediately |
+| **The last 3 rows of CPs at an intersection ⛔ must not be moved** | They determine curvature at that location | Incorrect edit → continuity breaks outright |
+| **The remaining rows are free to edit** | No effect on continuity at that edge | — |
+| **Do not cover a curvature problem with a hard-surface crease** | A genuine sharp edge is a design decision | Unexpected crease appears in the highlight |
 
-⚠️ 平面面网应**共面**，⛔ 不能把整个面网压成直线。
+⚠️ A planar patch net should be **coplanar**; ⛔ never collapse the whole net into a straight line.
 
-⚠️ `SetPt` 仅对选中设计区域、选定轴使用——**逐排对齐可能毁掉原本的双曲率**。
+⚠️ `SetPt` applies only to the selected design region and the chosen axis — **aligning row by row can destroy the original double curvature**.
 
-### ⭐ 三排法的边界
+### ⭐ Boundary conditions of the three-row method
 
-| 做法 | 成立条件 | ⛔ 不成立时 |
+| Approach | When it holds | ⛔ When it does not |
 |---|---|---|
-| 末端 3 排对齐 | 同阶、权重一致、参数尺度可比 | 周期结构、参数域差异大 |
-| 局部凸起用 3 排法 | 单跨 Degree2 的横向结构 | 需要两端 G2 时要加自由度 |
+| Aligning the last 3 rows | Same degree, consistent weights, comparable parameter scales | Periodic structures, large differences in parameter domain |
+| Using the three-row method for a local bulge | Transverse structure of a single-span Degree2 | When G2 is needed at both ends, extra degrees of freedom must be added |
 
 ---
 
-## 3. 曲线纪律
+## 3. Curve discipline
 
-| 规则 | 为什么 |
+| Rule | Why |
 |---|---|
-| **一条三维曲线至少在两个正交视图互校** | 单视图看着对，**转 90° 就歪** |
-| **CP 数逐阶试到 Max dev < 0.1 mm** | ⛔ 一律套"5 阶 6 点"：直线被过拟合成**波浪**，复杂曲线欠拟合 |
-| **`Rebuild`/`Fit`/`Fair` 保留原线并验差** | 这三个会改形 |
-| **误差集中在真实棱边就分段** | 不把全曲线无限升阶 |
+| **Cross-check every 3D curve in at least two orthographic views** | It looks correct in one view and **is visibly off after a 90° turn** |
+| **Try CP counts degree by degree until Max dev < 0.1 mm** | ⛔ Applying "degree 5, 6 points" everywhere over-fits straight lines into **waves** and under-fits complex curves |
+| **`Rebuild`/`Fit`/`Fair` keep the original curve and verify the difference** | All three change the shape |
+| **If the error is concentrated on a genuine crease, segment the curve** | Do not raise the degree indefinitely across the whole curve |
 
-⚠️ `Top` 视图对齐 ≠ 3D 正确。必须补 `Front`/`Right` 视图核验。
+⚠️ Alignment in `Top` view ≠ correctness in 3D. `Front`/`Right` view verification is mandatory.
 
 ---
 
-## 4. 3C / 消费电子专属纪律
+## 4. Discipline specific to 3C / consumer electronics
 
-来源：翻盖手机、数码摄像机案例（清华版第 8、9 章）。
+Source: flip phone and digital camera cases (Tsinghua edition, chapters 8 and 9).
 
-### 4.1 ⭐ 平面与侧面的衔接
+### 4.1 ⭐ Meeting between the planar face and the side wall
 
-**正确做法是"高低错位 + Trim"，不是用一个曲面硬接。**
-
-```
-1. 侧面故意做到比底面更高
-2. 用平面的轮廓线 Trim掉高出的部分
-3. 两部分自然衔接
-```
-
-⚠️ 直接相邻的平面与侧面交界线是**锐利**的，仍需圆滑（见 §4.3）。
-
-### 4.2 ⭐ `Extrude` 的自由度补充
-
-`Extrude` 挤出的曲面 **V向只有 2 个 CP**（1 阶）。
-
-要与相邻 `Extrude` 面保持 G2：
+**The correct approach is "offset the heights, then Trim" — not forcing one surface to bridge them.**
 
 ```
-ChangeDegree：U 向阶数不变，V 向 1 → 3 阶
-结果：V 向 CP 从 2 个变 4 个
-     3 个保持曲率不变（保 G2），1 个用来改形
+1. Build the side wall deliberately taller than the base face
+2. Trim away the excess with the base face's boundary curve
+3. The two parts meet naturally
 ```
 
-⚠️ `ChangeDegree` **必须键 `D` 开 Deformable**，否则只改阶数不改形状。
+⚠️ The edge where directly adjacent planar and side faces meet is **sharp**, and still needs blending (see §4.3).
 
-⚠️ 这是**特定局部方案**，不代表所有接缝都能这样达到 G2。
+### 4.2 ⭐ Adding degrees of freedom to `Extrude`
 
-### 4.3 ⭐ 边缘圆滑链
+A surface extruded with `Extrude` has **only 2 CPs in the V direction** (degree 1).
+
+To hold G2 against a neighboring `Extrude` surface:
 
 ```
-Intersect → Join → Pipe(Cap关) → ExtendSrf(T,S) → SplitSrf → Blend → Sweep2
+ChangeDegree: U degree unchanged, V 1 → 3
+→ result: V CPs go from 2 to 4
+    3 keep curvature (preserving G2), 1 is available to reshape
 ```
 
-| 步骤 | 关键 | ⛔ 错误后果 |
+⚠️ `ChangeDegree` **requires pressing `D` to enable Deformable**, otherwise it changes the degree without changing the shape.
+
+⚠️ This is a **specific local solution**; it does not mean every seam can reach G2 this way.
+
+### 4.3 ⭐ The edge blending chain
+
+```
+Intersect → Join → Pipe(Cap off) → ExtendSrf(T,S) → SplitSrf → Blend → Sweep2
+```
+
+| Step | Key point | ⛔ Consequence if wrong |
 |---|---|---|
-| `Pipe` | **键 `C` 关 Cap**（默认 Yes） | 圆管封盖，无法穿透修剪 |
-| `Pipe` 半径 | 教材案例 ≈ 圆滑宽 × 2/3 | ⚠️ 局部案例，不保证等宽 |
-| `ExtendSrf` | **键 `T` 选方式→ `S` 设 Smooth** | 圆管没穿透，修剪失败 |
-| `BlendSrf` | 先用默认 Bulge 出面 | ⛔ 别急着拖滑杆 |
+| `Pipe` | **Press `C` to turn Cap off** (Yes by default) | The tube gets capped and cannot pass through for trimming |
+| `Pipe` radius | Textbook case ≈ blend width × 2/3 | ⚠️ A local case; equal width is not guaranteed |
+| `ExtendSrf` | **Press `T` to select the method → `S` to set Smooth** | The tube does not pass through and the trim fails |
+| `BlendSrf` | Produce the surface with the default Bulge first | ⛔ Do not rush to drag the slider |
 
-⚠️ **`BlendSrf` 的边界线选中后不能取消** → 选多边时先选一条再**键 `A`**。
+⚠️ **Once `BlendSrf`'s boundary curves are selected they cannot be deselected** → when choosing multiple edges, pick the first one and then **press `A`**.
 
-### 4.4 ⭐ `BlendSrf` 扭曲的正解
+### 4.4 ⭐ The real fix for a twisting `BlendSrf`
 
-**现象**：曲面中间明显鼓起、扭曲，高光异常。按 `F10` 可见控制点在中间鼓起。
+**Symptom**: the surface bulges and twists noticeably in the middle, and the highlight behaves abnormally. Press `F10` to see that the control points bulge in the middle.
 
-**根因**：默认保持混接比例——**曲面窄的地方控制点跟着缩小，宽的地方间距也大**。
+**Root cause**: the default preserves the blend ratio — **where the surface is narrow the control points shrink with it, and where it is wide the spacing is large too**.
 
-**正解**：在 `Blend Bulge` 对话框**勾选 `Same height shapes`**，**不调整滑杆**。
+**Fix**: in the `Blend Bulge` dialog, **check `Same height shapes`** and **do not touch the sliders**.
 
-⛔ **不要用"加点"或"改滑杆"治扭曲**——滑杆调的是 bulge 强度，治不了根部畸变。
+⛔ **Do not treat twisting with "add points" or "move the sliders"** — the slider controls bulge strength and cannot correct distortion at the root.
 
-### 4.5 ⭐ `Setpt` 的正确用法
+### 4.5 ⭐ Correct use of `Setpt`
 
-⛔ **错误**：只对齐最下面一排 CP —— 外轮廓看起来对了，**内部曲面仍扭曲**。
+⛔ **Wrong**: aligning only the bottom row of CPs — the outer silhouette looks right, but **the interior surface is still twisted**.
 
-✅ **正确**：**从中间开始，所有排都对齐**。
+✅ **Correct**: **start from the middle and align every row**.
 
-（教材原话：只对齐最下面那排，虽然整个曲面外轮廓就正确了，
-但是内部曲面还存在一定扭曲，需要从中间部分开始，所有的控制点都要对齐。）
+(The textbook's own wording: aligning only the bottom row makes the surface's outer silhouette correct, but some twisting remains in the interior surface, so you must start from the middle and align all the control points.)
 
-### 4.6 镜像与对称
+### 4.6 Mirroring and symmetry
 
-| 规则 | 说明 |
+| Rule | Explanation |
 |---|---|
-| ⭐ **镜像前检查中轴** | `Mirror` 只是几何复制，**不改变接缝处的连续性** |
-| 想在中轴得 G2 | 必须**镜像前**把那侧匹配好 |
-| 做法 | 先镜像一份 → 用它 `MatchSrf` 原面到 G2 → 删镜像件 → 重新 `Mirror` |
-| 只画一半原则 | 沿参考只画一半轮廓，另一半镜像 → **完全精确对称** |
-| `ArcDir` + `Shift` | 画多段对称弧时按住 `Shift` 锁方向，保证各段等高 |
-| `Untrim` | 镜像后恢复未修剪状态 |
+| ⭐ **Check the centerline before mirroring** | `Mirror` is only a geometric copy; **it does not change continuity at the seam** |
+| To get G2 on the centerline | That side must be matched **before** mirroring |
+| Method | Mirror a copy → use it to `MatchSrf` the original surface to G2 → delete the mirrored copy → `Mirror` again |
+| Draw-only-one-half principle | Draw half the outline along the reference and mirror the other half → **perfectly exact symmetry** |
+| `ArcDir` + `Shift` | Hold `Shift` to lock direction while drawing multi-segment symmetric arcs, so all segments stay at equal height |
+| `Untrim` | Restores the untrimmed state after mirroring |
 
-⚠️ 辅助/匹配用曲面**用完即删**，永远保留原曲面（品质更好）。
+⚠️ Surfaces used for assistance or matching should be **deleted as soon as they are no longer needed**; always keep the original surface (it has better quality).
 
-### 4.7 其他 3C 操作点
+### 4.7 Other 3C operating points
 
-| 事项 | 规则 |
+| Item | Rule |
 |---|---|
-| `Selu` | 选整排/整列控制点，替代手动框选 |
-| Kink 点移动 | 必须同时移动 **Kink 点和两侧 4 个点**，否则破坏连续性 |
-| 调CP vs `Offset` | 内侧偏移**优先调控制点**：不随偏移精度膨胀、不产生硬连接 |
-| 卡槽矩形 | **四角必做圆滑**，不是可选 |
-| `ExtrudeCrv` | 硬表面开孔的经典做法（穿透曲面，非实体）|
-| `Extrude` 键 `B` | Bothside 双向，曲面必须穿透两侧 |
-| `Extrude` 键 `C` | Cap 加盖，做实体 |
+| `Selu` | Selects a whole row/column of control points, replacing manual box selection |
+| Moving a kink point | The **kink point and the 4 points on either side must move together**, or continuity breaks |
+| Adjusting CPs vs `Offset` | For an inward offset, **adjust control points first**: it does not inflate with offset precision and does not create hard connections |
+| Snap-fit rectangle | **All four corners must be blended** — this is not optional |
+| `ExtrudeCrv` | The classic approach for hard-surface openings (passes through the surface, not a solid) |
+| `Extrude` press `B` | Bothside, bidirectional — the surface must pass through both sides |
+| `Extrude` press `C` | Cap, add caps, build a solid |
 
 ---
 
-## 5. 连续性纪律
+## 5. Continuity discipline
 
-| 规则 | 为什么 |
+| Rule | Why |
 |---|---|
-| ⭐ **明暗交界线两侧⛔ 不强求 G2** | 那里本就是**设计意图上的转折**，强求会毁掉设计 |
-| ⭐ **真实锐边也不应被抹成 G2** | 锐边是设计决定 |
-| **G2 不匹配先查输入曲线** | ⛔ 不是猛加 CV——自由度不足不是靠加点能解决的 |
-| **`Untrim` 是恢复机制** | ⛔ 不是"失败"，是正常的参数化恢复手段 |
-| `MergeSrf` 接缝 | 要真融合成单张曲面须**关闭 Smooth**；`Smooth=Yes` 只是缝合 |
-| `MirrorSrf` 接缝 | 按需要**键 `S` 关闭 Smooth** |
+| ⭐ **Do not demand G2 on both sides of the shade boundary** ⛔ | That location is **a break in design intent**; forcing G2 there destroys the design |
+| ⭐ **A genuine sharp edge should not be flattened to G2 either** | A sharp edge is a design decision |
+| **When G2 does not match, check the input curves first** | ⛔ It is not about piling on CVs — insufficient degrees of freedom cannot be fixed by adding points |
+| **`Untrim` is a recovery mechanism** | ⛔ It is not a "failure"; it is a legitimate parametric recovery step |
+| `MergeSrf` at a seam | Achieving a true single-surface blend requires **turning Smooth off**; `Smooth=Yes` only sews the surfaces |
+| `MirrorSrf` at a seam | **Press `S` to turn Smooth off** where required |
 
-⚠️ **"明暗交界不能当分面依据"与"明暗交界不强求 G2"是两件事**：
-前者说它是光照产物、不能据此分面；后者说那个位置本就该有转折。
+⚠️ **"The shade boundary cannot be used as a patch boundary" and "do not demand G2 at the shade boundary" are two different things**:
+the first says it is a product of lighting and cannot be used to lay out patches; the second says a break belongs at that location.
 
 ---
 
-## 6. 验收纪律
+## 6. Acceptance discipline
 
-| 规则 | 为什么 |
+| Rule | Why |
 |---|---|
-| ⭐ **每个基础曲面建完立刻跑 `CurvatureAnalysis`** | 面定型后再改代价极高，**基础面阶段是唯一便宜的质量窗口** |
-| ⭐ **小面产品 Zebra/EMap 不管用** | 面数多且每面小→ 必须逐面曲率分析 |
-| **封闭性按交付目标定** | 外观件必须封闭（否则渲染/切片穿帮）；概念外形开放面合法 |
-| ⭐ **复杂件独立图层并及时隐藏** | ⛔ 不只是为了整洁：满屏控制点会让截图超时、**MCP 会话崩** |
-| 网格先定弦高/角度预算 | ⛔ 最短边过大可能截断需要的细化 |
+| ⭐ **Run `CurvatureAnalysis` immediately after each base surface is built** | Changing after the surface is settled is extremely expensive; **the base-surface stage is the only cheap quality window** |
+| ⭐ **Zebra/EMap are useless on products with many small faces** | Many small faces mean per-face curvature analysis is mandatory |
+| **Set watertightness by delivery goal** | Appearance parts must be closed (otherwise rendering and slicing break visibly); open surfaces are legitimate for concept forms |
+| ⭐ **Put complex parts on their own layer and hide it in time** | ⛔ Not just for tidiness: a screen full of control points makes screenshots time out and **crashes the MCP session** |
+| Set mesh chord height / angle budgets first | ⛔ An oversized minimum edge length can cut off refinement you need |
 
 ---
 
-## 7. ⭐ 常见误区：不是所有规则都同等重要
+## 7. ⭐ Common misconception: not all rules are equally important
 
-> 本章列的是**高代价、不可逆**的操作约束。
-> 造型审美、缝宽偏好、曲面数量取舍等**可逆决策**不在此列。
+> This chapter lists **high-cost, irreversible** operational constraints.
+> Reversible decisions — styling taste, gap width preference, how many surfaces to spend — are **not** listed here.
 >
-> 不要把这份清单当 checklist 逐条硬套——先按几何约束判断哪些适用。
+> Do not treat this list as a checklist to apply mechanically — first judge which rules apply to your geometric constraints.
 
 ---
 
-## 来源
+## Sources
 
-清华版《Rhino3D工业级造型与设计》第 3 版第 8 章（三星手机）、第 9 章（SONY 摄像机）
-及英文车书 624 页；页码区分印刷页/PDF 页。完整来源审计见 [08 来源审计](08-source-audit.md)。
+Tsinghua University Press, *Rhino3D Industrial Design and Modeling*, 3rd edition, chapter 8 (Samsung phone) and chapter 9 (SONY camera),
+plus the English automotive book, 624 pages; page numbers distinguish print pages from PDF pages. For the full source audit see [08 Source Audit](08-source-audit.md).

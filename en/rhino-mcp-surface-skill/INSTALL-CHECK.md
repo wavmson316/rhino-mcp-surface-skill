@@ -1,16 +1,18 @@
-# Installation, MCP connection, and self-check
+# Installation, MCP connection, and self-checks
 
-## Tested integration
+[简体中文](../../INSTALL-CHECK.md) | English
 
-This package targets McNeel [Rhino MCP Platform / RhinoAI](https://github.com/mcneel/RhinoAI), plugin `Rhino-MCP-Platform`. Tested on Windows, Rhino8.29.26063.11001, and Rhino Python3. Other platforms, Rhino6/7, Rhino9 WIP/Beta, and unrelated third-party MCP servers remain untested. The skill and plugin are separate installations.
+## Supported environment
+
+This package targets McNeel's [Rhino MCP Platform / mcneel/RhinoAI](https://github.com/mcneel/RhinoAI), with Rhino plugin package `Rhino-MCP-Platform`. Tested on Windows + Rhino 8.29.26063.11001 + Rhino Python 3. Rhino 9 WIP/Beta, macOS, Rhino 6/7, and other third-party MCP servers are untested. The skill and the plugin are installed separately.
 
 ## 1. Install and connect the official MCP
 
-Start with [official Getting Started](https://mcneel.github.io/RhinoAI/docs/getting-started/). For Codex:
+Start with the official [Getting Started](https://mcneel.github.io/RhinoAI/docs/getting-started/). Below is the official Codex route; the actual commands are whatever the current `MCPConnect` prints.
 
-1. Run Rhino8 `PackageManager`, install `Rhino-MCP-Platform`, and restart Rhino as required.
-2. Run `MCPConnect` in Rhino and read its router command and arguments.
-3. Configure the MCP server in Codex, commonly in `~/.codex/config.toml`, using that actual output. The official example has this structure; use it literally only when the command exists on your machine:
+1. Run `PackageManager` in Rhino 8, search for and install `Rhino-MCP-Platform`, and restart Rhino when prompted.
+2. Run `MCPConnect` in Rhino and read the router command and arguments it prints.
+3. Configure that output in the Codex MCP settings. The usual configuration file is `~/.codex/config.toml`. The official example has the following structure; use it only if your machine really has that command:
 
 ```toml
 [mcp_servers.rhino]
@@ -18,21 +20,21 @@ command = "rhino-mcp-router"
 args = ["--default-version", "8"]
 ```
 
-4. Restart Codex and verify the server/tools are visible. Do not guess executable paths or hard-code a developer-machine port.
+4. Restart Codex and confirm the MCP service and its tools are visible. The command, executable path, and arguments should all come from step 2; do not guess a fixed port.
 
-[Official Codex guide](https://mcneel.github.io/RhinoAI/docs/getting-started/codex/) · [Claude Desktop connector](https://mcneel.github.io/RhinoAI/docs/getting-started/connector/)
+[Official Codex guide](https://mcneel.github.io/RhinoAI/docs/getting-started/codex/) · [Official Claude Desktop connector](https://mcneel.github.io/RhinoAI/docs/getting-started/connector/)
 
-The router/connector provides the MCP connection. `run_python`/`run_csharp`/`run_command` execute inside Rhino; Python helpers use RhinoCommon. Live server descriptions define actual tool names and options. Keep an already working connection.
+The MCP router/connector handles the protocol and the Rhino connection; `run_python` / `run_csharp` / `run_command` perform the actual execution, and the Python geometry runs through RhinoCommon. Tool names and options are determined by the current service description.
 
-## 2. Install one language
+## 2. Install a language package
 
-Download Chinese or English ZIP from [Releases](https://github.com/wavmson316/rhino-mcp-surface-skill/releases/latest). Copy the extracted `rhino-mcp-surface-skill` folder to your client's supported Skills directory, with `SKILL.md` directly inside. Both languages share one internal ID; install one.
+Download the Chinese or English ZIP from [Releases](https://github.com/wavmson316/rhino-mcp-surface-skill/releases/latest), extract it, and place the whole `rhino-mcp-surface-skill` folder on a skills path supported by your agent. The entry point is the `SKILL.md` sitting directly inside that folder. Both packages share one ID; install one of them.
 
-Common Codex locations are `~/.agents/skills/` and project `.agents/skills/`; verify current configuration. Other clients load skills differently. MCP support alone does not guarantee skill discovery. Start a new session and confirm the skill is visible.
+Common Codex user-level path is `~/.agents/skills/` and the project-level path is `.agents/skills/`; defer to the client's current configuration. Other clients load skills per their own instructions; MCP availability does not imply automatic skills discovery. Open a new session to confirm the skill is visible.
 
-## 3. Inspect connection and document without modifying them
+## 3. Read-only checks on the document and connection
 
-Read `get_context`; use `list_slots` when available to identify the target. Adapt to the actual interface when absent. Ask only if multiple documents cannot be distinguished; never clear or close the user's current document.
+Have the agent read `get_context`; where `list_slots` exists, use it to locate the target instance first. Where these interfaces are unavailable, use whatever the current client provides instead. Only ask the user when multi-document state cannot be disambiguated; never clear or close the original document automatically.
 
 ```python
 import Rhino
@@ -41,40 +43,40 @@ print(str(Rhino.RhinoApp.Version), str(doc.ModelUnitSystem),
       doc.ModelAbsoluteTolerance, doc.ModelAngleToleranceDegrees)
 ```
 
-The document handle above is supplied by this MCP integration. Other hosts require explicit adaptation. Do not fall back to ActiveDoc or overwrite settings.
+This is the document handle injected by this MCP; other hosts need an explicit adapter. It does not fall back to ActiveDoc and does not modify the user's original settings.
 
-## 4. Run in-memory regression checks
+## 4. Run the in-memory tests
 
-Execute inside Rhino Python3, replacing the placeholder with the real skill path accessible to the Rhino process:
+Set the actual installation path before running these in Rhino Python 3; this is not ordinary CPython. The path must be reachable by the Rhino process.
 
 ```python
 import sys
 from pathlib import Path
-skill_root = Path(r'<actual skill installation directory>')
+skill_root = Path(r'<replace with the actual installation directory>')
 sys.path.insert(0, str(skill_root / 'scripts'))
 from smoke_test_rhino import run_tests
 result = run_tests(__rhino_doc__)
 print(result)
 ```
 
-Expected: 45 cases pass, without adding/deleting/editing document objects. Preserve failures and inspect specific APIs; do not delete assertions. Ordinary Python can run:
+Expect all 45 cases to pass, with no document objects added, removed, or edited. On failure, report the specific entry point; do not delete assertions to manufacture a pass. These also run under ordinary Python:
 
 ```text
 python scripts/test_outline_metrics.py
 python scripts/check_release.py
 ```
 
-Expected: 17 outline cases and static checks pass. Geometry code is shared with the 1.0.0 tested implementation; see [VALIDATION.md](VALIDATION.md).
+Expect the 17 2D cases to pass and the static checks to succeed. The current test code is identical to the 1.0.0 geometry implementation; for the validation scope see [VALIDATION.md](VALIDATION.md).
 
 ## Troubleshooting
 
-| Symptom | Check |
+| Problem | What to check |
 |---|---|
-| No connection or tools | Plugin installation/loading, MCPConnect output, client configuration and restart |
-| MCP works, skill missing | Directory nesting, client Skills support, fresh session |
-| import Rhino fails | Geometry scripts need Rhino Python; outline_metrics is standalone |
-| Script missing | Use a path accessible to the Rhino process; client and remote paths may differ |
-| Imported module has no doc | Pass the injected document explicitly; imports do not inherit caller globals |
-| Assertions fail | Check Rhino/API version and preserve failure evidence |
+| Cannot connect, or no tools appear | Whether the plugin is installed and loaded, the `MCPConnect` output, the client configuration, and the restart state |
+| MCP appears but the skill cannot be found | The skill directory level, whether the client supports Skills, and whether a new session was started |
+| `import Rhino` fails | Geometry scripts need Rhino's internal Python; the 2D metrics work under ordinary Python |
+| Scripts not found | Use the real path reachable from the Rhino side; do not assume the client and remote paths are identical |
+| No `doc` after import | Pass the injected document explicitly; the module does not inherit the caller's globals |
+| Tests fail | Check the Rhino/API versions and keep the failure record; do not reuse another machine's passing result |
 
-Installation checks do not certify a real model's shape, G2, or manufacturability.
+Installing and passing the self-checks does not mean an actual model has passed shape, G2, or manufacturing acceptance.

@@ -1,105 +1,104 @@
-# 曲线与构面原则
+# Curves and surfacing principles
 
-## 数学边界
+## Mathematical boundaries
 
-Rhino Degree是次数p，Order=p+1。普通非周期夹持单跨曲线有p+1个控制点；周期/闭合不是同一概念，周期曲线不存在“CP永远等于Degree”的公式。实际跨度读SpanCount，曲面分U/V读取。
+In Rhino, Degree is the degree p, and Order = p+1. An ordinary non-periodic clamped single-span curve has p+1 control points. Periodic and closed are not the same concept, and there is no formula of the form "CP always equals Degree" for periodic curves. Read the actual span count from SpanCount; for surfaces, read it separately in U and V.
 
-一般内部节点重数m时，B样条保证参数连续性C^(p-m)，特殊几何可更高。无节点的多项式或非奇异有理片内部光滑；这个规则不等于跨面G级。高Degree不保证公平性，三次也可满足特定更高几何连续性。
+With general interior knot multiplicity m, a B-spline guarantees parametric continuity C^(p-m); special geometry can do better. A knotless polynomial piece, or a non-singular rational piece, is smooth in its interior. This rule does not equal cross-surface G-level. High degree does not guarantee fairness, and a cubic can also satisfy a specific higher geometric continuity.
 
-有理二次圆的重复节点不是几何Kink。精确圆/圆弧应优先保留解析或有理表达。别为统一点数把圆重建成误差近似。
+The repeated knots of a rational quadratic circle are not a geometric kink. Exact circles and arcs should keep their analytic or rational representation wherever possible. Do not rebuild a circle into a tolerance approximation just to normalise the point count.
 
-**精确升阶、插节点可保持原形并增加自由度。** ChangeDegree的可变形模式、降阶、Rebuild、Fit、Fair可能改形，必须说明目的并验差。升阶后形状不变是正常结果。多跨升阶后的CP不普遍等于p+1。
+**Exact degree elevation and knot insertion preserve the shape and add degrees of freedom.** The Deformable mode of ChangeDegree, degree reduction, Rebuild, Fit and Fair can all change the shape — state the intent and measure the difference; do not treat them as shape-preserving. A shape that survives degree elevation unchanged is the normal outcome. After multi-span degree elevation, the CP count is not universally p+1.
 
-## 造线策略
+## Curve strategy
 
-先直线/圆弧和主截面，再辅助线。控制点曲线适合公平性编辑；插值适合确需穿点，避免逐个噪声像素插值。检查端点、方向、闭合接缝、微段、曲率梳和多视图投影。梳子比较固定显示尺度。
+Build the straight lines, arcs and primary sections first, then the auxiliary lines. Control-point curves suit fairness editing; interpolation suits cases that genuinely must pass through given points, and avoid interpolating noisy pixels one by one. Check endpoints, directions, closing seams, micro-segments, the curvature comb and the projection from multiple views. Compare combs at a fixed display scale.
 
-重建先保留原线，按预算试低复杂度候选；误差集中于真实棱边则分段，不把全曲线无限升阶。Fit可以处理合适的折线输入，但需保护真实角点，不能普遍禁止。插值结点Uniform/Chord/SqrtChord由点距与形状试验决定，没有一档永远最平滑。
+When rebuilding, keep the original line and try low-complexity candidates against a budget. If the error concentrates on a genuine hard edge, split the curve; do not raise the degree indefinitely across the whole curve. Fit can handle suitable polyline input, but genuine corners must be protected — a blanket ban is wrong. Interpolation knot spacing Uniform/Chord/SqrtChord is decided by point spacing and shape trials; no single setting is always the smoothest.
 
-## 成面选择
+## Choosing the surfacing method
 
-| 约束 | 候选 | 核验 |
+| Constraint | Candidate | Verify |
 |---|---|---|
-| 解析平面、柱锥球环 | 解析面/Revolve | 保真实尺寸、轴与接缝 |
-| 等截面沿向量 | ExtrudeCrv | 方向、厚度/封盖语义 |
-| 剖面绕轴、带轨旋转 | Revolve/RailRevolve | 极点、轨道、轮廓和自交 |
-| 有序截面 | Loft | 顺序、方向、闭合接缝、内部体量 |
-| 路径+截面 | Sweep1 | 标架旋转、截面朝向；允许不对称截面 |
-| 双轨+截面 | Sweep2 | rail对应、交点顺序、截面缩放/高度与侧边约束 |
-| 2–4条边围域 | EdgeSrf | 边界插值不保证内部体量与跨面G2 |
-| 两族相交曲线 | NetworkSrf | 交点一致、两族顺序、拟合误差、输出复杂度 |
-| 两母面间空带 | BlendSrf | 两侧连续性、bulge、宽度、对应、角区 |
-| 调整已有面 | MatchSrf | 主从、其他边保持、自由度和变形范围 |
-| 散点/边近似拟合 | Patch | 采样、刚度、边界误差、切向选项；需复核再决定用途 |
-| 有机概念分叉 | SubD→必要时重构 | 极点/面数与交付可编辑性 |
+| Analytic planes, cylinders, cones, spheres, tori | Analytic surfaces / Revolve | True dimensions, axis and seam are preserved |
+| Constant cross-section along a vector | ExtrudeCrv | Direction, and the thickness/cap semantics |
+| Profile revolved about an axis, with a rail | Revolve/RailRevolve | Poles, rail, profile and self-intersection |
+| Ordered sections | Loft | Order, direction, closing seam, interior volume |
+| Path plus cross-section | Sweep1 | Frame rotation, section orientation; asymmetric sections allowed |
+| Two rails plus cross-section | Sweep2 | Rail correspondence, intersection order, section scaling/height and the side-edge constraint |
+| Region enclosed by 2–4 edges | EdgeSrf | Boundary interpolation does not guarantee interior volume or cross-surface G2 |
+| Two intersecting families of curves | NetworkSrf | Consistency at intersections, the order of each family, fit error, output complexity |
+| Empty band between two parent surfaces | BlendSrf | Continuity on both sides, bulge, width, correspondence, corner regions |
+| Adjusting an existing surface | MatchSrf | Which side is the master, whether the other edges hold, degrees of freedom and the deformation range |
+| Fitting scattered points or edge approximations | Patch | Sampling, stiffness, boundary error, tangent options; review before committing to a use |
+| Organic concept with branching | SubD → rebuild if needed | Pole/face count against delivered editability |
 
-EdgeSrf的U/V可以不同Degree；相对边的兼容化可能增加节点，但精确升阶本身不导致变形。内部公平性仍受边界参数化和角兼容影响。Loft无需固定3–5截面；两条也可以，信息不足才加截面。
+The U and V degrees of EdgeSrf may differ. Compatibility adjustment between opposite edges can add knots, but exact degree elevation by itself does not cause deformation. Interior fairness is still governed by boundary parameterisation and corner compatibility. Loft does not require a fixed 3–5 sections; two work too, and add sections only when information is missing.
 
-Sweep2的Maintain height控制截面在双轨变化下的缩放行为；是否保拔模须量测，不能仅靠开关保证。需要连续性时选择真实面边及相邻面语义，DupEdge得到的独立曲线不保留面横向导数条件。
+Maintain height on Sweep2 controls how the section scales while the two rails vary. Whether draft is preserved must be measured — the toggle alone does not guarantee it. Where continuity is required, select the real surface edge together with the semantics of the adjacent surface; a standalone curve obtained with DupEdge does not retain the surface's cross-derivative conditions at that edge.
 
-## 局部编辑与过渡
+## Local edits and transitions
 
-夹持、非退化自然边附近的前1/2/3排控制点影响位置/一阶/二阶导数；结点、次数、权重不改且保护相关排，可保护该边的相应导数。修剪边和其他邻接边不受此简化自动保护。"三排对齐"不是G2证明。
+Near a clamped, non-degenerate natural edge, the first, second and third rows of control points govern position, first derivative and second derivative respectively. If the knots, degree and weights are unchanged and the relevant rows are protected, the corresponding derivative at that edge is preserved. Trimmed edges and other adjacent edges are not automatically protected by this simplification. Aligning "three rows" is not proof of G2.
 
-### ⭐ 三排法的适用边界
+### ⭐ Applicability limits of the three-row method
 
-| 情形 | 是否适用 |
+| Situation | Applicable |
 |---|---|
-| 同阶、权重一致、参数尺度可比的两面 | ✅ 成立，可作为施工规则 |
-| 周期/闭合结构 | ⛔ 不适用 |
-| 修剪边 | ⛔ 不受此保护 |
-| 需要 G2 但自由度不足 | ⛔ 3排不够，要加自由度 |
+| Two surfaces of equal degree with equal weights and comparable parameter scale | ✅ Holds; usable as a construction rule |
+| Periodic or closed structures | ⛔ Not applicable |
+| Trimmed edges | ⛔ Not protected by this method |
+| G2 required but degrees of freedom are insufficient | ⛔ Three rows are not enough; add degrees of freedom |
 
-直线段的相关控制点可共线；平面面网应共面，不能把整个面网压成直线。SetPt仅对选中设计区域、选定轴使用，逐排对齐可能毁掉原本的双曲率。
+The relevant control points along a straight run may be collinear; a planar patch net should be coplanar, and you must not collapse the whole net into a straight line. SetPt applies only to the selected design region and the chosen axis, and aligning row by row can destroy the original double curvature.
 
-### ⭐ 局部凸起/微鼓
+### ⭐ Local bulge / slight dome
 
-单跨横向Degree2的三排结构可用中排做微鼓盖，但会改变端部导数；若要两侧G2或局部凹坑，需要足够自由度和支撑宽度，不能全都套三排。
+A single-span transverse-degree-2 three-row structure can use the middle row to form a slight dome cap, but this changes the derivatives at the ends. For G2 on both sides or a local dimple, you need sufficient degrees of freedom and support width — the three-row method cannot be applied to all of them.
 
-⛔ **注意区别**：
-- "三排法"是**受限情形的施工规则**（原理上谨慎，施工时可用）
-- "末端3排决定该边曲率"是**不要越界编辑**的约束
+⛔ **Keep the two apart**:
+- The "three-row method" is a **construction rule for a constrained situation** (cautious in principle, usable in practice)
+- "The last three rows determine the curvature of that edge" is a **constraint that keeps you from editing beyond your remit**
 
-### ⭐ `ChangeDegree` 的可变形模式
+### ⭐ The Deformable mode of `ChangeDegree`
 
-精确升阶（可变形模式）保形是正常目标，⛔ 但若目的是**改形**（加自由度、修鼓包、抬局部凸起），
-不开可变形模式则**只改阶数不改形状**——命令返回"成功"而几何没变，容易误以为已提阶。
+Exact degree elevation (Deformable mode) preserving the shape is the normal goal. ⛔ But if the intent is **to change the shape** (add degrees of freedom, correct a bulge, raise a local boss), then without Deformable the command **changes only the degree, not the shape** — it reports "success" while the geometry has not moved, which is easily mistaken for having raised the degree.
 
-⛔ 反过来，不该为了"改形"而随手开可变形模式：它会破坏已确认的形状。
-**先说清目的，再选模式。**
+⛔ Conversely, do not casually enable Deformable in order to "change the shape": it destroys an already confirmed shape.
+**State the intent first, then pick the mode.**
 
-### ⭐ 用 `EdgeSrf` 前确认对边阶数
+### ⭐ Check opposite-edge degrees before using `EdgeSrf`
 
-阶数不一致时，软件会用内部节点去补偿，**结果是变形而不是报错**。
-在 Rhino 里这一类问题极难事后定位，所以建面前就查。
+When the degrees differ, the software compensates with interior knots, so **the result is deformation rather than an error message**.
+This class of problem is extremely hard to locate after the fact in Rhino, so check it before building the surface.
 
 ---
 
-## 修剪与偏移
+## Trimming and offsetting
 
-母面覆盖设计域并留合理求交余量。Split/Trim按输入对象和投影方向选择；曲线可合法切Brep，切割面需贯穿目标并避免近相切。Intersect可得到开放、多段或闭合交线，不以闭合一项判断成功。
+The parent surface must cover the design domain with reasonable margin for intersections. Choose Split/Trim according to the input object and the projection direction; a curve may legitimately cut a Brep, but a cutting surface must pass fully through the target and avoid near-tangency. Intersect can return an open, multi-piece or closed intersection curve — do not judge success by closure alone.
 
-Project沿定义的方向投影，可有多个目标；Pull按最近位置映射。前者用于方向定义明确的图案，后者用于贴附；不是按"单面/多面"区分。记录投影平面或向量。
+Project projects along a defined direction and can take several targets; Pull maps to the nearest position. The former suits patterns with a definite direction, the latter suits conforming to a target; the distinction is not "single surface versus multiple surfaces". Record the projection plane or vector.
 
-Offset表示等距意图，数值近似与自交需查。逐段偏移解析线再Blend可简化控制，但新的Blend通常不严格等距。平移/缩放的内层是外观近似，不能冒称等厚。FilletSrf处理面间圆角，FilletEdge处理Brep边；Blend式圆滑不等同固定半径圆角。
+Offset expresses the intent of a constant distance, so numerical approximation and self-intersection need checking. Offsetting analytic segments one at a time and blending them simplifies control, but the new blend is usually not strictly equidistant. A translated or scaled inner layer is a visual approximation and must not be passed off as constant thickness. FilletSrf handles fillets between surfaces, FilletEdge handles Brep edges; a Blend-style smoothing is not equivalent to a fixed-radius fillet.
 
-### ⭐ `ExtrudeCrv` 与硬表面开孔
+### ⭐ `ExtrudeCrv` and hard-surface cutouts
 
-`ExtrudeCrv` 挤出的是**穿透曲面**（不是实体），是硬表面开孔的经典做法：
+`ExtrudeCrv` extrudes a **surface that passes through** (not a solid). This is the classic hard-surface cutout:
 
 ```
-1. 沿参考画轮廓线
-2. ExtrudeCrv 挤出为穿透曲面
-3. Trim 相互修剪出孔内侧的面
+1. Draw the outline along the reference
+2. ExtrudeCrv into a through surface
+3. Trim to cut out the faces inside the opening
 4. Join
-5. FilletEdge 倒角
+5. FilletEdge to chamfer
 ```
 
-### ⭐ `Extrude` 的两个方向选项
+### ⭐ The two direction options of `Extrude`
 
-| 选项 | 键 | 用途 |
+| Option | Key | Use |
 |---|---|---|
-| Cap（加盖） | `C` | 挤出**实体**（按键、卡扣、螺柱）|
-| Bothside（双向） | `B` | 曲面必须**完全穿透**两侧时|
+| Cap | `C` | Extrude a **solid** (buttons, clips, screw posts) |
+| Bothside | `B` | When the surface must **fully pass through** both sides |
 
-⚠️ 符号随版本可能不同，`run_command` 前用 `get_commands` 核实当前版本。
+⚠️ Symbols may differ between versions; check the current version with `get_commands` before `run_command`.

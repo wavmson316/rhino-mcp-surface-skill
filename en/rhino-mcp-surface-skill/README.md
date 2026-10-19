@@ -1,126 +1,137 @@
 # Rhino MCP Surface Skill
 
-[简体中文](https://github.com/wavmson316/rhino-mcp-surface-skill/blob/main/README.md) | English
+[简体中文](../../README.md) | English
 
-**A modeling skill for AI agents using McNeel's Rhino MCP Platform to plan and build editable NURBS surfaces in Rhino 8 from photos, sketches, orthographic drawings, dimensions, or scan references.**
+**Lets an AI agent plan and build editable NURBS surfaces in Rhino 8 through McNeel Rhino MCP, starting from photographs, sketches, orthographic views, dimensions, or scan data.**
 
-The skill teaches shape interpretation, patch layout and UV flow, construction choices, controlled tool execution, and evidence-based validation. It is not Rhino itself, an MCP server, or a one-click photo-to-CAD application.
+This is a modeling skill written to be read by an AI agent. It guides the agent through interpreting the shape, choosing a patch layout and UV flow, calling Rhino tools, checking results, and recovering from failure. It does not include Rhino itself, and it is neither an MCP server nor a one-click photo-to-CAD application.
 
-**[Download Chinese / English packages](https://github.com/wavmson316/rhino-mcp-surface-skill/releases/latest)** · **[English skill](SKILL.md)** · **[Setup guide](INSTALL-CHECK.md)**
+**[Download the Chinese / English package](https://github.com/wavmson316/rhino-mcp-surface-skill/releases/latest)** · **[Chinese skill entry](../../SKILL.md)** · **[English skill](SKILL.md)** · **[Installation and connection guide](INSTALL-CHECK.md)**
 
-## Which Rhino and which MCP?
+## Which Rhino, and which MCP?
 
-| Component | Technology and compatibility |
+| Component | Technology and status adopted by this project |
 |---|---|
-| CAD application | McNeel **Rhinoceros 3D / Rhino 8**. Actually tested on **Windows with Rhino 8.29.26063.11001** |
+| Modeling software | McNeel **Rhinoceros 3D / Rhino 8**; actually tested on **Windows + Rhino 8.29.26063.11001** |
 | MCP project | **Rhino MCP Platform**, maintained by McNeel in **[mcneel/RhinoAI](https://github.com/mcneel/RhinoAI)** |
-| Rhino plugin | Install **`Rhino-MCP-Platform`** with Rhino `PackageManager`; follow the current official Rhino 8 instructions |
-| Client connection | Official MCP router or client connector. For Codex: run `MCPConnect`, use the emitted router configuration, and restart the client |
-| Geometry execution | MCP `run_python`, `run_csharp`, and `run_command`, plus RhinoCommon. Python helpers run inside **Rhino Python 3** |
-| Inspection tools | Discover the live tool set: for example `list_slots`, `get_context`, `list_objects`, `get_commands`, and `get_viewport_image` |
-| Parametric workflows | Grasshopper 1 when corresponding `g1_*` tools are available; no end-to-end GH validation is claimed |
-| Other environments | **Rhino 6/7, Rhino 9 WIP/Beta, macOS, and unrelated third-party Rhino MCP servers have not been tested by this package** |
+| Rhino plugin | Install **`Rhino-MCP-Platform`** from Rhino `PackageManager`; follow the current official guide to pick the package matching Rhino 8 |
+| Client connection | Use the official MCP router / client connector. On the Codex route, `MCPConnect` prints the configuration → configure the router → restart the client; see below |
+| Geometry execution | MCP `run_python` / `run_csharp` / `run_command`, plus RhinoCommon; the Python helpers run on **Python 3 inside Rhino** |
+| State and acceptance interface | Per the current tool list, `list_slots`, `get_context`, `list_objects`, `get_commands`, `get_viewport_image`, and similar calls |
+| Parametric tooling | Grasshopper 1 may be used where the current interface exposes the matching `g1_*` tools; this package has not completed end-to-end GH validation |
+| Other versions | **Rhino 6/7, Rhino 9 WIP/Beta, macOS, and other third-party Rhino MCP servers have not been tested by this package**; direct compatibility is not claimed |
 
-This is an independent skill, not an official McNeel skill. It targets the MCP project linked above, rather than every third-party server called “Rhino MCP.” Tools and configuration can change between versions; the agent discovers actual capabilities before execution.
+This project is independent of McNeel and is not an official McNeel Skill. It uses the MCP project linked above, not any third-party product that happens to share the name "Rhino MCP." Tool names and configuration change with plugin and client versions, so the agent discovers the actual capabilities first.
 
 ```text
-Your references and modeling requirements
-                  ↓
+Client references and modeling requirements
+        ↓
 AI agent with Skills and MCP support
-    ├── reads this skill: modeling decisions and validation
-                  ↓
+        ├── reads this skill: modeling decisions, patch layout, quality, execution discipline
+        ↓
 McNeel Rhino MCP router / connector
-                  ↓
+        ↓
 Rhino-MCP-Platform plugin → Rhino 8 / RhinoCommon
-                  ↓
+        ↓
 Curves, NURBS surfaces, Breps, 3dm files, and inspection reports
 ```
 
-## What can it help an agent do?
+## What can this actually help an agent do?
 
-| Task | Guided behavior | Examples |
+| Task | What the skill guides | Typical example |
 |---|---|---|
-| Interpret references | Separate silhouette, shading, materials, scale, perspective, and unknown depth | Product photographs, concept sketches, orthographic views |
-| Plan patches and UV flow | Allocate primary surfaces, side surfaces, transition bands, and corners; record adjacency and continuity targets | Glossy mouse shells, vehicle panels, asymmetric housings |
-| Build curve scaffolds | Design sections and boundaries; check direction, seams, true span counts, curvature combs, and fitting deviation | Shoulder lines, wheel arches, handle sections, crowned covers |
-| Choose construction methods | Select analytic geometry, Revolve, Loft, Sweep1/2, EdgeSrf, NetworkSrf, BlendSrf, or MatchSrf from constraints | Rotational speakers, lens barrels, double-curved shells |
-| Resolve difficult regions | Compare layouts for branches, multi-sided corners, fading features, variable-width blends, and recesses | Y-junction handles, thumb recesses, fading fillets |
-| Add product details | Derive panel gaps, openings, walls, buttons, and repeated features; keep moving components separate | Routers, cameras, phones, air-conditioning panels |
-| Reconstruct or repair | Rebuild from scan sections and design intent; distinguish fitting from mesh conversion | Scanned grips and missing-surface repair |
-| Inspect and deliver | Report shape, structure, fairness/seams, and engineering separately; keep parent surfaces and versions | 3dm, task-specific exchange files, and reports |
+| Reference reconstruction | Separate silhouette, shading, and material; handle calibration and perspective; identify unknown depth and back-side assumptions | Product photos, hand sketches, orthographic views |
+| Patch layout and UV planning | Plan the main parent surfaces, side surfaces, transition bands, and corner regions; record adjacency, movable edges, and continuity targets | Glossy mouse shells, vehicle side panels, asymmetric housings |
+| Curve scaffold and fairness | Build primary sections and boundaries; check direction, seams, true spans, curvature combs, and fitting deviation | Belt lines, wheel arches, grip sections, gently crowned covers |
+| Surface construction method | Choose among analytic surfaces, Revolve, Loft, Sweep1/2, EdgeSrf, NetworkSrf, BlendSrf, and MatchSrf according to the constraints | Rotational speakers, lens barrels, double-curved shells, edge-band transitions |
+| Difficult regions | Compare layouts for branching centers, multi-sided corners, fading features, variable-width transitions, recesses, and grip hollows | Three-way tube handles, thumb recesses, fading fillets |
+| Product detail and assembly | Derive panel gaps, holes, inner walls, buttons, and grilles from the parent surfaces; separate moving parts, thickness, and assembly clearance | Routers, cameras, phones, air-conditioning panels |
+| Reverse engineering and repair | Rebuild from scan sections or design intent; check noise, deviation, and layout; distinguish fitting from mesh conversion | Scanned grips, missing-surface repair |
+| Inspection and delivery | Report shape, structure, fairness/seams, and engineering checks separately; keep parent surfaces, versions, and unverified items | 3dm, task-specific exchange formats, and reports |
 
-**Generalization comes from geometric constraints and delivery requirements.** The skill does not force every appliance to be planar, every surface to be single-span, or every seam to be G2.
+**Generalization principle: decide from the actual geometry and the delivery requirement.** It does not dictate that a vehicle "must be built one way" or that an appliance "must be a plane plus fillets," and it does not treat single-span, G2, or a closed solid as one universal target for every task.
 
-### Included working scripts
+### Scripts actually included in the package
 
-| Script | Function | Scope |
+| File | Function | Boundary |
 |---|---|---|
-| `audit_geometry.py` | Degree, true SpanCount, control points, naked/non-manifold edges, solid state | Structural facts, not shape or G2 certification |
-| `nbs_geometry.py` | Curves, budget-checked rebuilds, three/four-edge surfaces, ruled surfaces, lofts, curvature queries, endpoint diagnostics | In-memory geometry; document additions are controlled by the caller |
-| `sample_seam_g1.py` | Bidirectional sampled edge gaps and tangent-plane angles | **Not G2**, not a proof against folds/overlap |
-| `outline_metrics.py` | Standalone 2D silhouette IoU and boundary distance | Single simple rings only; not depth or dimensional certification |
-| Regression/release checks | Rhino geometry cases, analytical 2D examples, syntax and file links | Not a substitute for real modeling-task acceptance |
+| `audit_geometry.py` | Read Degree, true SpanCount, control points, naked edges, non-manifold edges, and solid state | Structural audit; does not certify shape quality or G2 |
+| `nbs_geometry.py` | Curves, deviation-budget-constrained single-span rebuilds, three/four-edge surfaces, ruled surfaces, Loft, curvature queries, curve endpoint diagnostics | In-memory geometry helper; agent-controlled insertion into the user document |
+| `sample_seam_g1.py` | Bidirectional sampling of boundary distance and surface tangent-plane angle | **Does not judge G2**; does not prove the absence of folds over the whole domain |
+| `outline_metrics.py` | Standalone 2D silhouette IoU and contour distance | Single simple polygon outer ring; not depth or dimensional certification |
+| Tests and release checks | Rhino regression, 2D analytical cases, syntax and file-link checks | Does not replace acceptance of real modeling tasks |
 
-## Install the three separate parts
+## Installation: software, MCP, and skill are three separate parts
 
-### 1. Rhino 8
+### 1. Install and run Rhino 8
 
-Install and license [Rhino 8](https://www.rhino3d.com/download/). Windows is the tested platform. This repository supplies neither Rhino nor a license.
+Have [Rhino 8](https://www.rhino3d.com/download/) installed and running. The current verified platform is Windows; this skill ships neither a Rhino installer nor a license.
 
-### 2. McNeel Rhino MCP
+### 2. Connect McNeel Rhino MCP
 
-Follow the official [Getting Started guide](https://mcneel.github.io/RhinoAI/docs/getting-started/).
+Start with the official [Getting Started](https://mcneel.github.io/RhinoAI/docs/getting-started/) guide.
 
-- **Codex:** install `Rhino-MCP-Platform` from Rhino 8 `PackageManager`, restart Rhino as required, and run `MCPConnect`. Use the actual command/arguments it prints for your Codex MCP configuration. See the [official Codex guide](https://mcneel.github.io/RhinoAI/docs/getting-started/codex/).
-- **Claude Desktop:** follow the official [connector guide](https://mcneel.github.io/RhinoAI/docs/getting-started/connector/) for the connector and Rhino plugin.
-- **Other agents:** the official documentation also covers Claude Code, GitHub Copilot, Gemini CLI, and other clients. MCP connectivity does not automatically imply Skills support; follow your client's skill-loading instructions.
+- **Codex**: install `Rhino-MCP-Platform` from the Rhino 8 `PackageManager`, restart Rhino, then run `MCPConnect`. Configure the Codex MCP settings with the actual command and args it prints; see the [official Codex guide](https://mcneel.github.io/RhinoAI/docs/getting-started/codex/).
+- **Claude Desktop**: install the connector and the Rhino plugin following the [official connector guide](https://mcneel.github.io/RhinoAI/docs/getting-started/connector/).
+- **Other agents**: the official documentation also covers Claude Code, GitHub Copilot, Gemini CLI, and similar routes. Being able to connect MCP does not mean the client automatically supports Skills; install skills per each client's own instructions.
 
-Do not copy a developer-machine port as a universal setting. Use your own `MCPConnect` output and the current official instructions. Do not restart a working connection merely to discover its address.
+**You do not need to copy one fixed port from someone's machine to everyone.** Use the output of `MCPConnect` on your own machine and the current official documentation; if you already have a working connection, do not restart the service.
 
-### 3. Choose one skill language
+### 3. Install either the Chinese or the English skill — choose one
 
-Download an asset from [Releases](https://github.com/wavmson316/rhino-mcp-surface-skill/releases/latest):
+From [Releases](https://github.com/wavmson316/rhino-mcp-surface-skill/releases/latest), choose:
 
-- `rhino-mcp-surface-skill-1.1.0-zh-CN.zip`: Chinese entry, 12 references, setup guide, template, and scripts.
-- `rhino-mcp-surface-skill-1.1.0-en.zip`: English entry, 12 references, setup guide, template, and the same scripts.
+- `rhino-mcp-surface-skill-1.2.0-zh-CN.zip`: Chinese skill body, 13 references, installation guide, templates, and scripts.
+- `rhino-mcp-surface-skill-1.2.0-en.zip`: English skill body, 13 references, installation guide, templates, and the same set of scripts.
 
-Both archives contain a `rhino-mcp-surface-skill` folder. Copy it to a Skills location supported by your client, with `SKILL.md` directly inside that folder. **Install one language: both use the same internal skill ID.**
+Both archives extract to a `rhino-mcp-surface-skill` folder. Place it in a Skills directory supported by your client, making sure `SKILL.md` sits directly inside. Both packages use the same internal ID, so **install one language only; do not register two Skills with the same name at once**.
 
-Common Codex locations are `~/.agents/skills/` for user-level skills and `.agents/skills/` for project-level skills; verify against your current client configuration. Other clients use different locations. If a client only supports MCP, explicitly reading the skill may still be useful, but automatic skill discovery is not guaranteed.
+Common Codex user-level location is `~/.agents/skills/`, and the project-level location is `.agents/skills/`; defer to the current Codex documentation and your actual configuration. Other clients use different paths. If a client supports MCP but not automatic Skills discovery, you can have the agent read the entry point and its relative references explicitly, but identical automatic triggering is not guaranteed.
 
-For installation, use one language ZIP rather than registering the entire development repository containing `en/`; this avoids duplicate discovery of the same skill ID.
+When cloning the repository for development, do not register the whole repository including `en/` as a single Skill; install from one of the single-language ZIPs above so the same entry point is not discovered twice.
 
-Restart the client or open a new session, then run the [installation checks](INSTALL-CHECK.md).
+Restart the client or open a new session, then run the connection and in-memory geometry self-checks in [INSTALL-CHECK.md](INSTALL-CHECK.md).
 
 ## How does an object actually get built?
 
-The [construction playbooks](references/12-object-construction-playbooks.md) specify curve IDs, patch boundaries/UV/methods, seam targets, editable constraints, build steps, and recovery gates. They include a ten-step mouse-like shell plan, rotational products, and three-way junctions.
+The new [detailed patch layout and construction playbook](references/12-object-construction-playbooks.md) provides:
 
-An executable 120×70 crowned parent enclosure builds six parent faces into one valid solid with actual crown height40; **12/12 additional checks pass**. Use `scripts/example_closed_shell.py`. It intentionally retains G0 edges and is a parent-construction benchmark, not photo reconstruction, a finished mouse, or a G2 demonstration. Real shape acceptance still needs task-specific fixed-camera, section, and feature comparisons.
+- Curve IDs, the boundaries/UV/method of each patch, adjacency continuity, and the movable range.
+- A ten-step build for a mouse-style shell, from blockout and cross sections through top, sides, thumb recess, transitions, and detail.
+- Concrete patch layouts and failure fallbacks for rotational speakers/bodies and three-way tube handles.
+- An executable 120×70 double-curved closed shell with an actual maximum height of 40: six parent surfaces → one valid solid, adding **12/12** passing checks. Entry point is `scripts/example_closed_shell.py`.
 
-## Example prompt
+The programmatic example deliberately keeps G0 hard edges and validates only the parent-surface construction chain; it must not be presented as a finished mouse, a photo reconstruction, or a G2 transition. Whether the key forms match the reference must be checked item by item within the task, using a fixed camera, primary sections, and a feature checklist.
+
+## How do I prompt it after installing?
 
 ```text
 Use rhino-mcp-surface-skill.
-Check the Rhino MCP connection, target document, units, and existing objects.
-Use the attached mouse reference to analyze proportions, top crown, and thumb recess.
-Compare two patch layouts, then build editable NURBS parent surfaces and transitions.
-If dimensions are unknown, start normalized and record assumptions.
-Save a new 3dm version and report shape, structure, and continuity evidence separately.
+First confirm the Rhino MCP connection, target document, units, and existing objects.
+From the mouse reference I attached, analyze proportions, top crown height, and the thumb recess;
+compare two patch layouts, then build editable NURBS parent surfaces and transitions.
+Without reliable dimensions, start from a normalized scale and state the assumptions.
+When finished, save a new 3dm version and report shape, structure, and continuity checks separately.
 ```
 
-Other tasks include repairing a visible crease between surfaces, building a dimensioned rotational speaker, or planning the center of a three-way junction. Clear references, dimensions, and acceptance targets make results easier to assess.
+You can also ask it to "fix the crease between these two surfaces," "rebuild a rotational speaker from dimensions," or "analyze how to lay out the patches at the center of a three-way junction." The clearer the references, dimensions, and acceptance targets, the easier the result is to assess.
 
-## Bilingual contents and validation
+## Language, contents, and validation
 
-The English package includes the complete skill entry, all 12 reference documents, setup guide, project template, validation notes, and changelog. The geometry implementation and machine-readable test data are shared between language variants.
+| Content | 中文 | English |
+|---|---|---|
+| Overview | [README](../../README.md) | This page |
+| Skill entry | [SKILL.md](../../SKILL.md) | [SKILL.md](SKILL.md) |
+| Installation and connection | [INSTALL-CHECK.md](../../INSTALL-CHECK.md) | [INSTALL-CHECK.md](INSTALL-CHECK.md) |
+| References and templates | [references](../../references/01-intent-and-reference.md)、[template](../../templates/modeling-plan.md) | [references](references/01-intent-and-reference.md)、[template](templates/modeling-plan.md) |
+| Validation record | [VALIDATION.md](../../VALIDATION.md) | [VALIDATION.md](VALIDATION.md) |
 
-The 1.0.0 geometry suite passed **45/45 Rhino in-memory cases** and **17/17 standalone 2D cases**. Version 1.1.0 adds bilingual documentation, detailed construction playbooks, and 12 additional procedural-construction checks. Read [VALIDATION](VALIDATION.md) for the precise scope.
+The geometry runtime and machine-readable test data share the same implementation across languages. The Rhino in-memory regression passes **45/45**, the 2D metrics **17/17**, and the programmatic closed shell **12/12**. **1.2.0 is a documentation version**: verified numbers, construction discipline, and API errata were restored to the body text, and 13 construction-discipline rules were added; **the code and geometric behavior are exactly identical to 1.1.0, and no new validation claim is added**. See each language's record for the validation scope.
 
-Not claimed: full-domain G2/G3 certification; unique dimensional reconstruction from one photograph; one-click complete vehicles; end-to-end photo reconstruction quality; manufacturing feasibility; any OEM Class-A standard; or compatibility with untested platforms and servers. Report unverified items in each delivery.
+**Not claimed:** automatic full-domain G2/G3 certification, unique reconstruction of true dimensions from a single photograph, one-click generation of a complete vehicle, end-to-end photo-to-model quality, manufacturability, any OEM Class-A standard, and compatibility with any platform or API that has not been actually tested. Unverified items must be stated explicitly in the task delivery.
 
 ## Sources and project status
 
-The modeling workflow and helpers are independently maintained. The official MCP implementation belongs to [mcneel/RhinoAI](https://github.com/mcneel/RhinoAI). Connection guidance was checked on 2026-10-19 against upstream instructions and currently exposed tools; follow upstream documentation if the plugin changes.
+This skill is an independently compiled workflow and toolset; for the official MCP itself, see [mcneel/RhinoAI](https://github.com/mcneel/RhinoAI). The interface description was checked on 2026-10-19 against the official installation guide and the tools discovered on the local machine; for later plugin changes, the official documentation governs.
 
-No book PDFs, scans, complete OCR, or old workspace notes are distributed. See the source audit in the selected language package. No separate open-source license has been designated; no MIT or similar permission is implied. See [changelog](CHANGELOG.md).
+This repository contains no book PDFs, scan pages, complete OCR, or old workspace notes. For sources and rescinded rules, see the [source audit](../../references/08-source-audit.md). No separate open-source license has been designated, and nothing here implies an MIT-style grant. For updates, see [CHANGELOG.md](CHANGELOG.md).

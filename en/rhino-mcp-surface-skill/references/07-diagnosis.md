@@ -1,54 +1,54 @@
-# 诊断与回退
+# Diagnosis and fallback
 
-每轮提出一个可检验原因，比较前后几何/指标；两轮无改善就重评上游。下面是候选原因，不是症状到命令的唯一映射。
+Propose one testable cause per round and compare the geometry/metrics before and after. If two rounds produce no improvement, re-evaluate upstream. What follows is a set of candidate causes, not a one-to-one mapping from symptom to command.
 
-| 症状 | 检查 | 下一步 |
+| Symptom | Check | Next step |
 |---|---|---|
-| 单视角像、转过去歪 | 相机、深度、截面与遮挡 | 回到体块，不加细节掩盖 |
-| Loft/Sweep扭转 | 方向、闭合接缝、标架、截面顺序 | 统一对应后重做 |
-| 四边对、内部鼓包 | 参数速度、角点、内截面 | 调边界或换构面/布局 |
-| Blend变宽处鼓包 | 配对、截面、bulge、宽度 | 试Same height shapes或重构截面 |
-| ⭐ **BlendSrf中段明显鼓起扭曲** | 混接比例导致窄处CP缩小 | ⛔ **不加点不拖滑杆**，勾 `Same height shapes` |
-| ⭐ **Pipe无法穿透修剪** | Cap 是否为 Yes | **键 `C` 关 Cap**；再 `ExtendSrf` 键`T`→`S` |
-| ⭐ **平直段曲面鼓包** | 该段CP 是否共线 | 强制共线 |
-| ⭐ **对边阶数不同面就歪** | 四条边阶数是否一致 | 统一阶数（软件用内部节点补偿，报错不会提示）|
-| ⭐ **挤出面只有 G0** | `Extrude` 的 V 向只有 2 个 CP | `ChangeDegree` V 向 1→3 阶补自由度 |
-| ⭐ **Setpt后仍扭曲** | 是否只对齐了最外一排 | **从中间开始**把所有排对齐 |
-| ⭐ **端部CV <6 排，G2改了另一端** | 匹配方向与端部 CP 数 | 加 CP 或**换匹配方向** |
-| ⭐ **曲面局部鼓起** | 控制点**太多** | ⛔ 减 CP（过拟合会鼓包）|
-| ⭐ **改一处别处跟着崩** | 多跨结构节点耦合 | 改回单跨，或拆成独立面组 |
-| ⭐ **高光在某点收敛起皱** | 三边/五边面奇点 | 加点改四边面结构，把汇聚点移出高光区 |
-| ⭐ **先倒角后补的凹槽做不出/入口封死** | 顺序颠倒 | ⛔ 凹槽必须全部先于倒角与缝隙圆滑 |
-| 星形高光 | 极点、过窄角带、多面汇聚 | 扩大角区、移动汇聚点 |
-| Match好一边坏另一边 | 约束冲突、自由度、保另一端 | 固主面，改宽度/多边约束/布局 |
-| Refine点数膨胀 | 公差、目标复杂度、初始位置 | 对比手动局部插结点与重建，不永久禁Refine |
-| ⭐ **Refine狂增点数仍达不到目标G级** | CP数是否根本不足 | ⛔ Refine 不解决这个问题；`Setpt`+`InsertKnot`(S) |
-| 升阶后形状不变 | 是否精确升阶 | 若已增Degree是预期；**若目的是改形则须开Deformable**(D) |
-| Join失败 | 实际缝隙、单位、短边、对应 | 重求交/重构，先不放宽全局公差 |
-| Join成功仍有棱 | 切平面与曲率不连续 | 分开测G1/G2 |
-| Trim失败 | 刀具贯穿、投影方向、相切 | 看独立交线与端点，局部延伸 |
-| Offset自交 | 曲率半径、凹角、厚度 | 调设计/厚度/接角，不用平移假代 |
-| 数值过、反射差 | 采样遗漏、显示网格、面内起伏 | 加密局部与多方向截面/反射 |
-| 曲率颜色均匀却有问题 | 色标、平均值抵消、网格 | 查主曲率、截面与反射 |
-| ⭐ **小面产品看不出问题** | 面太小，Zebra/EMap 分辨不足 | 逐面 `CurvatureAnalysis` |
-| 圆角碎裂 | 半径、短边、角兼容、特征顺序 | 拆角区、换施工序或Blend |
-| MCP超时 | 操作是否已完成、对象数量 | 查ID与状态，禁止盲重试 |
-| ⭐ **截图卡死/会话崩** | 场景内控制点过多 | 复杂件独立图层并及时隐藏 |
-| API异常 | 真实签名、宿主、返回类型 | 查docstring和内存复现 |
+| Looks right from one view, skewed when you rotate | Camera, depth, sections and occlusion | Return to the volume; do not add detail to paper over it |
+| Loft/Sweep twists | Directions, closing seams, frames, section order | Unify the correspondence and redo |
+| Four edges match but the interior bulges | Parameter speed, corners, inner sections | Adjust the boundaries or change the surfacing/layout |
+| Blend bulges where it widens | Pairing, sections, bulge, width | Try Same height shapes or restructure the sections |
+| ⭐ **BlendSrf visibly bulges and twists in the middle** | Mixing proportions makes the CPs shrink where the band is narrow | ⛔ **Do not add points and do not drag the slider** — tick `Same height shapes` |
+| ⭐ **Pipe cannot pass through a trimmed region** | Is Cap set to Yes | **Press `C` to turn Cap off**; then ExtendSrf, press `T` then `S` |
+| ⭐ **A surface bulges along a straight run** | Are the CPs on that run collinear | Force them collinear |
+| ⭐ **A surface goes skewed when opposite edges differ in degree** | Are the degrees of all four edges consistent | Unify the degrees (the software compensates with interior knots; no error message warns you) |
+| ⭐ **An extruded surface only reaches G0** | The V direction of `Extrude` has only 2 CPs | `ChangeDegree` in V from 1→3 to add degrees of freedom |
+| ⭐ **Still twisted after Setpt** | Did you only align the outermost row | **Start from the middle** and align every row |
+| ⭐ **Fewer than 6 CV rows at the end, and the G2 change landed on the wrong end** | Matching direction and the CP count at the end | Add CPs or **change the matching direction** |
+| ⭐ **A surface bulges locally** | Too **many** control points | ⛔ Reduce the CP count (over-fitting causes bulges) |
+| ⭐ **Change one place and another place falls apart** | Knot coupling in a multi-span structure | Revert to a single span, or split into independent surface groups |
+| ⭐ **A highlight converges and wrinkles at a point** | A singularity in a three-/five-sided patch | Add points to turn it into a four-sided structure, and move the convergence point out of the highlight |
+| ⭐ **A recess that was meant to be added after the fillet cannot be made / its entrance is sealed** | The order is reversed | ⛔ All recesses must come before the fillets and gap blends |
+| Star-shaped highlight | A pole, an overly narrow corner band, or several surfaces converging | Enlarge the corner region, move the convergence point |
+| Match succeeds on one edge and fails on another | Constraint conflicts, degrees of freedom, holding the far end | Fix the master surface; change the width, the multi-edge constraints or the layout |
+| Refine inflates the point count | Tolerance, target complexity, initial placement | Compare against manual local knot insertion and rebuilding; do not permanently ban Refine |
+| ⭐ **Refine inflates the point count but still misses the target G-level** | Is the CP count fundamentally insufficient | ⛔ Refine does not solve this; use `Setpt` + `InsertKnot`(S) |
+| The shape does not change after degree elevation | Is it an exact degree elevation? | If Degree has increased, that is expected; **if the intent was to change the shape, Deformable (D) must be enabled** |
+| Join fails | The actual gap, units, short edges, correspondence | Recompute the intersection or rebuild; do not loosen the global tolerance first |
+| Join succeeds but edges still show | Tangent plane and curvature are discontinuous | Measure G1 and G2 separately |
+| Trim fails | The tool does not pass through, projection direction, tangency | Inspect the independent intersection curve and endpoints; extend locally |
+| Offset self-intersects | Radius of curvature, concave corners, thickness | Adjust the design, thickness or corner handling; do not fake it with a translation |
+| The numbers pass but the reflection is poor | Sampling misses detail, display mesh, waviness inside the surface | Densify locally and add sections/reflections from multiple directions |
+| Curvature colours are even yet something is wrong | The colour scale, cancellation by averaging, the mesh | Check principal curvature, sections and reflection |
+| ⭐ **Problems are invisible on a small product** | The faces are too small; Zebra/EMap lacks resolution | Per-surface `CurvatureAnalysis` |
+| A fillet breaks up | Radius, short edges, corner compatibility, feature order | Split the corner region, change the build order, or use a Blend |
+| MCP timeout | Whether the operation actually completed, the object count | Check the IDs and status; a blind retry is forbidden |
+| ⭐ **Screenshots hang / the session crashes** | Too many control points in the scene | Put complex parts on their own layer and hide them promptly |
+| An API exception | The true signature, the host, the return type | Read the docstring and reproduce in memory |
 
-回退层级：局部参数→边界/截面→过渡带→邻面自由度→未修剪母面→分面布局。不能把所有失败都归因于多跨或点太多；缺自由度也会失败。保留真实锐边与合理负曲率，不以调相机/隐藏对象作为修复。
+Fallback ladder: local parameters → boundaries/sections → transition band → adjacent-surface degrees of freedom → untrimmed parent surface → patch layout. Do not attribute every failure to multi-span structure or too many points; insufficient degrees of freedom also causes failure. Keep genuine sharp edges and reasonable negative curvature — do not use camera moves or hiding objects as a fix.
 
-### ⭐ 卡死时的上游回退路径
+### ⭐ Upstream fallback path when a patch is stuck
 
-当某个面反复做不好，标准退路是**往上游退**，不是往下游加点：
+When a surface repeatedly refuses to come out right, the standard move is **upstream**, not to add points further downstream:
 
 ```
-当前面失败
-  → 退回上一级依赖面（过渡带/角区）调边界
-    → 仍不行 → 退回未修剪母面改 UV 流向
-      → 仍不行 → 重新分面（挪接缝、扩大过渡区）
-        → 仍不行 → 改用解析面/Sweep/NetworkSrf 替代
-          → 仍不行 → Untrim 后重做 Blend
+Current surface fails
+  → fall back to the dependent surface one level up (transition band / corner region) and adjust the boundaries
+    → still not right → fall back to the untrimmed parent surface and change the UV flow
+      → still not right → re-plan the patches (move the seams, enlarge the transition zone)
+        → still not right → substitute an analytic surface / Sweep / NetworkSrf
+          → still not right → Untrim and redo the Blend
 ```
 
-⛔ **在同一条路上加点是最大的时间浪费**：CP 数再多也解决不了布局错误造成的扭曲。
+⛔ **Adding more points along the same path is the biggest waste of time**: no number of CPs can fix the distortion caused by a layout error.
