@@ -301,11 +301,20 @@ Run CurvatureAnalysis immediately after every base surface is built
 
 ```python
 import sys; sys.path.insert(0, str(skill_root / 'scripts'))
-from outline_metrics import silhouette_iou
+from outline_metrics import silhouette_iou, region_iou
+
+# One simple ring
 r = silhouette_iou(model_outline, photo_outline)
+
+# Multiple components and holes (vents, button cut-outs, multi-outline bodies)
+r = region_iou(model_components, photo_components)
+#   Each shape is one component given as a list of rings; a component may
+#   contain holes. r['components_a'] / r['components_b'] report the counts.
 ```
 
-### Validated against analytic theoretical values (17 tests)
+### Validated against analytic theoretical values (17 + 13 tests)
+
+Single ring (`silhouette_iou`):
 
 | Case | Measured | Theoretical |
 |---|---|---|
@@ -314,15 +323,28 @@ r = silhouette_iou(model_outline, photo_outline)
 | Concentric circles R5/R10 | 0.2500 | 0.2500 |
 | Two squares, half-overlapping horizontally | 0.3350 | 1/3 = 0.3333 |
 
-### ⭐ Three traps you have to know about
+Multiple rings (`region_iou`, 13 tests):
+
+| Case | Measured | Theoretical |
+|---|---|---|
+| Annulus self-comparison | 1.0000 | 1.0000 |
+| Annulus vs filled disc | 0.6399 | (314-113)/314 = 0.6400 |
+| Annulus vs inner disc (disjoint) | 0.0000 | 0.0000 |
+| One square hole vs filled square | 0.8400 | 84/100 |
+| Two square holes vs filled square | 0.9200 | 92/100 |
+| Two components vs one | 0.5000 | 100/200 |
+
+### ⭐ Four traps you have to know about
 
 | Trap | Consequence |
 |---|---|
 | ⛔ Using point-set Jaccard instead of rasterising | Every sampled point of a scaled copy falls inside the other outline, so **a 10% size error looks like a perfect score** |
 | ⛔ Leaving boundary-point ambiguity unresolved | Of 40 points on a circle only 20 register as inside and the IoU collapses (a tolerance must be added) |
+| ⛔ **Rings wound the same way turn holes into solid** | Under the even-odd rule an inner ring wound identically does not cut a hole, so the area comes out too large — silently. `region_iou` orients rings by signed area: the largest ring is the outer boundary, the rest are reversed |
 | ⚠️ **IoU ≠ dimensional accuracy** | Scale concentric circles by r → IoU = r². **At a 10% size difference the IoU is still 0.83** |
 
 ⚠️ IoU is only valid for **one projection**; a perspective photograph must have its camera fixed before you compare.
+⚠️ **Self-intersecting outlines are rejected outright** rather than resolved by a boolean operation — fix the topology first.
 
 ---
 

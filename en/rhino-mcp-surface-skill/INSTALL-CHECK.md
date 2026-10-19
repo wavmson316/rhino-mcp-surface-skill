@@ -4,7 +4,7 @@
 
 ## Supported environment
 
-This package targets McNeel's [Rhino MCP Platform / mcneel/RhinoAI](https://github.com/mcneel/RhinoAI), with Rhino plugin package `Rhino-MCP-Platform`. Tested on Windows + Rhino 8.29.26063.11001 + Rhino Python 3. Rhino 9 WIP/Beta, macOS, Rhino 6/7, and other third-party MCP servers are untested. The skill and the plugin are installed separately.
+This package targets McNeel's [Rhino MCP Platform / mcneel/RhinoAI](https://github.com/mcneel/RhinoAI), with Rhino plugin package `Rhino-MCP-Platform`. Tested on Windows + Rhino 8.29.26063.11001 + Rhino Python 3. **Version floor: the official RhinoAI platform does not support Rhino 6/7**; Rhino 8.x is the minimum. Rhino 9, macOS, and other third-party MCP servers are untested. The skill and the plugin are installed separately.
 
 ## 1. Install and connect the official MCP
 

@@ -12,14 +12,16 @@
 
 | 组件 | 本项目采用的技术与状态 |
 |---|---|
-| 建模软件 | McNeel **Rhinoceros 3D / Rhino 8**；实际测试为 **Windows + Rhino 8.29.26063.11001** |
+| 建模软件 | McNeel **Rhino 8**（官方 RhinoAI 支持 Rhino 8 与 9；最低 8.x 系列，见下）
+实际测试为 **Windows + Rhino 8.29.26063.11001** |
 | MCP 项目 | McNeel 维护的 **Rhino MCP Platform**，官方仓库 **[mcneel/RhinoAI](https://github.com/mcneel/RhinoAI)** |
 | Rhino 插件 | 在 Rhino `PackageManager` 中安装 **`Rhino-MCP-Platform`**；按当前官方指南选择 Rhino 8 对应包 |
 | 客户端连接 | 使用官方 MCP router / 客户端 connector。Codex 路线为 `MCPConnect` 输出配置 → 配置 router → 重启客户端；详见下文 |
 | 几何执行 | MCP 的 `run_python` / `run_csharp` / `run_command`，以及 RhinoCommon；Python 助手使用 **Rhino 内的 Python 3** |
 | 状态与验收接口 | 按当前工具清单使用 `list_slots`、`get_context`、`list_objects`、`get_commands`、`get_viewport_image` 等 |
 | 参数化工具 | 当前接口提供相应 `g1_*` 工具时，可使用 Grasshopper 1；本包未完成 GH 端到端验证 |
-| 其他版本 | **Rhino 6/7、Rhino 9 WIP/Beta、macOS 和其他第三方 Rhino MCP 尚未经本包实测**；不承诺直接兼容 |
+| 版本下界 | **Rhino 6/7 不可用** —— 官方 RhinoAI 不支持；本包不做兼容声明 |
+| 其他环境 | **Rhino 9、macOS 和其他第三方 Rhino MCP 尚未经本包实测** |
 
 本项目独立于 McNeel，并非 McNeel 官方 Skill。采用的是上面链接的 MCP 项目，不是任意同名的第三方 “Rhino MCP”。工具名和配置会随插件/客户端版本变化，Agent 会先发现实际能力。
 

@@ -7,7 +7,7 @@ description: 使用 Rhino MCP 将照片、草图、多视图、尺寸或扫描�
 
 把用户意图转成形状正确、结构可控、证据明确的几何。命令成功只是施工结果，不能代替形体与质量验收。
 
-适配 McNeel [Rhino MCP Platform / RhinoAI](https://github.com/mcneel/RhinoAI)，插件 `Rhino-MCP-Platform`；实测 Windows + Rhino8.29 + Rhino Python3。连接方式与版本边界见 [安装指南](INSTALL-CHECK.md)。
+适配 McNeel [Rhino MCP Platform / RhinoAI](https://github.com/mcneel/RhinoAI)，插件 `Rhino-MCP-Platform`；实测 Windows + Rhino 8.29 + Rhino Python3。⛔ 官方平台不支持 Rhino 6/7，最低为 Rhino 8.x。连接方式见 [安装指南](INSTALL-CHECK.md)。
 
 ## 读取与执行
 

@@ -4,7 +4,7 @@
 
 ## 适配环境
 
-本包采用 McNeel [Rhino MCP Platform / mcneel/RhinoAI](https://github.com/mcneel/RhinoAI)，Rhino 插件包名 `Rhino-MCP-Platform`。实测为 Windows + Rhino 8.29.26063.11001 + Rhino Python3。Rhino 9 WIP/Beta、macOS、Rhino6/7及其他第三方MCP未实测。Skill与插件分开安装。
+本包采用 McNeel [Rhino MCP Platform / mcneel/RhinoAI](https://github.com/mcneel/RhinoAI)，Rhino 插件包名 `Rhino-MCP-Platform`。实测为 Windows + Rhino 8.29.26063.11001 + Rhino Python3。**版本下界：官方 RhinoAI 不支持 Rhino 6/7**，最低为 Rhino 8.x 系列。Rhino 9、macOS 及其他第三方 MCP 未实测。Skill与插件分开安装。
 
 ## 1. 安装并连接官方 MCP
 

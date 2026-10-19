@@ -27,7 +27,8 @@
 | 范围 | 结果 | 可核对证据 |
 |---|---|---|
 | Rhino内存几何回归 | **45/45** | [rhino-test-results.json](rhino-test-results.json)、[测试代码](scripts/smoke_test_rhino.py) |
-| 独立二维指标 | **17/17** | [outline-test-results.json](outline-test-results.json)、[测试代码](scripts/test_outline_metrics.py) |
+| 独立二维指标（单环） | **17/17** | [outline-test-results.json](outline-test-results.json)、[测试代码](scripts/test_outline_metrics.py) |
+| 独立二维指标（多环/孔洞） | **13/13** | [测试代码](scripts/test_region_metrics.py) |
 | 程序化封闭壳母形 | **12/12** | [example-test-results.json](example-test-results.json)、[代码](scripts/example_closed_shell.py) |
 | Python语法、Markdown本地文件链接、入口与分发检查 | 发布时运行 | [check_release.py](scripts/check_release.py)、发布 manifest |
 
@@ -63,8 +64,10 @@ Rhino测试未添加、删除或编辑文档对象；测试前后对象数量、
 2. **真实图片→完整模型的端到端还原质量。** 范例是推理模板，不能称已造好模型。未知相机/尺度与背面仍需任务内处理。
 3. **制造可行性。** 壁厚、自交、拔模、分型、工艺缩率、装配运动及任何车厂标准，需逐项目验证。
 4. **STEP/IGES/STL往返与材料/图层保真。** 本轮未进行实际交换测试。
-5. **全部Rhino原生命令选项矩阵、GH组件、其他MCP插件、Rhino6/7或其他平台。** 用当前环境发现和最小试验核实。
-6. 曲率函数评估最近底层面，不识别修剪可见域，不自动转换为实体外法向符号；单点评估不能代表面公平。
+5. **全部Rhino原生命令选项矩阵、GH组件、其他MCP插件与平台。** 用当前环境发现和最小试验核实。
+   ⛔ **Rhino 6/7 不在支持范围** —— 官方 RhinoAI 平台不支持，本包不做兼容声明。
+6. **二维指标不支持自交轮廓**：带孔与多组件由 `region_iou` 支持，但自交环直接报错而非求解布尔运算。
+7. 曲率函数评估最近底层面，不识别修剪可见域，不自动转换为实体外法向符号；单点评估不能代表面公平。
 7. 曲线距离检查是Rhino数值估计，不是精确Hausdorff界；高度局部化特征还需加密/独立检查。
 8. **参数篇中标注为"教材案例"的圆角值与公差**未在实物零件上验证，仅为书中操作记录。
 

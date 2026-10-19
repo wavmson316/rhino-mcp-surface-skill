@@ -19,7 +19,8 @@ This is a modeling skill written to be read by an AI agent. It guides the agent 
 | Geometry execution | MCP `run_python` / `run_csharp` / `run_command`, plus RhinoCommon; the Python helpers run on **Python 3 inside Rhino** |
 | State and acceptance interface | Per the current tool list, `list_slots`, `get_context`, `list_objects`, `get_commands`, `get_viewport_image`, and similar calls |
 | Parametric tooling | Grasshopper 1 may be used where the current interface exposes the matching `g1_*` tools; this package has not completed end-to-end GH validation |
-| Other versions | **Rhino 6/7, Rhino 9 WIP/Beta, macOS, and other third-party Rhino MCP servers have not been tested by this package**; direct compatibility is not claimed |
+| Version floor | **Rhino 6/7 are not supported** by the official RhinoAI platform; this package makes no compatibility claim for them |
+| Other environments | **Rhino 9, macOS, and unrelated third-party Rhino MCP servers have not been tested by this package** |
 
 This project is independent of McNeel and is not an official McNeel Skill. It uses the MCP project linked above, not any third-party product that happens to share the name "Rhino MCP." Tool names and configuration change with plugin and client versions, so the agent discovers the actual capabilities first.
 

@@ -7,7 +7,7 @@ description: Use Rhino MCP to turn photos, sketches, multi-view drawings, dimens
 
 Turn user intent into geometry that is correctly shaped, structurally controlled, and evidence-backed. A command that returned successfully is only a construction result; it does not substitute for shape or quality acceptance.
 
-Targets McNeel's [Rhino MCP Platform / RhinoAI](https://github.com/mcneel/RhinoAI), plugin `Rhino-MCP-Platform`; tested on Windows + Rhino 8.29 + Rhino Python 3. For connection method and version boundaries see the [install guide](INSTALL-CHECK.md).
+Targets McNeel's [Rhino MCP Platform / RhinoAI](https://github.com/mcneel/RhinoAI), plugin `Rhino-MCP-Platform`; tested on Windows + Rhino 8.29 + Rhino Python 3. The official platform does not support Rhino 6/7; Rhino 8.x is the minimum. See the [install guide](INSTALL-CHECK.md) for connection method.
 
 ## Reading and execution
 

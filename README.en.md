@@ -12,14 +12,16 @@ The skill teaches shape interpretation, patch layout and UV flow, construction c
 
 | Component | Technology and compatibility |
 |---|---|
-| CAD application | McNeel **Rhinoceros 3D / Rhino 8**. Actually tested on **Windows with Rhino 8.29.26063.11001** |
+| CAD application | McNeel **Rhino 8** (official RhinoAI supports Rhino 8 and 9; 8.x series is the floor — see below).
+Actually tested on **Windows with Rhino 8.29.26063.11001** |
 | MCP project | **Rhino MCP Platform**, maintained by McNeel in **[mcneel/RhinoAI](https://github.com/mcneel/RhinoAI)** |
 | Rhino plugin | Install **`Rhino-MCP-Platform`** with Rhino `PackageManager`; follow the current official Rhino 8 instructions |
 | Client connection | Official MCP router or client connector. For Codex: run `MCPConnect`, use the emitted router configuration, and restart the client |
 | Geometry execution | MCP `run_python`, `run_csharp`, and `run_command`, plus RhinoCommon. Python helpers run inside **Rhino Python 3** |
 | Inspection tools | Discover the live tool set: for example `list_slots`, `get_context`, `list_objects`, `get_commands`, and `get_viewport_image` |
 | Parametric workflows | Grasshopper 1 when corresponding `g1_*` tools are available; no end-to-end GH validation is claimed |
-| Other environments | **Rhino 6/7, Rhino 9 WIP/Beta, macOS, and unrelated third-party Rhino MCP servers have not been tested by this package** |
+| Version floor | **Rhino 6/7 are not supported** by the official RhinoAI platform; this package makes no compatibility claim for them |
+| Other environments | **Rhino 9, macOS, and unrelated third-party Rhino MCP servers have not been tested by this package** |
 
 This is an independent skill, not an official McNeel skill. It targets the MCP project linked above, rather than every third-party server called “Rhino MCP.” Tools and configuration can change between versions; the agent discovers actual capabilities before execution.
 

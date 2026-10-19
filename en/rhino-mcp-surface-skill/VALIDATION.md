@@ -60,7 +60,8 @@ The error thresholds apply only to these test instances; no claim is made that a
 2. **End-to-end reconstruction quality from a real photograph to a complete model.** The examples are reasoning templates and cannot be described as a finished model. Unknown camera, scale, and back-side conditions still require in-task handling.
 3. **Manufacturability.** Wall thickness, self-intersection, draft, parting lines, process shrinkage, assembly motion, and any OEM standard require per-project verification.
 4. **STEP/IGES/STL round-tripping and material/layer fidelity.** No actual exchange test was performed in this round.
-5. **The full option matrix of all Rhino native commands, GH components, other MCP plugins, Rhino 6/7, or other platforms.** Verify by capability discovery in the current environment and minimal experiments.
+5. **The full option matrix of all Rhino native commands, GH components, other MCP plugins, or other platforms.** Verify by capability discovery in the current environment and minimal experiments.
+   Rhino 6/7 are outside the supported range entirely — the official RhinoAI platform does not support them.
 6. The curvature function evaluates the nearest underlying surface; it does not identify the trimmed visible domain and does not automatically convert to an outward solid normal. A single-point evaluation cannot represent surface fairness.
 7. The curve distance check is a Rhino numerical estimate, not an exact Hausdorff bound; highly localised features require denser sampling or independent checks.
 8. **Fillet values and tolerances marked as "textbook cases" in the parameters reference** were not verified on physical parts; they are operation records from the book only.

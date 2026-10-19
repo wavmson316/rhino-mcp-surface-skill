@@ -301,11 +301,20 @@ UnifyMeshNormals → Weld → Check → Audit → Audit3dmFile
 
 ```python
 import sys; sys.path.insert(0, str(skill_root / 'scripts'))
-from outline_metrics import silhouette_iou
+from outline_metrics import silhouette_iou, region_iou
+
+# 单个简单轮廓
 r = silhouette_iou(model_outline, photo_outline)
+
+# 多组件 / 带孔（散热槽、按钮开口、多轮廓外形）
+r = region_iou(model_components, photo_components)
+#   每个 shape 是一个组件 = 一个环的列表；同一组件里可含孔
+#   r['components_a'] / r['components_b'] 会回报组件数
 ```
 
-### 已用解析理论值验证（17 项测试）
+### 已用解析理论值验证（17 + 13 项测试）
+
+单环（`silhouette_iou`）：
 
 | 用例 | 实测 | 理论 |
 |---|---|---|
@@ -314,15 +323,28 @@ r = silhouette_iou(model_outline, photo_outline)
 | 同心圆 R5/R10 | 0.2500 | 0.2500 |
 | 方水平半重叠 | 0.3350 | 1/3 = 0.3333 |
 
-### ⭐ 三个必须知道的陷阱
+多环（`region_iou`，13 项）：
+
+| 用例 | 实测 | 理论 |
+|---|---|---|
+| 圆环自比 | 1.0000 | 1.0000 |
+| 圆环 vs 实心圆 | 0.6399 | (314−113)/314 = 0.6400 |
+| 圆环 vs 内圆（不相交） | 0.0000 | 0.0000 |
+| 单方孔 vs 实心方 | 0.8400 | 84/100 |
+| 双方孔 vs 实心方 | 0.9200 | 92/100 |
+| 两组件 vs 一组件 | 0.5000 | 100/200 |
+
+### ⭐ 四个必须知道的陷阱
 
 | 陷阱 | 后果 |
 |---|---|
-| ⛔ 用点集Jaccard 而非栅格化 | 缩放副本的所有采样点都落在另一轮廓内，**10% 尺寸误差看起来像满分** |
-| ⛔ 边界点歧义未处理 | 圆周 40 点只20 个判内部，IoU 崩塌（须加容差）|
+| ⛔ 用点集 Jaccard 而非栅格化 | 缩放副本的所有采样点都落在另一轮廓内，**10% 尺寸误差看起来像满分** |
+| ⛔ 边界点歧义未处理 | 圆周 40 点只 20 个判内部，IoU 崩塌（须加容差）|
+| ⛔ **多个环同向 → 孔洞被当成实心** | even-odd 规则下内环不产生"洞"，面积静默偏大。`region_iou` 按有向面积自动定向：最大环为外环，其余自动反向 |
 | ⚠️ **IoU ≠ 尺寸精度** | 同心圆缩放 r 倍 → IoU = r²。**尺寸差 10% 时 IoU 仍有 0.83** |
 
 ⚠️ IoU 只对**一个投影**有效；透视照片必须先固定相机再比。
+⚠️ **自交轮廓直接报错**而非求解布尔运算——先修拓扑再比。
 
 ---
 

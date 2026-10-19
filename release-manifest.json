@@ -1,11 +1,12 @@
 {
-  "version": "1.2.0",
+  "version": "1.3.0",
   "language": "zh-CN",
   "date": "2026-10-19",
   "checks": {
     "syntax_and_links": true,
     "rhino_baseline": "45/45",
     "outline_baseline": "17/17",
+    "region_baseline": "13/13",
     "procedural_shell": "12/12"
   },
   "note": "Hash list excludes this manifest and the en/ tree. See VALIDATION.md for tested scope.",
@@ -17,8 +18,8 @@
     },
     {
       "path": "CHANGELOG.md",
-      "bytes": 2759,
-      "sha256": "dc6fefa5c833899b2348013d8231312a1844f0cbd43363c61e1ebe3bf2973c68"
+      "bytes": 4049,
+      "sha256": "b3b2541069f338a28e36495750c02b0159bfccb8a83f70b4b74aff6643a9f44f"
     },
     {
       "path": "example-test-results.json",
@@ -27,8 +28,8 @@
     },
     {
       "path": "INSTALL-CHECK.md",
-      "bytes": 4230,
-      "sha256": "14a3c70d828c8f2e9ce2d0f9001f452f803c6535609007b0c55a63be51e0a716"
+      "bytes": 4298,
+      "sha256": "6f183774dde5b69a9e02dcb57ae03ec7bb2c77bf899ea81f424d9c463afe3f13"
     },
     {
       "path": "outline-test-results.json",
@@ -37,13 +38,13 @@
     },
     {
       "path": "README.en.md",
-      "bytes": 11253,
-      "sha256": "7770a4c2e3b31ae225688be59ff0c4081ae1bf82575da39afbe06b468b7b01af"
+      "bytes": 11285,
+      "sha256": "28f3e8b6f60360a4598879bc5f1f8fafcbaa4301e8012a12ce3ee080157b71cd"
     },
     {
       "path": "README.md",
-      "bytes": 10825,
-      "sha256": "bb80a74909595d7abde6e2ed46c4c46425778c27477224214201c54591fee317"
+      "bytes": 10936,
+      "sha256": "c6185c6883d31e003de0120a722fdce55fd7c3fced2ce6a7b3633ab58c2938e5"
     },
     {
       "path": "references/01-intent-and-reference.md",
@@ -92,8 +93,8 @@
     },
     {
       "path": "references/10-parameters-and-recipes.md",
-      "bytes": 14923,
-      "sha256": "3cf767d7b08c70e013c827be4f1807a4223f0662a49d6cc3786c17651843ccdc"
+      "bytes": 15937,
+      "sha256": "25713f6ef3e37568dabcb1c900233c856b129f2c043f1053f06c2bc4fdfbda02"
     },
     {
       "path": "references/11-consumer-electronics.md",
@@ -109,6 +110,11 @@
       "path": "references/13-construction-discipline.md",
       "bytes": 9210,
       "sha256": "933c77b0a07687124cc1172dcc036a7a34a8dcdd2b91238dfddfb268652928cb"
+    },
+    {
+      "path": "region-test-results.json",
+      "bytes": 516,
+      "sha256": "5be8290910a09ee984719902f623c29fbc363eb85c2712d85efb9fd227b1c676"
     },
     {
       "path": "rhino-test-results.json",
@@ -137,8 +143,8 @@
     },
     {
       "path": "scripts/outline_metrics.py",
-      "bytes": 3680,
-      "sha256": "067f037cf41575aed0dd53099e32182b641751c73ad7ce257a6181491fa5d1d7"
+      "bytes": 9099,
+      "sha256": "fddcf96a499b8340c39f5682a37e39d59e829a080ff2bfe74fa2aa59448d347b"
     },
     {
       "path": "scripts/sample_seam_g1.py",
@@ -156,9 +162,14 @@
       "sha256": "d98447ea0e184491692e3c8406ebfa03b73c0c1e48d29158af1079e8baf8a3ac"
     },
     {
+      "path": "scripts/test_region_metrics.py",
+      "bytes": 3085,
+      "sha256": "3f5be18f91f075097a59a62f7465566392fea5c4f8e7fa2aebdb91e4598e3eb7"
+    },
+    {
       "path": "SKILL.md",
-      "bytes": 10449,
-      "sha256": "5bb9f9b6ef89895f262564e47e355595d8cba4a17a68321b301cdd2a4cd99825"
+      "bytes": 10495,
+      "sha256": "552af90246d7da6b032d05010093b5f427aeaff5a70a595f4d52e8fba2730196"
     },
     {
       "path": "templates/modeling-plan.md",
@@ -167,8 +178,8 @@
     },
     {
       "path": "VALIDATION.md",
-      "bytes": 6883,
-      "sha256": "09ba27c758b1c70c7e0c73d5fc436641264bb41b5cc5679363051dfcbe60f435"
+      "bytes": 7231,
+      "sha256": "45f7b47165cc6f2fb1ea2d347b417bbdc0d71fa12de74e44b65751ced48b6ab8"
     }
   ]
 }
