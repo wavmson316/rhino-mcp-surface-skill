@@ -203,7 +203,154 @@ errors with "unknown command: _SelEdges"); edge selection uses `Edge` / `SelEdge
 
 ---
 
-## 11. General principles
+## 11. ⭐⭐ `Sweep2` and `NetworkSrf` do not exist in RhinoCommon at all
+
+**This is the single most reliable way to waste your time.** Plenty of people
+assume "Rhino command = RhinoCommon method" and then spend half an hour hunting
+for a method that was never there.
+
+```python
+G.Brep.CreateSweep2        # ⛔ AttributeError
+G.Brep.CreateNetworkSrf    # ⛔ AttributeError
+G.Surface.CreateSweep2     # ⛔ AttributeError
+```
+
+**Verified (Rhino 8.29)**: neither one appears anywhere in the complete list of
+`Brep.Create*` methods.
+
+### 11.1 Which surfacing operations have an API and which do not
+
+| Command | RhinoCommon method | Notes |
+|---|---|---|
+| `Loft` | ✅ `Brep.CreateFromLoft` | available |
+| `EdgeSrf` | ✅ `Brep.CreateEdgeSurface` | available |
+| `Patch` | ✅ `Brep.CreatePatch` | available |
+| `FilletEdge` | ✅ `Brep.CreateFilletEdges` | available |
+| `Extrusion` | ✅ `Extrusion.Create` + `ToBrep` | a separate class, not a Brep method |
+| `Revolve` | ✅ `Brep.CreateFromRevSurface` | available |
+| ⛔ **`Sweep2`** | ❌ **none** | **command only** |
+| ⛔ **`NetworkSrf`** | ❌ **none** | **command only** |
+| ⛔ `Sweep1` | ⚠️ `Brep.CreateFromSweep*` exists but means something else | see §11.3 |
+
+### 11.2 When you have to go through a command
+
+⛔ **`rs.Command` blocks the MCP call** (see §10). What does work:
+
+```python
+import rhinoscriptsyntax as rs
+# 1. Add the working copies to the document (commands only see document objects)
+ids = [doc.Objects.Add(c) for c in working_copies]
+# 2. Use the underscore-prefixed command name (language independent)
+rs.Command('_-NetworkSrf _SelCrv ' + ','.join(map(str, ids)) + ' _Enter', False)
+# 3. Fish the result back out of the document
+```
+
+⚠️ The risks and costs:
+- ⛔ The command **consumes its input objects** — they disappear from the scene →
+  this is exactly why this package insists on "copy first, then build"
+- ⚠️ It runs asynchronously, so the result may not be usable yet →
+  **you must check the result**; you cannot assume it worked
+- ⚠️ Command-line options change between versions → ⛔ do not memorise option
+  strings; run `get_commands` first to verify them
+
+### 11.3 The trap in `Sweep1`
+
+`Brep.CreateFromSweep` / `CreateFromSweepInParts` do exist, but
+⛔ **they are not the equivalent of the `Sweep1` command** — the parameter
+semantics and the resulting topology do not line up either way.
+
+When you need strict `Sweep1` behaviour (framing, twist, capping), go through
+the command.
+
+---
+
+## 12. ⭐⭐ `doc.Layers.FindName` returns `None`, **not** `-1`
+
+```python
+doc.Layers.FindName('Lines')     # returns None when the layer does not exist
+if found >= 0:                   # ⛔ TypeError: '>=' not supported between
+    return found                     NoneType and int
+```
+
+**Correct approach**:
+
+```python
+found = doc.Layers.FindName('Lines')
+if found is not None:
+    return found.Index        # ✅ a Layer object — take .Index
+# when it is missing you get None, so Add a Layer object first (see below)
+layer = Rhino.DocObjects.Layer()
+layer.Name = 'Lines'
+doc.Layers.Add(layer)         # returns an int index
+```
+
+⚠️ Two things to note:
+- ⛔ `doc.Layers.Add('Lines')` **does not accept a string**; you must pass a `Layer`
+  object
+- When it is found you get a **`Layer` object**, not an int; the index comes from
+  `.Index`
+
+---
+
+## 13. ⭐ `doc.Objects.Count` may disagree with enumeration
+
+```python
+doc.Objects.Count          # 16
+len(list(doc.Objects))     # 0   ← actually empty
+```
+
+**Verified (Rhino 8.29, reproduced twice independently)**:
+
+| Scenario | `Count` | Enumeration |
+|---|---|---|
+| After a Rhino command consumed the inputs | 8 | **0** |
+| After deleting every object | 16 | **0** |
+
+⚠️ **`Count` sits at the old value in both cases and never refreshes.** Worse, it
+leads you to think "the objects are still there and cannot be deleted", when in
+fact enumerating once shows there is nothing left.
+
+⚠️ A related trap: `Rhino.Geometry.NurbsCurve` has **no `IsCurve` property**.
+To filter objects by geometry type you are left with `IsValid` plus a check on
+the geometry class name.
+
+⚠️ **To determine whether a document is clean, enumerate it instead of reading
+`Count`**:
+
+```python
+clean = len(list(doc.Objects)) == 0        # ✅ reliable
+# ⛔ doc.Objects.Count == 0                 # may fool you
+```
+
+⚠️ This matters most in assertions of the form "the object count should match
+before and after the test" — `Count` will hand you a false verdict.
+
+### 13.1 `Purge` requires an argument
+
+```python
+doc.Objects.Purge()          # ⛔ No overload ... takes '0' arguments
+```
+
+⛔ Do not call it on intuition; the signature varies by version.
+
+### 12.2 You must reload after editing script source
+
+Rhino's Python **caches modules it has already imported**. Edit the `.py`, run
+it again, and you still get the old code — while the traceback points at a line
+that doesn't match your source, which is thoroughly misleading.
+
+```python
+import importlib, patch_with_lines
+importlib.reload(patch_with_lines)      # ✅ must reload after editing the source
+```
+
+⚠️ Or delete `__pycache__` at the file level. ⛔ **Do not use that to discover
+whether your code change actually took** — first confirm that `module.__file__`
+points at the file you think it does.
+
+---
+
+## 14. General principles
 
 ⛔ **Don't write RhinoCommon Python from memory.** The right approach:
 
@@ -225,7 +372,7 @@ regex; printing directly gets broken up by the newlines.
 
 ---
 
-## 12. A snippet verified on a live machine (copy it directly)
+## 15. A snippet verified on a live machine (copy it directly)
 
 ```python
 import Rhino.Geometry as G
@@ -254,7 +401,7 @@ print(res[0].Faces.Count, res[0].IsValid)
 
 ---
 
-## 13. Source
+## 16. Source
 
 Tested on Rhino **8.29.26063.11001**, Windows, the Python 3 bundled with Rhino, and
 the official McNeel Rhino MCP Platform **0.3.0.0** (`serverInfo.name == "rhino-mcp"`).

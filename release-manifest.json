@@ -1,5 +1,5 @@
 {
-  "version": "1.5.1",
+  "version": "1.6.0",
   "language": "zh-CN",
   "date": "2026-10-19",
   "checks": {
@@ -12,7 +12,8 @@
     "patch_route_rules": true,
     "patch_with_lines_helper": "UNVERIFIED on live Rhino",
     "patch_with_lines_loft": "VERIFIED on live Rhino 8.29",
-    "patch_with_lines_sweep2_network": "command-based, unverified"
+    "patch_with_lines_sweep2_network": "command-based, unverified",
+    "bilingual_parity": "15 references + 10 scripts, zh/en aligned"
   },
   "note": "Skill package: .gitignore is intentionally excluded (Git-only file). Hash list also excludes this manifest and the en/ tree. See VALIDATION.md for tested scope.",
   "files": [
@@ -113,13 +114,13 @@
     },
     {
       "path": "references/14-rhino-python-binding-traps.md",
-      "bytes": 11354,
-      "sha256": "f13f8e3f026b28826404f10904939da6ef18272353d0e62db491e3e6b64421d6"
+      "bytes": 12529,
+      "sha256": "7bab28e394fd877f860919e0c066c60d282e4929b97d59b352a40dfc5d7f3dd9"
     },
     {
       "path": "references/15-patch-route-and-curve-retention.md",
-      "bytes": 10240,
-      "sha256": "71b62be6b0d4d8e3868702ed903166d1280080250dd64a57270541a66d84c64c"
+      "bytes": 10234,
+      "sha256": "c4237fbde95861160b049eea43bc42b29e2580d8f9d1063bba8e0352e64f0634"
     },
     {
       "path": "region-test-results.json",

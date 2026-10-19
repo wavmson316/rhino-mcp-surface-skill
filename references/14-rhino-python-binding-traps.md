@@ -244,15 +244,51 @@ rs.Command('_-NetworkSrf _SelCrv ' + ','.join(map(str, ids)) + ' _Enter', False)
 
 ---
 
-## 12. ⭐ `doc.Objects.Count` 可能与枚举不一致
+## 12. ⭐⭐ `doc.Layers.FindName` 返回 `None`，不是 `-1`
 
 ```python
-doc.Objects.Count          # 8
+doc.Layers.FindName('Lines')     # 层不存在时返回 None
+if found >= 0:                   # ⛔ TypeError: '>=' not supported between
+    return found                     NoneType and int
+```
+
+**正确写法**：
+
+```python
+found = doc.Layers.FindName('Lines')
+if found is not None:
+    return found.Index        # ✅ Layer 对象，取 .Index
+# 不存在时返回 None，必须先 Add 一个 Layer 对象（见下）
+layer = Rhino.DocObjects.Layer()
+layer.Name = 'Lines'
+doc.Layers.Add(layer)         # 返回 int 索引
+```
+
+⚠️ 两个要点：
+- ⛔ `doc.Layers.Add('Lines')` **不接受字符串**，必须传 `Layer` 对象
+- 找到了返回的是 **`Layer` 对象**不是 int，取索引用 `.Index`
+
+---
+
+## 13. ⭐ `doc.Objects.Count` 可能与枚举不一致
+
+```python
+doc.Objects.Count          # 16
 len(list(doc.Objects))     # 0   ← 实际是空的
 ```
 
-**实测（Rhino 8.29）**：用 Rhino 命令构造过几何后，`Count` 不刷新，
-枚举却已经是空集。此时 `Delete()` 全部返回 False（无可删对象）。
+**实测（Rhino 8.29，两次独立复现）**：
+
+| 场景 | `Count` | 枚举 |
+|---|---|---|
+| Rhino 命令消耗对象后 | 8 | **0** |
+| 删除全部对象后 | 16 | **0** |
+
+⚠️ **两种情况下 `Count` 都停在旧值不刷新。** 更糟的是它会让人以为
+"对象还在，删不掉" —— 而实际枚举一遍就什么都没有了。
+
+⚠️ 另一处相关陷阱：`Rhino.Geometry.NurbsCurve` **没有 `IsCurve` 属性**，
+想按类型过滤对象时只能用 `IsValid` 加几何类名判断。
 
 ⚠️ **判定文档是否干净，用枚举而不是 `Count`**：
 
@@ -263,7 +299,7 @@ clean = len(list(doc.Objects)) == 0        # ✅ 可靠
 
 ⚠️ 这条在「测试前后对象数量应一致」的断言里尤其重要 —— 用 `Count` 会误判。
 
-### 12.1 `Purge` 需要参数
+### 13.1 `Purge` 需要参数
 
 ```python
 doc.Objects.Purge()          # ⛔ No overload ... takes '0' arguments
@@ -271,7 +307,7 @@ doc.Objects.Purge()          # ⛔ No overload ... takes '0' arguments
 
 ⛔ 不要凭直觉调用，签名随版本不同。
 
-### 12.2 改过脚本源码后必须 reload
+### 13.2 改过脚本源码后必须 reload
 
 Rhino 的 Python 会**缓存已 import 的模块**。改了 `.py` 重新跑，
 拿到的还是旧代码 —— 而报错行号会指向源码里不匹配的行，非常误导。
@@ -286,7 +322,7 @@ importlib.reload(patch_with_lines)      # ✅ 改过源码后必须 reload
 
 ---
 
-## 13. 通用原则
+## 14. 通用原则
 
 ⛔ **不要靠记忆写 RhinoCommon Python。** 正确姿势：
 
@@ -306,7 +342,7 @@ print(G.Brep.CreateFilletEdges.__doc__)     # 打印所有重载
 
 ---
 
-## 14. 实测通过的片段（可直接抄）
+## 15. 实测通过的片段（可直接抄）
 
 ```python
 import Rhino.Geometry as G
@@ -335,7 +371,7 @@ print(res[0].Faces.Count, res[0].IsValid)
 
 ---
 
-## 15. 来源
+## 16. 来源
 
 本机 Rhino **8.29.26063.11001**、Windows、Rhino 内 Python 3、
 官方 McNeel Rhino MCP Platform **0.3.0.0**（`serverInfo.name == "rhino-mcp"`）。
