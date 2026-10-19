@@ -81,7 +81,7 @@ python scripts/check_release.py
 
 安装和自检不代表实际模型已经通过形体、G2或制造验收。
 
-## ⭐ ��地存档（发布后必做，2026-10-20 补充）
+## ⭐ 本地存档（发布后必做，2026-10-20 补充）
 
 ⛔ **发布到 GitHub 不等于本地有存档。** 2026-10-20 才发现仓库建在
 `/tmp/` 里（临时目录，重启即丢）。
@@ -89,24 +89,25 @@ python scripts/check_release.py
 **发布完成后必须确认这几处存在：**
 
 ```
-1. ~/.workbuddy/skills/rhino-mcp-surface-skill/     ← 唯一被加载的路径
-2. G://RHINO MCP SKILL\rhino-mcp-surface-skill-repo\  ← git 仓库（带 tag）
-3. G://RHINO MCP SKILL\20-最新版-vX.Y.Z\              ← 目录名必须带当前版本号
-4. ~/.workbuddy/skill-backups/...\packages\*.zip      ← 离线安装包
-5. ~/.workbuddy/skill-backups/...\LOCAL-ARCHIVE.md    ← 存档索引
+1.  ~/.workbuddy/skills/rhino-mcp-surface-skill/   <- 唯一被加载的路径
+2.  <REPO>/                                        <- git 仓库（带 tag）
+3.  <SKILL_DIR>/<version-dir>/                    <- 目录名必须带当前版本号
+4.  ~/.workbuddy/skill-backups/.../packages/*.zip <- 离线安装包
+5.  ~/.workbuddy/skill-backups/.../LOCAL-ARCHIVE.md   <- 存档索引
 ```
+
+把 `<REPO>` 和 `<SKILL_DIR>` 换成本机实际路径。
 
 **验证命令：**
 
 ```bash
 # 版本号是否一致
 grep -o '"version": "[^"]*"' ~/.workbuddy/skills/rhino-mcp-surface-skill/release-manifest.json | head -1
-cd "G:/RHINO MCP SKILL/rhino-mcp-surface-skill-repo" && git log --oneline -1
+cd <REPO> && git log --oneline -1
 
 # 内容是否一致（必须是 0 差异）
 diff -rq --exclude=.git --exclude=.gitignore --exclude=__pycache__ \
-  "G:/RHINO MCP SKILL/rhino-mcp-surface-skill-repo" \
-  ~/.workbuddy/skills/rhino-mcp-surface-skill/
+  <REPO> ~/.workbuddy/skills/rhino-mcp-surface-skill/
 ```
 
 ⛔ **不要在 `/tmp/` 或系统临时目录下建 git 仓库** —— 重启即丢。
