@@ -1,32 +1,105 @@
-# Continuity and evidence
+# 连续性与验收
 
-G0 is positional agreement. G1 matches tangents/tangent planes with a valid two-sided neighborhood. G2 matches second-order geometry under suitable correspondence. G3 concerns higher variation. Define targets per seam from function and appearance.
+## 目标和证据
 
-Two surfaces can share the same straight edge and form a 90-degree fold. Matching normals supports only a tangent-plane check. Zebra appearance alone cannot prove numeric G2. A plane tangent to a cylinder is G1 but not G2. Zero curvature can legitimately satisfy G2; separately inspect whether the design was flattened.
+G0为位置匹配；G1为切向/切平面匹配且两侧形成合理邻域；G2为适当参数对应下二阶几何匹配。G3涉及更高阶变化。按每条接缝用途定目标，平面/结构件/高光面可以各不相同。
 
-## Numerical seam checks
+公共边曲线相同仍可两面折90°；法线一致只支持切平面检查；斑马纹顺也不能证明数值G2。平面与相切圆柱就是G1而非G2反例。零曲率可真实满足G2，不是"假G2"；还要看设计是否被压平。
 
-Select real faces and adjacent edges, validate endpoints and full-edge correspondence. Bidirectional closest points remain diagnostics: inspect coverage, monotonicity, closed seams, folds, and side neighborhoods. Uniform parameter samples can miss knot/corner defects.
+### ⭐ 判 G2 的三个错误做法
 
-`sample_seam_g1.py` reports sampled position and unoriented tangent-plane angles. It does not evaluate G2 or prove no overlap/folding. Opposite normals may reflect face orientation; check engineering solid orientation separately. Do not skip failed samples and report a pass.
-
-Reliable G2 requires a verified native continuity tool or second-order/shape-operator comparison in a common tangent basis, handling orientation, weights, parameter scale, and singularities. Principal-curvature magnitudes alone omit principal directions. Without a reliable method write “G2 intended; numerical validation incomplete.”
-
-## Matching strategy
-
-Fix a master and adjust a slave; use Average only if both may move. Select opposite-end preservation, iso direction, closest-point correspondence, and Refine from geometry. No switch combination always works. Refine can add freedom but also excessive knots; compare shape and complexity with manual insertion. Resolve conflicting sides with wider transitions, joint constraints, or new layout.
-
-At symmetry seams check center-plane position, compatible tangent planes, and curvature when required. A temporary mirror can help. Mirroring neither smooths a seam automatically nor requires every center seam to be G3.
-
-## Budgets and acceptance
-
-Separate document units/tolerances, reference fitting, seam distance, tangent angle, curvature error, and manufacturing constraints. Curvature has inverse-length units; relative errors near zero need absolute safeguards and a defined metric. Existing settings remain unchanged without a task-based reason. CAD seam error and manufactured dimensional tolerance are different. Do not certify OEM Class-A without traceable standards.
-
-| Category | Report |
+| 错误 | 为什么错 |
 |---|---|
-| Shape | Fixed-camera silhouette, anchors, sections, negative spaces, critical features and reference conditions |
-| Structure | Validity, face count, actual spans/degree/CP, singularities, naked/nonmanifold edges, solid orientation |
-| Fairness/seams | Multiple reflection directions, section combs, curvature maps, and separate G evidence |
-| Engineering | Thickness, offset intersections, clearances, motion, draft, and exchange round trips |
+| 用公共边曲线曲率判两面 G2 | 边只描述边，两侧横向曲率根本没测 |
+| 两侧法线一致就报 G2 | 法线一致只支持 G1 |
+| 曲率向量取 `abs(dot)` 通过 | ⛔ 相反曲率方向不能取绝对值消除 |
 
-Use adequate display/analysis meshes and known units/color scales. A uniform mean-curvature map is not proof of good reflection; saddle contributions may cancel. Zooming small parts makes zebra useful too. Open-surface acceptance depends on delivery; unjoined adjacent Breps still have naked edges. Mesh export needs chord/angle/seam/normal checks. Rhino Weld angle is not a distance tolerance.
+⚠️ 对照：`abs(dot)` 用在**无向切平面**比较上是**正确的**（`sample_seam_g1.py` 就是这么做），
+用在**曲率向量**上才是错的。两者不能混。
+
+### ⭐ 明暗交界处不强求 G2
+
+**那里本就是设计意图上的转折，强求会毁掉设计。**
+
+⚠️ 这与"明暗交界不能当分面依据"是**两件事**：前者说它是光照产物不能据此分面，
+后者说那个位置本就该有转折、不要抹平。
+
+## 面接缝数值检查
+
+选实际面与相邻边，核对端点与整边对应。双向最近点只是诊断，需查覆盖、单调、闭合接缝、折返与两侧邻域；参数均匀采样会漏局部节点/角点缺陷。
+
+`sample_seam_g1.py`仅给出有限采样位置和无向切平面夹角，不判G2、不证明无反折。法线相反可能只是面方向相反，工程实体方向要另查。样本失败不能跳过后报通过。
+
+可靠G2需当前版本已核实的边连续性分析，或共同切平面基底中的二阶/形算子比较，处理法线方向、权重、参数尺度和奇点。只比两个主曲率数值仍缺主方向。没有可靠方法时写"G2目标，数值未验证"。
+
+### ⭐ 什么时候必须跑曲率检查
+
+```
+每个基础曲面建成后立即跑 CurvatureAnalysis
+```
+
+| 色谱形态 | 判断 | 动作 |
+|---|---|---|
+| 规则均匀 | 反射可接受 | 进入下一阶段 |
+| 局部色带/不规则 | ⛔ 反射会有问题 | **立刻修**，不要留到细节深入后 |
+
+⚠️ 面定型后再改代价极高，**基础面阶段是唯一便宜的质量窗口**。
+⚠️ **小面产品 `Zebra`/`EMap` 分辨不足**，必须逐面曲率分析。色谱参数见参数手册。
+
+## 匹配策略
+
+固定主面，调整从面；两者允许动时可Average。选择是否保另一端、iso方向策略、closest points及Refine；无永远正确的开关组合。Refine可提高拟合能力也可能点数膨胀，应比较效果、结构与变形；手动插节点也是候选。多边冲突时考虑整体约束或重分区，不无限逐边Match。
+
+### ⭐ 匹配失败先查输入，不要猛加 CP
+
+```
+1. 输入曲线的阶数、CP 数、偏差是否达标
+2. 匹配两端阶数是否兼容
+3. CP 数够不够
+4. 以上都正常仍失败 → 换匹配方向，或拆成两段匹配
+```
+
+⛔ 加 CP 只会让控制点拥挤、反射更差——**自由度不足不是靠加点能解决的**。
+`Refine` 能增加自由度但**不能解决自由度根本不足**。
+
+### ⭐ 对接 Match 的常见准备
+
+| 事项 | 规则 |
+|---|---|
+| 修剪边难匹配 | 用未修剪母面、延伸母面、重新安排自然边或加过渡带 |
+| `ShrinkTrimmedSrf` | 可能影响可恢复范围，不是通用前处理 |
+| `RebuildEdges` | 主要修复边表示，**不会公平底层面**，二者都不是通用前处理 |
+| `BlendSrf` 选中后不能取消 | 选多边时先选一条再**键 `A`** |
+| 对话框预置值 | 教材实拍 `0.001 units / 1.0° / 0.05%`，⛔ 但那是**软件预置状态不是正确容差** |
+
+镜像先验证边在对称面、切平面相容，目标需要时检查曲率；可用临时镜像件配对。
+
+### ⭐ 镜像的时机
+
+`Mirror` **只是几何复制，不改变接缝处的连续性**。
+想在中轴得到 G2，必须**镜像前**把那侧匹配好：
+
+```
+先镜像一份 → 用它 MatchSrf 原面到 G2 → 删镜像件 → 重新 Mirror
+```
+
+⚠️ 镜像不自动光顺，也不必强制所有中轴 G3——目标来自用户与项目。
+
+## 公差预算
+
+分别定义单位、文档绝对/角度公差、参考拟合、接缝距离、法线夹角、曲率误差、制造约束。曲率单位1/长度；相对差近零不稳定，需绝对阈值及定义。已有公差读取后保留；新项目起点见 [参数手册](10-parameters-and-recipes.md)。
+
+CAD接缝误差不等于实物制造尺寸公差。Class-A是形体、反射、控制结构与项目规范综合要求；无可追溯标准不认证某厂A面。
+
+## 四类验收并列
+
+| 类别 | 内容 |
+|---|---|
+| 形状 | 固定相机剪影、锚点、主截面、负空间、关键细节；数据条件和误差方法 |
+| 结构 | 有效性、面数、真实span/Degree/CP、奇异边、裸边、非流形、实体方向 |
+| 公平与接缝 | 多方向Zebra/EMap、截面曲率、曲率色谱、各边G级证据 |
+| 工程 | 厚度、偏移自交、间隙、装配/运动、拔模、输出往返 |
+
+反射分析要足够细的显示/分析网格；色谱范围与单位固定。平均曲率色彩均匀不能证明无问题，平均值还会掩盖鞍形信息。小件也可放大观察Zebra，不禁止任何一种有效诊断。
+
+开放面是否合格看合同；未Join的相接Brep仍有裸边。实体需查有效水密和方向；外观壳面可合法开放。网格导出查弦高、角度、法线、裂缝及锐边；Rhino Weld按角度语义使用，不以绝对距离公差代替。

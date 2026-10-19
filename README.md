@@ -81,8 +81,8 @@ Rhino-MCP-Platform 插件 → Rhino 8 / RhinoCommon
 
 在 [Releases](https://github.com/wavmson316/rhino-mcp-surface-skill/releases/latest) 选择：
 
-- `rhino-mcp-surface-skill-1.1.0-zh-CN.zip`：中文技能正文、12篇参考、安装指南、模板与脚本。
-- `rhino-mcp-surface-skill-1.1.0-en.zip`：英文技能正文、12篇参考、安装指南、模板与同一套脚本。
+- `rhino-mcp-surface-skill-1.2.0-zh-CN.zip`：中文技能正文、13篇参考、安装指南、模板与脚本。
+- `rhino-mcp-surface-skill-1.2.0-en.zip`：英文技能正文、13篇参考、安装指南、模板与同一套脚本。
 
 两者解压后都得到 `rhino-mcp-surface-skill` 文件夹，放入客户端支持的 Skills 目录，保证里面直接有 `SKILL.md`。两包使用相同内部 ID，**选择一种语言安装，不要同时注册两个同名 Skill**。
 
@@ -126,7 +126,7 @@ Codex 常见用户级目录为 `~/.agents/skills/`，项目级目录为 `.agents
 | 参考与模板 | [references](references/01-intent-and-reference.md)、[模板](templates/modeling-plan.md) | [English references](en/rhino-mcp-surface-skill/references/01-intent-and-reference.md)、[template](en/rhino-mcp-surface-skill/templates/modeling-plan.md) |
 | 验证记录 | [VALIDATION.md](VALIDATION.md) | [English validation](en/rhino-mcp-surface-skill/VALIDATION.md) |
 
-几何运行代码与机器测试数据中英文共用相同实现。1.0.0 的 Rhino 内存回归 **45/45**、二维指标 **17/17** 已通过；1.1.0 补充双语文档、详细施工剧本与新增12项程序化构造检查，验证范围见各语言记录。
+几何运行代码与机器测试数据中英文共用相同实现。Rhino 内存回归 **45/45**、二维指标 **17/17**、程序化封闭壳 **12/12** 已通过。**1.2.0 是文档版本**：把已验证的数值、施工纪律与 API 勘误补回正文，新增 13 施工纪律；**代码与几何行为与 1.1.0 完全一致，不新增验证声明**。验证范围见各语言记录。
 
 **未承诺：**自动全域 G2/G3 认证、一张照片唯一还原真实尺寸、完整车辆一键生成、真实照片到模型端到端质量、制造可行性、任何车厂 Class-A 标准，以及未经实测的平台/API兼容。未验证项目必须在任务交付中明确写出。
 

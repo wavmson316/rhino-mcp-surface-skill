@@ -20,6 +20,29 @@ layer.Name = 'P01_Main'
 
 单位换算需决定是否缩放坐标；改ModelUnitSystem只设元数据不等同完整换算。不要复制初始化例子覆盖用户项目。API重载读方法文档并先作内存测试，Guid经doc.Objects.FindId查到几何再用。
 
+### ⭐ 四个在本机被实测打脸的写法
+
+这些在教材与网络示例中大量流传，但在 Rhino 8 实测会抛异常或静默失效：
+
+| ⛔ 失败写法 | ✅ 正确写法 | 症状 |
+|---|---|---|
+| `doc.Units.SetUnits(...)` | `doc.ModelUnitSystem = Rhino.UnitSystem.Millimeters` | `Units` 无该方法 |
+| `doc.ModelUnitAbsoluteTolerance` | `doc.ModelAbsoluteTolerance` | 属性不存在 |
+| `Rhino.Radians(deg)` | `math.radians(deg)` | 命名空间下无该函数 |
+| `doc.Layers.Add('name')` | `layer = Layer(); layer.Name='name'; doc.Layers.Add(layer)` | 需传Layer 对象 |
+
+记忆法：单位/公差三兄弟是 `ModelUnitSystem` / `ModelAbsoluteTolerance` /
+`ModelAngleToleranceDegrees`，**全部挂 `doc`、全部 `Model` 前缀、全部直接赋值不调用**。
+
+### ⭐ 端口不是常量
+
+端口、路径、启动命令随插件版本、启动参数和占用情况变化。
+⛔ **任何写死的端口都是错的**——包括本包开发机实测过的值。
+
+正确做法：执行 `MCPStart` / `MCPConnect`，**读它打印的横幅**，
+或先尝试、连不上就换成横幅里的地址。连不上时先查端口，
+⛔ 不要怀疑几何或命令。
+
 ## 几何助手
 
 ```python

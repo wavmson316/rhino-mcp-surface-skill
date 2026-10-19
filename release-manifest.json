@@ -1,5 +1,5 @@
 {
-  "version": "1.1.0",
+  "version": "1.2.0",
   "language": "zh-CN",
   "date": "2026-10-19",
   "checks": {
@@ -8,7 +8,7 @@
     "outline_baseline": "17/17",
     "procedural_shell": "12/12"
   },
-  "note": "Hash list excludes this manifest. See VALIDATION.md for tested scope.",
+  "note": "Hash list excludes this manifest and the en/ tree. See VALIDATION.md for tested scope.",
   "files": [
     {
       "path": ".gitignore",
@@ -17,8 +17,8 @@
     },
     {
       "path": "CHANGELOG.md",
-      "bytes": 1201,
-      "sha256": "d94526dc8d37e99bd29a498777ac9a59f5a6415d7d1fa58b425313b380c3f58e"
+      "bytes": 2741,
+      "sha256": "ca7769dee67b45c315937cb1ff3baefe590f5cb0c00360511f983276a2b8c17b"
     },
     {
       "path": "example-test-results.json",
@@ -37,13 +37,13 @@
     },
     {
       "path": "README.en.md",
-      "bytes": 10887,
-      "sha256": "4857bac07d682d21e86e2ff3e162560e99c093bad75759966c7ca00ab17d87b9"
+      "bytes": 11253,
+      "sha256": "7770a4c2e3b31ae225688be59ff0c4081ae1bf82575da39afbe06b468b7b01af"
     },
     {
       "path": "README.md",
-      "bytes": 10695,
-      "sha256": "2e18eb432f60fe2db05b2eb053f2091ac63efd5908160f3753269976440ef96b"
+      "bytes": 10825,
+      "sha256": "bb80a74909595d7abde6e2ed46c4c46425778c27477224214201c54591fee317"
     },
     {
       "path": "references/01-intent-and-reference.md",
@@ -57,18 +57,18 @@
     },
     {
       "path": "references/03-construction.md",
-      "bytes": 4646,
-      "sha256": "8e8da9ed7d80a94b08596f40946907e36b16eec20f098253e35759475a774fa2"
+      "bytes": 6471,
+      "sha256": "3ee96575bfae8297fb841e4ba80d0bd7d66a3f9fadee1f824f9bb2564b527800"
     },
     {
       "path": "references/04-continuity-and-validation.md",
-      "bytes": 3262,
-      "sha256": "c2e4c72b1727e37faf5ae7c71782d98dddf706fd04ff4946dc38996fb08bcd96"
+      "bytes": 5857,
+      "sha256": "eeab6ff5e76a16bc9f3ac5e5233da7e6509a03692edcb5b1b772f241173ae59d"
     },
     {
       "path": "references/05-mcp-execution.md",
-      "bytes": 3234,
-      "sha256": "340a59dae7b942fe406ab0cffd0484892017e4dbba9d3d35b26837a3125cd223"
+      "bytes": 4446,
+      "sha256": "c11aa1fa50cdec01da9b969f0526371f1ae74834cd8bccadc69de02f2b040948"
     },
     {
       "path": "references/06-complex-regions.md",
@@ -77,8 +77,8 @@
     },
     {
       "path": "references/07-diagnosis.md",
-      "bytes": 2197,
-      "sha256": "61ce860f090dbbbb5effa4517ad76d30dd674823140cb162005ea0c64c615108"
+      "bytes": 4401,
+      "sha256": "b46c1fc8f6b7490013617d952dbda23c07e9940ae8da5f52b17353fbfb39683c"
     },
     {
       "path": "references/08-source-audit.md",
@@ -92,18 +92,23 @@
     },
     {
       "path": "references/10-parameters-and-recipes.md",
-      "bytes": 4754,
-      "sha256": "185a3756adc691915a875a541077323cdadb7826b074bb297870d0bc1b57fc53"
+      "bytes": 14923,
+      "sha256": "3cf767d7b08c70e013c827be4f1807a4223f0662a49d6cc3786c17651843ccdc"
     },
     {
       "path": "references/11-consumer-electronics.md",
-      "bytes": 3058,
-      "sha256": "e441b6902b1f265ae1d1983efa141300b2ed3329936211f654e753ff1be48863"
+      "bytes": 5674,
+      "sha256": "d0165616ae95caa4fdda058f15c02c53bf956de3449b61a33b034adbac50c410"
     },
     {
       "path": "references/12-object-construction-playbooks.md",
       "bytes": 13688,
       "sha256": "e3df71b5a04647da590fdad22d0bffe32441cb6563f681b89bee2b07251948e1"
+    },
+    {
+      "path": "references/13-construction-discipline.md",
+      "bytes": 9210,
+      "sha256": "933c77b0a07687124cc1172dcc036a7a34a8dcdd2b91238dfddfb268652928cb"
     },
     {
       "path": "rhino-test-results.json",
@@ -152,8 +157,8 @@
     },
     {
       "path": "SKILL.md",
-      "bytes": 7237,
-      "sha256": "6c1577c55b6b19b06709b87659fb2af57e0df8e7dee86bcada513ff155e1491e"
+      "bytes": 10449,
+      "sha256": "5bb9f9b6ef89895f262564e47e355595d8cba4a17a68321b301cdd2a4cd99825"
     },
     {
       "path": "templates/modeling-plan.md",
@@ -162,8 +167,8 @@
     },
     {
       "path": "VALIDATION.md",
-      "bytes": 4909,
-      "sha256": "7242321cb9115901da2e051e1aaf5f33e171b4a1ba1399e764834e75b43c321c"
+      "bytes": 6883,
+      "sha256": "09ba27c758b1c70c7e0c73d5fc436641264bb41b5cc5679363051dfcbe60f435"
     }
   ]
 }

@@ -81,8 +81,8 @@ Do not copy a developer-machine port as a universal setting. Use your own `MCPCo
 
 Download an asset from [Releases](https://github.com/wavmson316/rhino-mcp-surface-skill/releases/latest):
 
-- `rhino-mcp-surface-skill-1.1.0-zh-CN.zip`: Chinese entry, 12 references, setup guide, template, and scripts.
-- `rhino-mcp-surface-skill-1.1.0-en.zip`: English entry, 12 references, setup guide, template, and the same scripts.
+- `rhino-mcp-surface-skill-1.2.0-zh-CN.zip`: Chinese entry, 13 references, setup guide, template, and scripts.
+- `rhino-mcp-surface-skill-1.2.0-en.zip`: English entry, 13 references, setup guide, template, and the same scripts.
 
 Both archives contain a `rhino-mcp-surface-skill` folder. Copy it to a Skills location supported by your client, with `SKILL.md` directly inside that folder. **Install one language: both use the same internal skill ID.**
 
@@ -113,9 +113,9 @@ Other tasks include repairing a visible crease between surfaces, building a dime
 
 ## Bilingual contents and validation
 
-The English package includes the complete skill entry, all 12 reference documents, setup guide, project template, validation notes, and changelog. The geometry implementation and machine-readable test data are shared between language variants.
+The English package includes the complete skill entry, all 13 reference documents, setup guide, project template, validation notes, and changelog. The geometry implementation and machine-readable test data are shared between language variants.
 
-The 1.0.0 geometry suite passed **45/45 Rhino in-memory cases** and **17/17 standalone 2D cases**. Version 1.1.0 adds bilingual documentation, detailed construction playbooks, and 12 additional procedural-construction checks. Read [VALIDATION](en/rhino-mcp-surface-skill/VALIDATION.md) for the precise scope.
+The geometry suite passed **45/45 Rhino in-memory cases**, **17/17 standalone 2D cases**, and **12/12 procedural closed-shell checks**. **Version 1.2.0 is a documentation release**: it restores verified numeric values, construction discipline, and the four disproven API call patterns into the body text, and adds reference 13 on construction discipline. Code and geometry behaviour are identical to 1.1.0; no new verification claims are made. Note that the 1.2.0 Chinese updates in `en/` are not yet translated — see [TRANSLATION-STATUS](en/rhino-mcp-surface-skill/TRANSLATION-STATUS.md). Read [VALIDATION](en/rhino-mcp-surface-skill/VALIDATION.md) for the precise scope.
 
 Not claimed: full-domain G2/G3 certification; unique dimensional reconstruction from one photograph; one-click complete vehicles; end-to-end photo reconstruction quality; manufacturing feasibility; any OEM Class-A standard; or compatibility with untested platforms and servers. Report unverified items in each delivery.
 

@@ -1,16 +1,40 @@
-# Changelog
+# 版本记录
+
+## 1.2.0 — 2026-10-19
+
+**文档版本，代码与几何行为与 1.1.0 完全一致。**
+
+- 新增 [13 施工纪律](references/13-construction-discipline.md)：开工三件事、三条顺序铁律、
+  以及成面/曲线/3C/连续性/验收环节的不可逆约束（每条附失效信号与出处）。
+- 重写 [10 参数](references/10-parameters-and-recipes.md)：保留五类数值分类框架，
+  补回单位换算表、探索预算、MatchSrf 实测容差锚点、边缘圆滑链、按键配方、
+  圆角实测表、Class-A 适用范围警告、IoU 三个实现陷阱。
+  **每个数值标注来源、适用条件与失效信号**，不作为制造标准或恒定默认。
+- `03` 增补三排法适用边界、`EdgeSrf` 对边阶数检查、`ChangeDegree` 两种模式的用途区分、
+  `ExtrudeCrv`/`Extrude` 选项。
+- `04` 增补判 G2 的三个错误做法、明暗交界不强求 G2 的理由、匹配失败先查输入、
+  镜像时机、CurvatureAnalysis 时机。
+- `05` 增补四个在Rhino 8 实测被证伪的 API 写法（`doc.Units.SetUnits` 等）
+  与端口纪律。
+- `07` 增补17 条实测症状与卡死时的上游回退路径。
+- `11` 增补高低错位分面、`Extrude` 提阶补G2、边缘圆滑链、`Same height shapes`
+  扭曲正解、`Setpt` 中段对齐、按键 7 步配方。
+- `SKILL.md` 增读参数分流、顺序三件事与三条铁律、Stage 3–6 检查项。
+
+**未新增任何平台或建模验证声明**；测试结果仍为 45/45、17/17、12/12。
 
 ## 1.1.0 — 2026-10-19
 
-- Added detailed construction playbooks, patch/curve contracts, stage gates, and a procedural enclosure builder with12 additional passed checks.
-- Added detailed Chinese/English landing pages, explicit Rhino8/McNeel MCP integration, architecture, capabilities, setup, and prompt examples.
-- Added a complete English skill entry, all12 references, setup, template, validation, and release notes.
-- Added separate Chinese/English install archives. Both share one skill ID and the same geometry implementation; install one language.
-- Verified setup guidance against upstream RhinoAI docs; no new geometry/platform certification claimed.
+- 新增物品分面/逐步施工剧本、曲线与面块合同、任务验收门，以及12项实测的封闭壳母形构造脚本。
+- 补充中文/英文完整首页，明确 Rhino8、McNeel Rhino MCP Platform、router/connector 与安装步骤。
+- 新增完整英文技能正文、12篇参考、安装、自检、项目模板、验证和更新说明。
+- 分别提供中文/英文安装包，共用同一技能ID与几何实现；二选一安装。
+- 本次为文档/分发更新，不新增几何或平台验证声明。
 
 ## 1.0.0 — 2026-10-19
 
-- Unified geometry-driven modeling workflow and conditional recipes.
-- Corrected degree/span/periodicity/elevation/Refine/offset/projection/mesh statements.
-- Fixed rebuild, edge-surface, loft, curvature, and endpoint diagnostics.
-- Added standalone2D metrics, Rhino regressions, and release checks; separated tested scope from unverified claims.
+- 统一入口与12篇参考：按几何约束、用途和证据分流；移除品类硬限定与互相矛盾的规则。
+- 修正Degree/跨度/周期/圆/升阶/Refine/Offset/投影/网格Weld等表述；案例配方补适用条件。
+- 修复重建、EdgeSrf、Loft、曲率与曲线G1助手；删除未验证的放图命令拼接入口，以明确几何输入替代。
+- 二维轮廓指标独立为普通Python模块，补边界条件；扩展Rhino内存验证与发布检查。
+- 分开实测、案例与未验证项目；发布包不依赖工作区、图片或外部旧知识图谱。

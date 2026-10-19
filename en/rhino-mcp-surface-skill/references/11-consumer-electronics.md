@@ -1,39 +1,120 @@
-# Housings, buttons, and assembly transfer
+# 产品壳体、按钮与装配迁移
 
-## Geometry comes first
+## 先看几何特征
 
-Consumer products include planar boxes, glossy double-curved shells, ergonomic recesses, and branches; vehicles also contain analytic parts. Select shape and continuity from evidence and purpose, not the category name.
+消费电子既有平面箱体，也有高光双曲率壳、人体工学凹区和复杂分叉。汽车也有解析零件。按参考和用途选形体/G级，不按产品名称固定G1或“平面+小圆角”。
 
-Phone/camcorder cases motivate shared parents, assembly datums, transition sections, and dependencies. Router/air-conditioner examples are transfer templates, not validated reconstructions of actual products.
+本章借鉴翻盖手机、摄像机案例：共享母面、装配基准、过渡截面和细节依赖。路由器/空调等是迁移模板，未经真实参考的端到端验证。
 
-| Feature | Candidate | Inspect |
+## 主壳策略
+
+| 特征 | 候选 | 重点 |
 |---|---|---|
-| Flat panel with walls | PlanarSrf/Extrude/fillets | Planarity and corners |
-| Crowned cover | Sparse Loft or controlled parent | Crown/volume/reflection |
-| Sloped walls | Directed extrusion/ruled/two-rail | Pull direction and actual draft |
-| Deep grip recess | Independent base and wide bands | Avoid pulling the top |
-| Assembly contact | Shared datum/parent derivatives | Clearance, interference, movement |
+| 平板加侧壁 | PlanarSrf/Extrude/圆角 | 平面保持、角区顺序 |
+| 微鼓盖 | 少截面Loft/可控母面 | 拱高、最大体量、反射 |
+| 倾斜侧壁 | 倾斜挤出/直纹/双轨 | 拔模方向与真实角度 |
+| 深凹握持区 | 独立凹底+宽过渡 | 局部改形不要牵扯顶面 |
+| 接触/装配面 | 共享基准母面派生 | 间隙、干涉与活动范围 |
 
-Extending a wall and trimming is an intersection technique, not automatic G1/G2. Extrusion often has degree1/two rows in one direction; read actual U/V. Exact elevation adds freedom without requiring Deformable. Protecting three rows in one local cubic example is not a universal G2 solution.
+侧面适当超出再trim是求交手法，不保证自动G1/G2。挤出方向常为Degree1、两排CP，但U/V实际读取；若要编辑可精确升阶，不必开启可变形模式。升到Degree3四排并保护一端三排是特定局部方案，不能代表所有接缝G2。
 
-## Buttons and switches
+### ⭐ 平面与侧面的衔接：高低错位 + Trim
 
-Separate outline, crown, and edge softness. Lines/semicircles give an exact G1 outline; use G2 transitions if reflection requires them. Caps can be section/Loft driven; Patch is an approximation candidate. The conditional three-row recipe is in [parameters](10-parameters-and-recipes.md). Switch ridges/stops/walls retain functional creases rather than being smoothed indiscriminately.
+**不要用一个曲面硬接平面与侧面。** 教材做法：
 
-## Variable-width and fading details
+```
+1. 侧面故意做到比底面更高
+2. 用平面的轮廓线 Trim 掉高出的部分
+3. 两部分自然衔接
+```
 
-Check correspondence and sections before bulge/height experiments. Reconstruct from useful sections extracted from trial blends if needed. Set real-edge curvature conditions and verify results. Mean curvature alone or a fixed color range is insufficient.
+⚠️ 直接相邻的平面与侧面交界线是**锐利**的，仍需圆滑（见下）。
 
-## Assembly and repeated features
+### ⭐ `Extrude` 挤出面补G2自由度
 
-Establish whole-product blocks, axes, and interfaces before part refinement. Upper/lower shells and covers can share an exterior parent before splitting. Keep untrimmed copies. Antennas, louvers, and hinges need independent components/axes and extreme-position interference checks.
+`Extrude` 的 V 向只有 2 个 CP。与相邻 `Extrude` 面保持 G2 的教材做法：
 
-Validate one opening/grille unit, edge margins, walls, and hole directions before repetition. UV/Flow mapping does not guarantee equal arc-length spacing; graded spacing may be intentional. Delay expensive arrays and isolate display. Not every feature requires GH or a fully modeled hole.
+```
+ChangeDegree：U 向阶数不变，V 向 1 → 3 阶
+→ V 向 CP 从 2 个变 4 个（3 个保持曲率保 G2，1 个改形）
+```
 
-## Manufacturing branch
+⚠️ 这是**特定局部方案**，不代表所有接缝都能这样达到 G2。
 
-Manufacturing solids require sourced thickness, parting, draft, clearance, and radii. Shrinkage depends on material grade, direction, and process, not one ABS/PC percentage. Concepts can omit bosses/clips if explicitly unengineered. Scaling an inner shell is a visual approximation, not constant thickness.
+---
 
-## Acceptance
+## 鼓面按钮与推拉键
 
-Check silhouettes/negative spaces, crown, fading/variable-width bands, continuity evidence, motion/clearance, array boundaries, thickness, and undercuts. Zoomed zebra/EMap remains useful on small parts; set curvature scales to the model. There is no single exclusive consumer-product validation tool.
+轮廓、拱高、边软硬分别控制。直线+半圆是精确G1轮廓；高光需求可用G2过渡并验差。正面可用Loft/截面母面，Patch仅作近似候选；微鼓三排法条件见 [参数配方](10-parameters-and-recipes.md)。推拉键凸台、外轮廓、止挡与侧壁独立处理，别为"统一顺滑"消掉功能棱边。
+
+### ⭐ 轮廓G 级二选一
+
+| 做法 | 连续性 | 建议 |
+|---|---|---|
+| 两条平行线 + 两端各一半圆 | **G1**（精确） | ⛔ **优先用这个**，便于后续改尺寸 |
+| `Blend` 在两端做圆滑过渡 | **G2** | 仅高光面、可见度高时 |
+
+⚠️ 按键会频繁改尺寸，⛔ 一上来就G2 会拖慢修改。
+
+### ⭐ 完整按键配方（7 步）
+
+```
+1. 绘轮廓（直线+半圆 = G1）
+2. Extrude 挤成侧面（键 C 加盖做实体）
+3. Split 用直线把轮廓分成对称两半
+4. Loft 两条分割线 → 平面
+5. ChangeDegree 把 U 向降到 2 阶（D 按需）→ 3 排 CP
+6. 只移中间那排（⛔ 首尾两个不能选）→ 鼓起表面
+7. Pipe → Split/Trim → BlendSrf → 缝隙圆滑
+```
+
+⚠️ `Patch` 做按键正面时**不要选 `Adjust tangency`**。
+
+---
+
+## 变宽过渡与渐消
+
+检查边配对与截面后试bulge/Same height shapes。若仍失控，可从多个试验Blend提取适合截面再Sweep2，真实面边带Curvature条件。平均曲率、法截面和反射一起看，不用固定色标判全部通过。
+
+### ⭐ 边缘圆滑标准链
+
+```
+Intersect → Join → Pipe(Cap关) → ExtendSrf(T,S) → SplitSrf → Blend → Sweep2
+```
+
+| 步骤 | 关键 | ⛔ 后果 |
+|---|---|---|
+| `Pipe` | **键 `C` 关 Cap**（默认 Yes）| 圆管封盖，无法穿透修剪 |
+| `ExtendSrf` | 键 `T` → `S`（Smooth）| 圆管没穿透，修剪失败 |
+| `BlendSrf` | 先用默认 Bulge，⛔ 别急拖滑杆 | — |
+
+### ⭐ `BlendSrf` 扭曲的正解
+
+**现象**：曲面中间鼓起扭曲，高光异常。**根因**：默认保持混接比例，窄处CP 跟着缩小。
+
+**正解**：勾选 **`Same height shapes`**，⛔ 不调整滑杆。
+
+⛔ 不要用"加点"或"拖滑杆"治扭曲——滑杆调的是 bulge 强度，治不了根部畸变。
+
+### ⭐ `Setpt` 的正确用法
+
+⛔ 只对齐最外一排 → 外轮廓对了但**内部仍扭曲**。
+✅ **从中间开始，所有排都对齐**。
+
+### ⭐ `BlendSrf` 选边效率
+
+边界线**选中后不能取消**。选多边时先选一条再**键 `A`** 选中所有相连边。
+
+## 分件、装配和重复特征
+
+先整机体块、轴线和接口位置；再分件细化。上/下壳与盖板可共享外形母面再切分，保留未修剪副本。运动天线、导风板、铰链按独立部件和旋转轴表达，检查至少闭合/打开或极限位置的干涉。
+
+重复孔/格栅先验证一个单元，检查边缘余量、最小壁厚和孔方向，再阵列/参数化。曲面UV映射不保证等弧长，Flow也需查缩放；渐变间距可正确，不强制所有图案等距。大阵列最后生成并隔离显示，不必所有任务用GH或实体建出每个孔。
+
+## 制造需求分支
+
+制造实体需要真实壁厚、分型、拔模、装配间隙和工艺半径；缩率由材料牌号、方向和工艺确定，不自动套ABS/PC统一比例。外观概念可以先不建螺柱/卡扣，并说明这些未设计。缩放内层仅作外观近似，不叫等厚。
+
+## 检查重点
+
+主剪影与负空间、盖面拱高、边带渐宽/渐消、G级证据、运动件独立与间隙、孔阵列边缘、材料厚度与倒扣。小面可放大Zebra/EMap，曲率色谱需适合尺度；没有“消费电子唯一可靠质检工具”。

@@ -1,91 +1,137 @@
 ---
 name: rhino-mcp-surface-skill
-description: Use McNeel Rhino MCP to build editable NURBS surfaces from photographs, sketches, orthographic views, dimensions, or scan references. Covers industrial products, freeform shapes, vehicle exteriors, complex transitions, repair, and reconstruction. Guides shape interpretation, patch layout and UV flow, fair curves, construction choices, continuity validation, and controlled Rhino execution. Use for Rhino surfacing, reference reconstruction, patch planning, MatchSrf, or complex surface modeling.
+description: 使用 Rhino MCP 将照片、草图、多视图、尺寸或扫描数据转为可编辑的 NURBS 曲面。适用于工业产品、自由曲面、汽车外形、复杂过渡、曲面修复和逆向重建；指导形体解读、分面与 UV 流向、曲线公平性、构面选择、连续性验证和可靠执行。用户要求 Rhino 曲面建模、参考图还原、分面布线、MatchSrf 或复杂曲面时使用。
 ---
 
 # Rhino MCP Surface Skill
 
-Turn design intent into accurate, editable geometry with explicit evidence. A command completing successfully is not proof of shape or surface quality.
+把用户意图转成形状正确、结构可控、证据明确的几何。命令成功只是施工结果，不能代替形体与质量验收。
 
-Target integration: McNeel [Rhino MCP Platform / RhinoAI](https://github.com/mcneel/RhinoAI), plugin `Rhino-MCP-Platform`. Tested on Windows with Rhino8.29 and Rhino Python3. See [setup](INSTALL-CHECK.md) for router/connector configuration and compatibility limits.
+适配 McNeel [Rhino MCP Platform / RhinoAI](https://github.com/mcneel/RhinoAI)，插件 `Rhino-MCP-Platform`；实测 Windows + Rhino8.29 + Rhino Python3。连接方式与版本边界见 [安装指南](INSTALL-CHECK.md)。
 
-## Read selectively and act
+## 读取与执行
 
-Read this entry first, then the references relevant to the task. Complete ordinary reversible modeling without asking for stage-by-stage approval. Ask about ambiguities that materially affect dimensions, assembly, or intent, while continuing independent work.
+先读本页；按任务读取下表，避免每次把全部参考装入上下文。普通可逆操作直接完成，不要求用户逐阶段批准。核心尺寸、装配或设计意图确有歧义才提问，同时推进不依赖答案的部分。
 
-| Question | Reference |
+| 当前问题 | 参考 |
 |---|---|
-| Interpret images, text, and scan data | [01 Intent](references/01-intent-and-reference.md) |
-| Plan patches, UV flow, adjacency | [02 Layout](references/02-patch-layout.md) |
-| Select curve/surface methods | [03 Construction](references/03-construction.md) |
-| Validate continuity, fairness, delivery | [04 Validation](references/04-continuity-and-validation.md) |
-| MCP, scripts, timeouts, document safety | [05 Execution](references/05-mcp-execution.md) |
-| Branches, fading features, corners, reverse engineering | [06 Complex regions](references/06-complex-regions.md) |
-| Diagnose and recover | [07 Diagnosis](references/07-diagnosis.md) |
-| Sources and retracted rules | [08 Source audit](references/08-source-audit.md) |
-| Transfer reasoning across products | [09 Examples](references/09-worked-examples.md) |
-| Parameters and conditional recipes | [10 Parameters](references/10-parameters-and-recipes.md) |
-| Housings, buttons, assemblies, repetition | [11 Products](references/11-consumer-electronics.md) |
+| **开工前的顺序铁律与高代价约束** | ⭐ [13 施工纪律](references/13-construction-discipline.md) |
+| 图片、文字、扫描怎样解释 | [01 输入与意图](references/01-intent-and-reference.md) |
+| 怎样分面、走 UV、处理邻接 | [02 分面](references/02-patch-layout.md) |
+| 曲线与构面命令如何选 | [03 构面](references/03-construction.md) |
+| 连续性、公平性和交付验证 | [04 验收](references/04-continuity-and-validation.md) |
+| 接入 MCP、调用脚本、超时恢复 | [05 执行协议](references/05-mcp-execution.md) |
+| 分叉、渐消、多边角区、逆向 | [06 复杂区域](references/06-complex-regions.md) |
+| 做坏后的诊断 | [07 回退](references/07-diagnosis.md) |
+| 来源与被撤销的规则 | [08 来源审计](references/08-source-audit.md) |
+| 跨品类推理范例 | [09 示例](references/09-worked-examples.md) |
+| **数值、命令配方与适用条件** | ⭐ [10 参数](references/10-parameters-and-recipes.md) |
+| 壳体、按钮、装配与重复特征 | [11 消费产品](references/11-consumer-electronics.md) |
 
-Record the work in the [project template](templates/modeling-plan.md).
+首次接入读 [安装自检](INSTALL-CHECK.md)。全过程记录到 [项目模板](templates/modeling-plan.md)。
 
-Before complex objects, read [construction playbooks](references/12-object-construction-playbooks.md). Produce curve IDs, patch/boundary/adjacency contracts, actual inputs, and stage gates; a command list is not a build plan.
+复杂物品开工前还必须读 [物品分面与逐步施工剧本](references/12-object-construction-playbooks.md)，输出曲线ID、面块/边界/邻接、具体输入及阶段出口；仅列命令名不算施工计划。
 
-## Non-negotiable boundaries
+### 读参数前的分流
 
-1. Separate observations, inferences, and design completion. A single photograph does not uniquely determine depth, unseen surfaces, or scale. Normalize unknown dimensions; do not invent millimeter accuracy.
-2. Establish proportions, silhouette, primary sections, and volume before transitions and detail. Choose methods from geometry; product categories only index examples.
-3. Shading, material boundaries, and part boundaries are not automatically surface boundaries. Preserve intended sharp features rather than forcing G2.
-4. Single-span is a control strategy. Preserve rational arcs and useful multi-span structures; do not sacrifice shape for neat point counts. Display isocurves do not reveal true spans by themselves.
-5. Join establishes topology; Trim limits the visible domain; degree elevation and knot insertion add representation freedom. None automatically improves fairness or produces G2.
-6. After edits, recheck every neighboring seam and important silhouette. Record G0/G1/G2 evidence separately. Shared boundary curves, normals, and zebra stripes cannot independently prove surface G2.
-7. Operate on an explicitly identified document and objects. Discover tools and APIs; do not clear the scene. After a timeout inspect state before retrying.
-8. Shape, structure, reflection quality, and engineering are independent checks. Mark untested items unverified. Open surfaces are not automatically defective, and watertightness is not manufacturing approval.
+**按几何特征选路线，不要按产品名称固定 G 级或构造法。**
+汽车覆盖件、家电外壳、3C 产品的常见主构造与连续性目标不同，
+先判断输入属于哪类，再决定是否需要读 [11 消费产品](references/11-consumer-electronics.md)。
 
-## Workflow and exit conditions
+## 必守边界
 
-### 0. Define delivery and identify the environment
+1. 分开记录观察、推断与设计补全。单图不能唯一恢复深度、背面和真实尺度；无尺寸可先做归一化模型，不能声称毫米还原。
+2. 先比例、剪影、主截面与体量，再过渡和细节。根据几何约束选择方法，产品名称只用于检索案例。
+3. 明暗线、材质线、零件线不自动等于曲面边界；真实锐边也不应被强制抹成 G2。**明暗交界本就是设计转折，该处不强求 G2。**
+4. 单跨是控制策略。保留有理圆弧和合理多跨；不为点数整齐破坏形状。不以显示等参线密度推算跨度。**跨度读 `SpanCount`。**
+5. Join 是拓扑连接；Trim 是可见域裁切；升阶、插节点增加表示自由度。它们均不自动改善公平性或达到 G2。
+6. 修改后回查全部相邻边和关键轮廓。G0、G1、G2 分别记录证据；公共边曲线、法线或斑马纹均不能单独证明面间 G2。
+7. 操作显式目标文档和对象；不猜工具/API，不清空用户场景。超时先核查是否完成再重试。
+8. 形体、结构、反射与工程是独立验收项。未测写“未验证”，不把开放面自动判坏，也不把水密自动当制造可行。
 
-Record concept/exterior surfaces/manufacturing solid/reconstruction, key features, dimensions and units, symmetry, error budgets, editability, and output formats. Discover MCP tools; specify a slot when supported and use the injected document. Read existing tolerances without changing them.
+### 顺序不可颠倒的三件事
 
-Exit: target, document, budgets, unknowns, and assumptions are recorded. If Rhino or network access is unavailable, complete useful analysis and clearly distinguish unexecuted modeling.
+| # | 动作 | 不做的后果 |
+|---|---|---|
+| 1 | 确认单位制（mm/inch/抽象 units） | 同一模型里同一个「2」可能相差 30 倍 |
+| 2 | 有尺寸就定标；没有就问用户 | 比例失真，全部白做 |
+| 3 | 分面草图先画完再开软件 | NURBS 事后补救极难，拆面破坏已建接缝 |
 
-### 1. Interpret shape, camera, and scale
+### 顺序敏感的三条铁律
 
-Calibrate orthographic views and cross-check shared anchors. For photographs, match a low-complexity blockout and camera before refining shape. Record principal axes, extents, sections, and occlusion hypotheses. Keep comparison cameras fixed.
+1. **母面 → 凹槽 → 操作凹槽 → 倒角 → 缝隙圆滑**（顺序颠倒则圆滑面封死凹槽入口，不可逆）
+2. **先大圆角，后小圆角**（小圆角会被吞掉）
+3. **不对称产品齐头并进**建模，不能分件做完再装配（配套：先主轴骨架，最后按钮小件）
 
-Exit: major-view proportions hold; unknown depth is explicit; conflicting evidence has a documented resolution.
+⭐ 完整纪律（含成面/曲线/3C/连续性/验收的不可逆约束）见
+[13 施工纪律](references/13-construction-discipline.md)。
 
-### 2. Select layout and construction
+## 工作流与出口
 
-Rotational geometry suggests Revolve; constant sections Extrude; ordered sections Loft; paths and sections Sweep; bounded domains EdgeSrf; intersecting curve families NetworkSrf; transition gaps BlendSrf; existing-surface adjustment MatchSrf. Compare SubD for suitable concepts, then validate any conversion.
+### 0. 定义交付并识别环境
 
-For each P01 patch record coverage, UV flow, natural/trimmed/closed/singular sides, master/slave roles, continuity, movement budget, and singularity risks. For E01 seams record both sides and validation. Compare two substantive layouts for difficult glossy regions; do not invent alternatives for trivial analytic geometry. Update the plan with trial surfaces.
+记录概念外形/外观曲面/制造实体/逆向拟合、关键特征、单位与尺寸来源、对称性、允许误差和输出格式。读取当前 MCP 工具；有多实例接口时明确 slot，使用注入文档。读取已有公差，不擅自改设置。
 
-Exit: important constraints have buildable adjacency/dependency relationships and a recovery route.
+**出口：**目标、工作文档、误差预算、未知信息已记录。没有联网或没有 Rhino 时继续做可完成的解析与方案，说明未执行部分，不假报建模完成。
 
-### 3. Build scaffolds and trial surfaces
+### 1. 解读形体、相机与尺度
 
-Prefer analytic geometry and a few informative sections. Check direction, seams, endpoints, curvature combs, and reference deviation. Preserve originals when rebuilding/fitting/fairing. Test volume, UV flow, and reflections on a few parent surfaces before extending dependencies. Keep untrimmed versions.
+正交图定标并用公共锚点互校；照片先用低复杂度体块匹配相机，再核对剪影和体量。建立主轴、包围尺寸、主要截面和遮挡假设。固定相机比较，不能挪相机掩盖误差。
 
-Exit: primary silhouettes and internal sections agree, complexity is justified, unintended oscillations are absent, and actual spans are read.
+**出口：**主要视角比例成立；未知深度有明确假设；数据矛盾有处理依据。
 
-### 4. Resolve seams and complex regions
+### 2. 选择布局与构面路线
 
-Define fixed masters and adjustable slaves. Address position, tangent planes, and second-order structure according to requirements. Blend inspection includes sections, bulge, correspondence, width, and corners. Recheck previous seams after sequential matching. Conflicts call for more transition width, different layout, or multi-boundary constraints, not endless point insertion.
+按几何选择候选：旋转体→Revolve；等截面→Extrude；有序截面→Loft；路径与截面→Sweep；边界围域→EdgeSrf；两族网络→NetworkSrf；空带→BlendSrf；已有面调整→MatchSrf。复杂有机概念可比较 SubD，但转换结果需重新验收。
 
-Use a temporary mirrored instance to inspect symmetry seams; constrain the center-plane tangent and curvature as required, then recheck the final mirror. Mirroring does not smooth a crease, but there is no universal prerequisite to Match every seam to G2.
+为 P01 等面块记录范围、U/V、自然/修剪/闭合/退化边、主从、连续性、可动宽度和奇点风险；为 E01 等接缝记录两侧和检查方法。复杂高光区比较至少两个布局；简单解析对象直接施工。用试验面更新方案，不要求一次预见所有分面。
 
-Exit: critical seams have explicit validation status; failures are not hidden by excessive complexity.
+**出口：**关键约束有可施工的邻接与依赖关系，局部失败有回退路径。
 
-### 5. Add details and engineering
+### 3. 建曲线骨架并试面
 
-Derive openings, panels, and gaps from parent surfaces. Keep moving components independent. Sequence slots and fillets from real dependencies; large-before-small is a candidate, not an irreversible law. Use real offsets or engineering construction for thickness, not translation or scaling. Check offset self-intersections, thin areas, flanges, draft, and assembly requirements.
+优先解析几何与少量主截面；检查方向、闭合接缝、端点、曲率梳和参考偏差。Rebuild/Fit/Fair 保留原线并验差。先试少量母面看体量、UV 与反射，再扩展依赖面。保留未修剪母面和版本。
 
-Exit: required features exist; engineering parameters have sources and visual approximations are labeled.
+- **跨度读 `SpanCount`**，不计算 `CP数 − 阶数`（重复节点与周期结构会破坏该关系）。
+- CP 数逐阶试到 Max deviation 达预算，**不要一律套固定阶数点数**（直线会过拟合成波浪）。
+- **每条曲线在至少两个正交视图互校**——单视图看着对，转 90° 就歪。
+- `EdgeSrf` 前**确认四条边阶数一致**（不一致时软件用内部节点补偿，结果是变形而非报错）。
+- **平直段的控制点必须共线**，否则该段鼓包。
 
-### 6. Recheck and deliver
+**出口：**主轮廓与内截面正确，复杂度有理由，无意外振荡；真实跨度已读取。
 
-Save a new 3dm version and requested exchange formats with object mappings, fixed cameras, evidence, assumptions, and unresolved issues. Require watertightness and orientation only when appropriate. Mesh checks use chord/angle/seam criteria, not distance tolerance as a Weld angle. When required, reimport exchanges independently and check units, dimensions, and geometry counts.
+### 4. 处理连续性与复杂区
 
-Explain what was reconstructed, why the layout was selected, which checks passed, what remains unverified, and where files were saved. Script limits and tested scope are in [VALIDATION.md](VALIDATION.md).
+确定固定主面与可调整从面；按目标处理位置、切平面及二阶结构。Blend检查截面、bulge、对应与角区，不能只勾Curvature。顺序匹配后复验之前的边；边区约束相互冲突时改宽度、布局或使用多边约束方案。
+
+- **匹配失败先查输入曲线**（阶数/CP数/偏差），⛔ 不是猛加 CV。
+- `BlendSrf` 扭曲时**勾 `Same height shapes`**，⛔ 不要靠拖滑杆或加点解决。
+- **相交处末端 3 排控制点 ⛔ 不能动**（它们决定该处曲率），其余排可自由编辑。
+- **每个基础曲面建成后立刻跑 `CurvatureAnalysis`**——面定型后再改代价极高。
+- 小面产品 `Zebra`/`EMap` 看不出问题，必须逐面曲率分析。
+
+对称面先建镜像试件检查接缝；按目标约束中轴切平面和曲率，再镜像复验。镜像不自动消棱，也不要求一律先Match到G2；想在中轴得G2 必须在**镜像前**把那侧匹配好。
+
+**出口：**关键接缝验证状态明确；失败不靠无限加点掩盖。
+
+### 5. 细节与工程
+
+母面派生孔、面板和分缝；运动件保持独立。按实际依赖安排开槽和圆角，先大后小可作候选，不能当不可逆铁律。等厚用真实偏移或工程构造，不把平移/缩放当等厚。检查偏移自交、薄区、翻边、拔模和装配需求。
+
+- ⛔ **顺序不可颠倒**：母面 → 凹槽 → 操作凹槽 → 倒角 → 缝隙圆滑。
+- `Pipe` 做量规时**键 `C` 关 Cap**（默认 Yes 会封盖）。
+- 复杂件**独立图层并及时隐藏**——满屏控制点会让截图超时、MCP 会话崩。
+- 阵列孔/格栅先用阵列或参数化生成后烘焙，⛔ 逐个手画会累积误差并缺角。
+
+**出口：**设计细节完成；制造参数有来源，外观近似有标识。
+
+### 6. 复验、保存与交付
+
+保存新版本3dm及所需交换文件，记录对象映射、固定相机、检查结果、假设和未决项。实体按合同检查水密和方向；网格按弦高/角度/接缝检查，Weld角度不照抄距离公差。交换文件需要时重新导入独立环境核验单位、尺寸与面数。
+
+**封闭性按交付目标定**：外观件/覆盖件必须封闭（否则渲染、切片、导出穿帮）；概念外形可以交付开放面组。
+
+**剪影还原度用 IoU 数字化**（`outline_metrics.silhouette_iou`，已解析验证17 项）。
+⚠️ IoU 只对一个投影有效，且**不等于尺寸精度**（同心圆缩放 r 倍 → IoU = r²）。
+
+**交付说明必须回答：**还原了什么；为什么这样分面；实测通过哪些；哪些未验证；文件在哪里。完整脚本边界与实测范围见 [VALIDATION.md](VALIDATION.md)。

@@ -1,45 +1,79 @@
-# Validation record — 1.1.0 documentation release
+# 1.2.0 发布验证记录
 
-Geometry baseline executed on 2026-10-19: Windows, Rhino8.29.26063.11001, Rhino Python3, and the McNeel Rhino MCP connection. Version1.1.0 adds translated documentation/setup, construction playbooks, and an additional example builder. The original helpers and 45-case regression suite remain unchanged from1.0.0; the new example is tested separately below. Images were not read. No claim of this reviewer visually reading every source scan is inherited.
+1.2.0 **只改文档**：把已验证的具体数值、施工纪律与 API 勘误补回正文，
+新增 [13 施工纪律](references/13-construction-discipline.md)。
+**代码、测试与几何行为与 1.1.0 完全一致，不新增任何平台或建模验证声明。**
 
-| Checks | Result | Evidence |
+下列几何实测均来自 1.0.0/1.1.0：Rhino 内存回归 45/45、二维指标 17/17、施工链 12/12。
+
+日期：2026-10-19。实测平台为 Windows、Rhino **8.29.26063.11001**、Rhino 内 Python3
+与当前 MCP 连接。无图片阅读；未把旧版"读完全部扫描页"的声明继承为本轮事实。
+
+## 1.2.0 文档变更
+
+| 变更 | 内容 | 是否新增验证 |
 |---|---|---|
-| Rhino in-memory regressions | 45/45 | [results](rhino-test-results.json), [suite](scripts/smoke_test_rhino.py) |
-| Standalone analytical 2D cases | 17/17 | [results](outline-test-results.json), [suite](scripts/test_outline_metrics.py) |
-| Syntax, local file links, entry, package hygiene | Run for release | [checker](scripts/check_release.py), [manifest](release-manifest.json) |
+| `10-parameters` 重写 | 五类数值框架保留，补回单位换算表、探索预算、MatchSrf 实测容差锚点、按键配方、圆角表、IoU 陷阱、Class-A 适用范围警告 | ❌ 纯文档 |
+| `13-construction-discipline.md` 新增 | 开工三件事、三条顺序铁律、成面/曲线/3C/连续性/验收的不可逆约束 | ❌ 纯文档 |
+| `03` / `04` / `05` / `07` / `11` 增补 | 三排法边界、Deformable 用途、判 G2 三错、CurvatureAnalysis 时机、API 勘误、端口纪律、症状表 | ❌ 纯文档 |
+| `SKILL.md` | 增读参数分流、顺序三件事与三条铁律、Stage 3–6 的检查项 | ❌ 纯文档 |
 
-Tests added/deleted/edited no document objects. Object count, units, and tolerances matched before/after. A recorded pass on this version does not guarantee another Rhino/client; rerun [installation checks](INSTALL-CHECK.md).
+⚠️ 补回的数值全部标注了**来源、适用条件与失效信号**，不作为制造标准或恒定默认。
+⚠️ `Class-A` 一节加了适用范围警告——它属于汽车主机厂体系，
+⛔ 不适用于家电/玩具/家具（注塑件公差常在 0.1–0.3 mm 量级）。
 
-## Rhino coverage
+## 自动测试
 
-- Sampled coplanar seam, shared-edge90-degree fold, one-unit gap; invalid indices/sample counts/nonfinite tolerances rejected; closed edges explicitly require seam-aware pairing.
-- Valid open face/four naked edges, actual directional spans, repeated-knot counterexample, missing ID with explicit doc.
-- Control/interpolated/periodic curves, geometric tangent continuity of exact circle knots, exact elevation and curve properties.
-- Correct rebuild overload, explicit deviation budget, missing budget rejection, underfit rejection, closed input rejection.
-- Directed endpoint joins: aligned,90-degree,180-degree reversal, disconnected parallel, alternate pairing, invalid mode, closed shortcut rejection.
-- Three/four-edge surfaces, shuffled directions, different degrees, disconnected boundaries, ruled surfaces, open/capped/closed-direction lofts, invalid loft inputs.
-- Plane/sphere curvature, explicit image-plane dimensions and invalid size.
+| 范围 | 结果 | 可核对证据 |
+|---|---|---|
+| Rhino内存几何回归 | **45/45** | [rhino-test-results.json](rhino-test-results.json)、[测试代码](scripts/smoke_test_rhino.py) |
+| 独立二维指标 | **17/17** | [outline-test-results.json](outline-test-results.json)、[测试代码](scripts/test_outline_metrics.py) |
+| 程序化封闭壳母形 | **12/12** | [example-test-results.json](example-test-results.json)、[代码](scripts/example_closed_shell.py) |
+| Python语法、Markdown本地文件链接、入口与分发检查 | 发布时运行 | [check_release.py](scripts/check_release.py)、发布 manifest |
 
-## 2D coverage
+Rhino测试未添加、删除或编辑文档对象；测试前后对象数量、单位与公差设置一致。测试结果 JSON 中的日期/版本代表本次执行，不保证其他版本自动通过。安装后可按 [自检步骤](INSTALL-CHECK.md) 重跑。
 
-Identical/overlapping/disjoint rings, duplicate endpoint, reverse direction, four analytical concentric-circle area ratios, boundary distance, empty/degenerate/nonfinite inputs, invalid resolution, and rejected old buffering behavior.
+## Rhino覆盖内容
 
-These examples do not guarantee arbitrary shapes/resolutions have the same error. Thin features need higher resolution and local metrics. Only single simple outer rings are supported, not holes, components, or self-intersections; callers ensure valid topology.
+- 面接缝：共面相接、同边90°折面、1单位间隙；负索引、非整数采样数和非有限公差拒绝；闭合边明确拒绝，要求接缝感知配对策略。
+- 结构审计：有效开放面与4条裸边、实际U/V跨度、重复结点导致CP−Degree不等于SpanCount、显式文档缺失对象报告。
+- 曲线：控制点与插值、周期构造、精确圆内部几何切向、精确升阶保形、真实属性。
+- 重建：正确重载与单跨候选、显式偏差预算、缺预算拒绝、折线低阶欠拟合拒绝、闭合输入拒绝。
+- 曲线连接：同向相接通过、90°折角拒绝、180°反向拒绝、平行但断开拒绝、另一端点配对、未知模式拒绝、闭合快捷检查拒绝。
+- 构面：三边面、四边面、边方向/顺序、不同Degree边、断开边界拒绝、直纹面、开放Loft、封盖实体、闭合Loft方向、输入不足与无封盖公差拒绝。
+- 曲率：平面零曲率、球面主曲率量级；显式参考平面宽高与非法尺寸。
 
-## Unverified or uncertified
+## 二维指标覆盖内容
 
-1. Full-domain surface G2/G3, second-order shape operators, and global absence of folds/overlap.
-2. End-to-end reconstruction quality from real photographs, unique unknown scale/camera/backside recovery.
-3. Thickness, self-intersection, draft, parting, shrinkage, assembly motion, or OEM Class-A compliance for real products.
-4. STEP/IGES/STL round trips or material/layer preservation.
-5. All native option matrices, GH workflows, other MCP servers, Rhino6/7/9, macOS, or other hosts.
-6. Curvature helper evaluates the nearest underlying surface, not trimmed visibility or outward-solid signs. A single sample is not a fairness test.
-7. Curve distance uses Rhino's numerical estimator, not an exact Hausdorff bound; localized features need independent checks.
+同轮廓、重叠矩形、分离、重复首尾点、反向轮廓、四组同心圆解析面积比、边界距离、空/退化/非有限输入、非法分辨率和旧buffer行为拒绝。
 
-## Previously fixed blockers
+误差阈值仅用于这些测试实例，不承诺任意轮廓在任意栅格分辨率下相同误差。薄小特征需要更高分辨率与局部指标。当前仅支持单个简单多边形外环，不支持孔、多组件或自交；调用方应保证输入拓扑合法。
 
-Fixed wrong Rebuild/Loft overloads, nonexistent EdgeSrf/curvature methods, and Unitize boolean multiplication that falsely called a90-degree curve join0 degrees. The old six-case suite did not exercise these helpers. New cases cover released helper families and counterexamples. Removed an unverified image-command builder; retained explicit reference-plane geometry. Split outline_metrics from Rhino dependencies and made old source notes non-executable references.
+## ⭐ 已知实现陷阱（写入参数篇，避免误用）
 
-## New procedural construction benchmark — 1.1.0
+| 陷阱 | 后果 |
+|---|---|
+| 用点集 Jaccard 而非栅格化算 IoU | 缩放副本的所有采样点都落在另一轮廓内，**10% 尺寸误差看起来像满分** |
+| 射线法未处理边界点歧义 | 圆周 40 点只 20 个判内部，IoU 崩塌 |
+| 把 IoU 当尺寸精度 | 同心圆缩放 r 倍 → IoU = r²，**尺寸差 10% 时 IoU 仍有 0.83** |
 
-[example_closed_shell.py](scripts/example_closed_shell.py) constructs a crowned enclosure in memory from explicit parameters: top degree3×4/CP4×5, four derived ruled walls, planar bottom, joined valid solid. The actual surface center reaches height40. **12/12** checks pass on the recorded Rhino8 environment; [results](example-test-results.json). This checks six parents, solid validity/orientation, edge status, degrees/spans, crown, volume, invalid inputs, and unchanged document state. It does not test G2, wall thickness, molding, or reference-photo similarity. See [playbook](references/12-object-construction-playbooks.md).
+## 明确未验证或不提供认证
+
+1. **全域面间G2/G3数值认证。** 接缝脚本只采样位置与无向切平面，不查二阶形算子，不证明无反折/重叠。
+2. **真实图片→完整模型的端到端还原质量。** 范例是推理模板，不能称已造好模型。未知相机/尺度与背面仍需任务内处理。
+3. **制造可行性。** 壁厚、自交、拔模、分型、工艺缩率、装配运动及任何车厂标准，需逐项目验证。
+4. **STEP/IGES/STL往返与材料/图层保真。** 本轮未进行实际交换测试。
+5. **全部Rhino原生命令选项矩阵、GH组件、其他MCP插件、Rhino6/7或其他平台。** 用当前环境发现和最小试验核实。
+6. 曲率函数评估最近底层面，不识别修剪可见域，不自动转换为实体外法向符号；单点评估不能代表面公平。
+7. 曲线距离检查是Rhino数值估计，不是精确Hausdorff界；高度局部化特征还需加密/独立检查。
+8. **参数篇中标注为"教材案例"的圆角值与公差**未在实物零件上验证，仅为书中操作记录。
+
+## 从旧版修复的发布阻断项（1.1.0 记录）
+
+修复错误Rebuild重载、不存在的Surface.CreateEdgeSrf、错误Loft重载、不存在的曲率方法；修复Unitize返回布尔值被当点积，使90°曲线误报0°的问题。旧六项冒烟没有覆盖这些公开助手，故不能证明整个旧工具包正确。新测试对每类发布入口和关键反例分别执行。
+
+删除未经验证的放图命令字符串助手；保留显式参考平面几何函数。二维指标拆成无Rhino依赖模块。主入口与12篇参考统一到带条件的方法，旧知识图谱不再作为执行依赖。
+
+## 1.1.0 新增：物品施工链验证
+
+[example_closed_shell.py](scripts/example_closed_shell.py)按明确尺寸在内存中构建双曲率盖、四个派生直纹壁、平底并合成有效实体，实际曲面中心高度40。**12/12**通过，见[结果](example-test-results.json)与[详细剧本](references/12-object-construction-playbooks.md)。检查6块母面、有效封闭体、边状态、朝向、Degree/Span、实际拱高、正体积、错误输入及文档未变。它不验证G2、壁厚、注塑或参考图相似度。

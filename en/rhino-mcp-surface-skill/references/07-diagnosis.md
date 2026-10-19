@@ -1,25 +1,54 @@
-# Diagnosis and recovery
+# 诊断与回退
 
-Test one plausible cause per iteration and compare geometry/evidence. After two ineffective iterations reconsider upstream constraints. These are candidate causes, not one-to-one symptom recipes.
+每轮提出一个可检验原因，比较前后几何/指标；两轮无改善就重评上游。下面是候选原因，不是症状到命令的唯一映射。
 
-| Symptom | Inspect | Recovery |
+| 症状 | 检查 | 下一步 |
 |---|---|---|
-| One view matches, others fail | Camera, depth, sections, occlusion | Return to blockout |
-| Loft/Sweep twist | Direction, seams, frame, order | Correct correspondence |
-| Boundaries match but interior bulges | Parameter speeds, corners, internal sections | Change boundary or method/layout |
-| Wide/narrow Blend bulges | Pairing, sections, bulge, width | Try height options or section reconstruction |
-| Star reflections | Poles, narrow corners, too many incident patches | Enlarge/relocate junction |
-| Matching one edge breaks another | Freedom, masters, conflicting constraints | Wider band, joint constraints, relayout |
-| Refine explodes points | Tolerances, target complexity, initial fit | Compare local insertion/reconstruction |
-| Elevation does not change shape | Exact elevation selected? | Expected; edit increased freedom next |
-| Join fails | Real gap, units, short edges, correspondence | Reintersect/reconstruct before loosening tolerance |
-| Joined seam still creases | Tangent planes/curvature | Check G1/G2 separately |
-| Trim fails | Cutter crossing, projection, tangency | Inspect intersection/endpoints and extend locally |
-| Offset intersects itself | Radius, concavity, thickness | Revise geometry/thickness/corners |
-| Numbers pass but reflection fails | Missed samples, display mesh, interior ripples | Refine local checks and sections |
-| Uniform color map hides defects | Scale, averaging cancellation, mesh | Inspect principal curvature/sections |
-| Fillet corner fragments | Radius, short edges, feature order | Reconstruct corner or revise sequence |
-| MCP timeout | Operation already completed? | Query IDs/state before retry |
-| API error | Signature, host, return type | Docstring and memory reproduction |
+| 单视角像、转过去歪 | 相机、深度、截面与遮挡 | 回到体块，不加细节掩盖 |
+| Loft/Sweep扭转 | 方向、闭合接缝、标架、截面顺序 | 统一对应后重做 |
+| 四边对、内部鼓包 | 参数速度、角点、内截面 | 调边界或换构面/布局 |
+| Blend变宽处鼓包 | 配对、截面、bulge、宽度 | 试Same height shapes或重构截面 |
+| ⭐ **BlendSrf中段明显鼓起扭曲** | 混接比例导致窄处CP缩小 | ⛔ **不加点不拖滑杆**，勾 `Same height shapes` |
+| ⭐ **Pipe无法穿透修剪** | Cap 是否为 Yes | **键 `C` 关 Cap**；再 `ExtendSrf` 键`T`→`S` |
+| ⭐ **平直段曲面鼓包** | 该段CP 是否共线 | 强制共线 |
+| ⭐ **对边阶数不同面就歪** | 四条边阶数是否一致 | 统一阶数（软件用内部节点补偿，报错不会提示）|
+| ⭐ **挤出面只有 G0** | `Extrude` 的 V 向只有 2 个 CP | `ChangeDegree` V 向 1→3 阶补自由度 |
+| ⭐ **Setpt后仍扭曲** | 是否只对齐了最外一排 | **从中间开始**把所有排对齐 |
+| ⭐ **端部CV <6 排，G2改了另一端** | 匹配方向与端部 CP 数 | 加 CP 或**换匹配方向** |
+| ⭐ **曲面局部鼓起** | 控制点**太多** | ⛔ 减 CP（过拟合会鼓包）|
+| ⭐ **改一处别处跟着崩** | 多跨结构节点耦合 | 改回单跨，或拆成独立面组 |
+| ⭐ **高光在某点收敛起皱** | 三边/五边面奇点 | 加点改四边面结构，把汇聚点移出高光区 |
+| ⭐ **先倒角后补的凹槽做不出/入口封死** | 顺序颠倒 | ⛔ 凹槽必须全部先于倒角与缝隙圆滑 |
+| 星形高光 | 极点、过窄角带、多面汇聚 | 扩大角区、移动汇聚点 |
+| Match好一边坏另一边 | 约束冲突、自由度、保另一端 | 固主面，改宽度/多边约束/布局 |
+| Refine点数膨胀 | 公差、目标复杂度、初始位置 | 对比手动局部插结点与重建，不永久禁Refine |
+| ⭐ **Refine狂增点数仍达不到目标G级** | CP数是否根本不足 | ⛔ Refine 不解决这个问题；`Setpt`+`InsertKnot`(S) |
+| 升阶后形状不变 | 是否精确升阶 | 若已增Degree是预期；**若目的是改形则须开Deformable**(D) |
+| Join失败 | 实际缝隙、单位、短边、对应 | 重求交/重构，先不放宽全局公差 |
+| Join成功仍有棱 | 切平面与曲率不连续 | 分开测G1/G2 |
+| Trim失败 | 刀具贯穿、投影方向、相切 | 看独立交线与端点，局部延伸 |
+| Offset自交 | 曲率半径、凹角、厚度 | 调设计/厚度/接角，不用平移假代 |
+| 数值过、反射差 | 采样遗漏、显示网格、面内起伏 | 加密局部与多方向截面/反射 |
+| 曲率颜色均匀却有问题 | 色标、平均值抵消、网格 | 查主曲率、截面与反射 |
+| ⭐ **小面产品看不出问题** | 面太小，Zebra/EMap 分辨不足 | 逐面 `CurvatureAnalysis` |
+| 圆角碎裂 | 半径、短边、角兼容、特征顺序 | 拆角区、换施工序或Blend |
+| MCP超时 | 操作是否已完成、对象数量 | 查ID与状态，禁止盲重试 |
+| ⭐ **截图卡死/会话崩** | 场景内控制点过多 | 复杂件独立图层并及时隐藏 |
+| API异常 | 真实签名、宿主、返回类型 | 查docstring和内存复现 |
 
-Recovery hierarchy: local parameters → boundaries/sections → transition band → neighboring freedom → untrimmed parents → layout. More CP and fewer CP can both be wrong depending on cause. Preserve intentional creases and negative curvature. Moving cameras or hiding defective objects is not repair.
+回退层级：局部参数→边界/截面→过渡带→邻面自由度→未修剪母面→分面布局。不能把所有失败都归因于多跨或点太多；缺自由度也会失败。保留真实锐边与合理负曲率，不以调相机/隐藏对象作为修复。
+
+### ⭐ 卡死时的上游回退路径
+
+当某个面反复做不好，标准退路是**往上游退**，不是往下游加点：
+
+```
+当前面失败
+  → 退回上一级依赖面（过渡带/角区）调边界
+    → 仍不行 → 退回未修剪母面改 UV 流向
+      → 仍不行 → 重新分面（挪接缝、扩大过渡区）
+        → 仍不行 → 改用解析面/Sweep/NetworkSrf 替代
+          → 仍不行 → Untrim 后重做 Blend
+```
+
+⛔ **在同一条路上加点是最大的时间浪费**：CP 数再多也解决不了布局错误造成的扭曲。
