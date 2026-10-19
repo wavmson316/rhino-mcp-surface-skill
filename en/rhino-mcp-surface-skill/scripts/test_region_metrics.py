@@ -50,6 +50,8 @@ def expect_reject(name, fn):
 
 
 def run():
+    CASES.clear()
+    FAILED.clear()
     R10, R6 = circle(10), circle(6)
     a10, a6 = abs(_signed_area(R10)), abs(_signed_area(R6))
     ring = a10 - a6
@@ -71,6 +73,20 @@ def run():
     expect_reject('resolution too low', lambda: region_iou([o], [o], samples=5))
     expect_reject('resolution too high', lambda: region_iou([o], [o], samples=99999))
     expect_reject('degenerate ring', lambda: region_iou([[degenerate]], [o]))
+    expect('hole winding independent',[[o,list(reversed(sq(3,3,4)))]],[o],0.84)
+    expect('ring order independent',[[sq(3,3,4),o]],[o],0.84)
+    expect('components overlap union',[o,sq(5,0,10)],[o],2/3)
+    expect('island inside hole',[[o,sq(2,2,6)],sq(4,4,2)],[o],0.68)
+    far=lambda r:[(x+1e9,y-1e9) for x,y in r]
+    expect('large offset keeps hole area',[[far(o),far(sq(3,3,4))]],[far(o)],0.84)
+    for name,rings in [('outside hole',[o,sq(12,0,2)]),('crossing hole',[o,sq(9,2,3)]),
+       ('touching hole',[o,sq(0,2,2)]),('overlapping holes',[o,sq(1,1,4),sq(3,3,4)]),
+       ('nested holes',[o,sq(2,2,6),sq(4,4,2)]),('empty ring',[[]])]:
+        expect_reject(name,lambda rings=rings:region_iou([rings],[o]))
+    for name,r in [('nonzero crossing',[(0,0),(4,4),(0,4),(3,0)]),
+       ('self touch',[(0,0),(4,0),(4,4),(2,0),(0,4)]),
+       ('adjacent retracing',[(0,0),(4,0),(2,0),(4,4),(0,4)])]:
+        expect_reject(name,lambda r=r:region_iou([r],[o]))
 
     return {'passed': len(CASES)-len(FAILED), 'total': len(CASES),
             'failed': [{'case': n, 'reason': r} for n, r in FAILED],

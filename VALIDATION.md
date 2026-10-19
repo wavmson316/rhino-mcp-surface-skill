@@ -1,130 +1,27 @@
-# 1.2.0 发布验证记录
+# v1.8.0 验证记录
 
-1.2.0 **只改文档**：把已验证的具体数值、施工纪律与 API 勘误补回正文，
-新增 [13 施工纪律](references/13-construction-discipline.md)。
-**代码、测试与几何行为与 1.1.0 完全一致，不新增任何平台或建模验证声明。**
+日期：2026-10-20。平台：Windows、Rhino 8.29.26063.11001、Rhino Python3，经当前 MCP router 连接。本次没有读取扫描图片。
 
-下列几何实测均来自 1.0.0/1.1.0：Rhino 内存回归 45/45、二维指标 17/17、施工链 12/12。
-
-日期：2026-10-19。实测平台为 Windows、Rhino **8.29.26063.11001**、Rhino 内 Python3
-与当前 MCP 连接。无图片阅读；未把旧版"读完全部扫描页"的声明继承为本轮事实。
-
-## 1.4.0 真机实测（2026-10-19）
-
-在**官方 McNeel Rhino MCP Platform 0.3.0.0**（`serverInfo.name == "rhino-mcp"`）
-+ **Rhino 8.29.26063.11001** + Windows + Rhino 内 Python 3 上实际运行。
-
-### 实测通过的项目
-
-| 项 | 结果 |
-|---|---|
-| 官方服务握手 | `initialize` 返回 `serverInfo.version = 0.3.0.0`，响应头 `Microsoft-HTTPAPI/2.0` |
-| 端口 | **10502**（HTTP.sys，归属 PID 4）；⚠️ 需 `--noproxy '*'` 绕过本机代理 |
-| 活数据链路 | `get_context` 返回 Perspective 相机位置、objectCount、layerCount、GH 状态 |
-| 工具清单 | `tools/list` 返回 **31 个**，含 `run_python` / `run_command` / `run_csharp` / 13 个 `g1_*` |
-| 文档状态 | `Millimeters` / AbsTol `0.001` / AngleTol `1.0` —— 与本文档记载一致 |
-| 回归测试 | `smoke_test_rhino.run_tests(doc)` → **45/45**（本次亲自在活 Rhino 里跑） |
-| 施工链 | `example_closed_shell` → **12/12**（本次亲自跑，含 0 裸边/0 非流形/朝外/正体积） |
-| 二维指标 | `region_iou` 自比 1.0；`silhouette_iou` 自比 1.0 |
-| `nbs_geometry.make_curve` | degree=3 / spans=1 / cp=4 / len=27.27 —— **CP 数 = 阶数+1 → 单跨** 成立 |
-| 几何构造 | 挤出实体 6 面、solid=True、**体积 48000.0 = 80×50×12 ✅ 精确** |
-
-### ⭐ 实测打出的 13 类绑定坑
-
-已整理为 [14 RhinoCommon Python 绑定坑](references/14-rhino-python-binding-traps.md)。
-这些**编译期不报错、运行时才炸**，静态查文档看不出来。
-
-| 坑 | 症状 |
-|---|---|
-| `BrepFaceList` 无 `__len__` | `len(brep.Faces)` → TypeError |
-| `Brep` 无 `Volume` | 要用 `VolumeMassProperties.Compute(brep).Volume` |
-| `BrepFace` 无 `Edges` | 要用 `f.OuterEdge` 或从 Brep 层取 |
-| `BrepEdge` 无 `Index` | 边索引用 `enumerate` 位置 |
-| `Rhino.Geometry` 无 `Polygon` | 用 `PolylineCurve(Polyline(pts+[pts[0]]))` |
-| `Extrusion.Create` 4 参 | `(curve, plane, height, cap)`，第2参是 Plane 不是 Vector3d |
-| `Extrusion.ToBrep()` 返回单个 Brep | ⛔ 不能 `for f in ext.ToBrep()` |
-| `CreateFilletEdges` 要位置索引 | 且 `BlendType.Fillet`（⛔ 无 `Normal`）、`RailType.RollingBall` |
-| `CreateBooleanDifference` 要公差 | 返回 `Brep[]` |
-| `Guid` 无 `.Id` | `AddBrep` 直接返回 Guid |
-| **`rs.Command` 阻塞** | ⛔ **实测卡死 MCP 调用**，须用 `run_command` 工具 |
-| `_SelEdges` 已不存在 | Rhino 8 命令行选项已变 |
-| `int` 不能隐式转枚举 | Python.NET 3.0 起必须 `G.BlendType.Fillet` |
-
-### ⚠️ 尚未完成
-
-- **`rs.Command` 卡死后未能自动恢复**，需在 Rhino 内手动 Esc 取消。
-  恢复后应重跑一次完整端到端（本次已完成的几何验证不受影响，
-  因全部为内存构造，`doc.Objects.Count` 前后均为 0）。
-- **G2/G3 仍无自动数值检查** —— 这次也没做。
-
-## 1.2.0 文档变更
-
-| 变更 | 内容 | 是否新增验证 |
+| 测试 | 本次结果 | 证据 |
 |---|---|---|
-| `10-parameters` 重写 | 五类数值框架保留，补回单位换算表、探索预算、MatchSrf 实测容差锚点、按键配方、圆角表、IoU 陷阱、Class-A 适用范围警告 | ❌ 纯文档 |
-| `13-construction-discipline.md` 新增 | 开工三件事、三条顺序铁律、成面/曲线/3C/连续性/验收的不可逆约束 | ❌ 纯文档 |
-| `03` / `04` / `05` / `07` / `11` 增补 | 三排法边界、Deformable 用途、判 G2 三错、CurvatureAnalysis 时机、API 勘误、端口纪律、症状表 | ❌ 纯文档 |
-| `SKILL.md` | 增读参数分流、顺序三件事与三条铁律、Stage 3–6 的检查项 | ❌ 纯文档 |
+| 原有内存几何回归 | 45/45 | [结果](rhino-test-results.json)、[代码](scripts/smoke_test_rhino.py) |
+| 程序化封闭壳构造链 | 12/12 | [结果](example-test-results.json)、[代码](scripts/example_closed_shell.py) |
+| 原生构面与原始线交付 | 32/32 | [结果](native-test-results.json)、[代码](scripts/test_native_builders.py) |
+| 单环二维指标 | 21/21 | [结果](outline-test-results.json) |
+| 多组件/孔洞二维指标 | 27/27 | [结果](region-test-results.json) |
+| 语法、文件链接、编码、双语文件覆盖与共享脚本一致性 | 见本次发布检查 | [检查器](scripts/check_release.py)、[manifest](release-manifest.json) |
 
-⚠️ 补回的数值全部标注了**来源、适用条件与失效信号**，不作为制造标准或恒定默认。
-⚠️ `Class-A` 一节加了适用范围警告——它属于汽车主机厂体系，
-⛔ 不适用于家电/玩具/家具（注塑件公差常在 0.1–0.3 mm 量级）。
+32 项新测试涵盖：直接双轨 API、网络 API、3×3 网络生成一张鞍面及独立中心点/负高斯曲率、内存调用无文档对象变化、输入不被修改、非法输入拒绝、封盖未成实体时失败、空/重复输出阻断、不会误取已有实体、实际输入线与面映射、计数不足以证明留存完整、.3dm 保存读回保留 GUID/图层/映射、缺线检测，以及带孔平面 API。
 
-## 自动测试
+持久化测试使用独立 headless 文档和独立测试文件，没有打开/关闭/保存用户当前文档。当前用户文档枚举对象 ID、图层数和修改状态在测试前后保持一致。Undo 不是事务；封装失败只清理本次新增对象，可能留下空的新图层。
 
-| 范围 | 结果 | 可核对证据 |
-|---|---|---|
-| Rhino内存几何回归 | **45/45** | [rhino-test-results.json](rhino-test-results.json)、[测试代码](scripts/smoke_test_rhino.py) |
-| 独立二维指标（单环） | **17/17** | [outline-test-results.json](outline-test-results.json)、[测试代码](scripts/test_outline_metrics.py) |
-| 独立二维指标（多环/孔洞） | **13/13** | [测试代码](scripts/test_region_metrics.py) |
-| 程序化封闭壳母形 | **12/12** | [example-test-results.json](example-test-results.json)、[代码](scripts/example_closed_shell.py) |
-| Python语法、Markdown本地文件链接、入口与分发检查 | 发布时运行 | [check_release.py](scripts/check_release.py)、发布 manifest |
+二维算法使用奇偶填充，环方向不影响孔洞；每组件为一个外环和严格内部、互不相交/嵌套的孔。岛作为独立组件，组件间取并集。自交、触碰和回走的指定反例拒绝；使用普通浮点运算，近退化/极大尺度输入应先清理归一化。栅格近似可能漏薄小特征。
 
-Rhino测试未添加、删除或编辑文档对象；测试前后对象数量、单位与公差设置一致。测试结果 JSON 中的日期/版本代表本次执行，不保证其他版本自动通过。安装后可按 [自检步骤](INSTALL-CHECK.md) 重跑。
+## 不属于本次通过范围
 
-## Rhino覆盖内容
+- 用户实际失败参考的重建质量：未提供失败日志/模型，本次也未执行真实图片端到端重建。
+- 任意参考、任意 Agent 的还原保证，以及单张照片未知深度/背面的唯一恢复。
+- 全域自交/重叠证明、G2/G3 数值认证、全部原生命令选项或平台兼容。
+- 壁厚、拔模、制造、装配、STEP/IGES/STL 往返；只完成新示例 .3dm 的曲线/映射持久性验证。
 
-- 面接缝：共面相接、同边90°折面、1单位间隙；负索引、非整数采样数和非有限公差拒绝；闭合边明确拒绝，要求接缝感知配对策略。
-- 结构审计：有效开放面与4条裸边、实际U/V跨度、重复结点导致CP−Degree不等于SpanCount、显式文档缺失对象报告。
-- 曲线：控制点与插值、周期构造、精确圆内部几何切向、精确升阶保形、真实属性。
-- 重建：正确重载与单跨候选、显式偏差预算、缺预算拒绝、折线低阶欠拟合拒绝、闭合输入拒绝。
-- 曲线连接：同向相接通过、90°折角拒绝、180°反向拒绝、平行但断开拒绝、另一端点配对、未知模式拒绝、闭合快捷检查拒绝。
-- 构面：三边面、四边面、边方向/顺序、不同Degree边、断开边界拒绝、直纹面、开放Loft、封盖实体、闭合Loft方向、输入不足与无封盖公差拒绝。
-- 曲率：平面零曲率、球面主曲率量级；显式参考平面宽高与非法尺寸。
-
-## 二维指标覆盖内容
-
-同轮廓、重叠矩形、分离、重复首尾点、反向轮廓、四组同心圆解析面积比、边界距离、空/退化/非有限输入、非法分辨率和旧buffer行为拒绝。
-
-误差阈值仅用于这些测试实例，不承诺任意轮廓在任意栅格分辨率下相同误差。薄小特征需要更高分辨率与局部指标。当前仅支持单个简单多边形外环，不支持孔、多组件或自交；调用方应保证输入拓扑合法。
-
-## ⭐ 已知实现陷阱（写入参数篇，避免误用）
-
-| 陷阱 | 后果 |
-|---|---|
-| 用点集 Jaccard 而非栅格化算 IoU | 缩放副本的所有采样点都落在另一轮廓内，**10% 尺寸误差看起来像满分** |
-| 射线法未处理边界点歧义 | 圆周 40 点只 20 个判内部，IoU 崩塌 |
-| 把 IoU 当尺寸精度 | 同心圆缩放 r 倍 → IoU = r²，**尺寸差 10% 时 IoU 仍有 0.83** |
-
-## 明确未验证或不提供认证
-
-1. **全域面间G2/G3数值认证。** 接缝脚本只采样位置与无向切平面，不查二阶形算子，不证明无反折/重叠。
-2. **真实图片→完整模型的端到端还原质量。** 范例是推理模板，不能称已造好模型。未知相机/尺度与背面仍需任务内处理。
-3. **制造可行性。** 壁厚、自交、拔模、分型、工艺缩率、装配运动及任何车厂标准，需逐项目验证。
-4. **STEP/IGES/STL往返与材料/图层保真。** 本轮未进行实际交换测试。
-5. **全部Rhino原生命令选项矩阵、GH组件、其他MCP插件与平台。** 用当前环境发现和最小试验核实。
-   ⛔ **Rhino 6/7 不在支持范围** —— 官方 RhinoAI 平台不支持，本包不做兼容声明。
-6. **二维指标不支持自交轮廓**：带孔与多组件由 `region_iou` 支持，但自交环直接报错而非求解布尔运算。
-7. 曲率函数评估最近底层面，不识别修剪可见域，不自动转换为实体外法向符号；单点评估不能代表面公平。
-7. 曲线距离检查是Rhino数值估计，不是精确Hausdorff界；高度局部化特征还需加密/独立检查。
-8. **参数篇中标注为"教材案例"的圆角值与公差**未在实物零件上验证，仅为书中操作记录。
-
-## 从旧版修复的发布阻断项（1.1.0 记录）
-
-修复错误Rebuild重载、不存在的Surface.CreateEdgeSrf、错误Loft重载、不存在的曲率方法；修复Unitize返回布尔值被当点积，使90°曲线误报0°的问题。旧六项冒烟没有覆盖这些公开助手，故不能证明整个旧工具包正确。新测试对每类发布入口和关键反例分别执行。
-
-删除未经验证的放图命令字符串助手；保留显式参考平面几何函数。二维指标拆成无Rhino依赖模块。主入口与12篇参考统一到带条件的方法，旧知识图谱不再作为执行依赖。
-
-## 1.1.0 新增：物品施工链验证
-
-[example_closed_shell.py](scripts/example_closed_shell.py)按明确尺寸在内存中构建双曲率盖、四个派生直纹壁、平底并合成有效实体，实际曲面中心高度40。**12/12**通过，见[结果](example-test-results.json)与[详细剧本](references/12-object-construction-playbooks.md)。检查6块母面、有效封闭体、边状态、朝向、Degree/Span、实际拱高、正体积、错误输入及文档未变。它不验证G2、壁厚、注塑或参考图相似度。
+`quality_gate` 只提供结构检查；`sample_seam_g1` 仅有限位置/切平面采样。程序化封闭壳不验证鼠标或照片还原。新原生封装的网络约束为位置匹配，不自动提供相邻父面的 G1/G2。

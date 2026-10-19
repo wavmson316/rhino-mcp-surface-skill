@@ -2,7 +2,7 @@
 
 ## Reading and evidence boundary
 
-The reviewed Chinese source package's 20 text files were fully read and compared by hash with the previous review. Existing industrial-book OCR review, sample pages, and updated structured notes informed corrections. Images were excluded as requested. This package does not claim this reviewer visually read every scan, and rendered image counts do not prove reading coverage.
+This release reviews current skill text/code without scanned images. Prior reading records are historical sources, not a new claim to have visually read every book page. API evidence is limited to current minimal probes and recorded test cases.
 
 Sources include Rhino3D Industrial Modeling and Design, third edition; André Kutscherauer's 3D Car Modeling with Rhinoceros and sample; training material; and current RhinoCommon APIs. Distinguish printed/PDF page numbers. Tutorials inspire methods but frequency does not establish mathematical truth. Visualization-oriented tutorials are not manufacturing standards.
 

@@ -63,10 +63,11 @@ Expect all 45 cases to pass, with no document objects added, removed, or edited.
 
 ```text
 python scripts/test_outline_metrics.py
+python scripts/test_region_metrics.py
 python scripts/check_release.py
 ```
 
-Expect the 17 2D cases to pass and the static checks to succeed. The current test code is identical to the 1.0.0 geometry implementation; for the validation scope see [VALIDATION.md](VALIDATION.md).
+Expect21 single-ring and27 multi-ring cases to pass and the static checks to succeed. Native builders and metrics were revised in v1.8.0; for the validation scope see [VALIDATION.md](VALIDATION.md).
 
 ## Troubleshooting
 
@@ -80,3 +81,6 @@ Expect the 17 2D cases to pass and the static checks to succeed. The current tes
 | Tests fail | Check the Rhino/API versions and keep the failure record; do not reuse another machine's passing result |
 
 Installing and passing the self-checks does not mean an actual model has passed shape, G2, or manufacturing acceptance.
+
+
+Install the v1.8.0 language package per README. Current tests do not establish real-image reconstruction quality.

@@ -1,0 +1,54 @@
+{
+  "status": "TEMPLATE_NOT_MEASURED",
+  "units": "normalized_length_or_explicit_model_units",
+  "views": [
+    {
+      "id": "view_01",
+      "reference_path": null,
+      "frame_pixels": null,
+      "crop": null,
+      "projection": null,
+      "camera_hypothesis": null,
+      "registration_id": null,
+      "locked": false,
+      "landmarks": [
+        {
+          "id": "top_high_point",
+          "target_pixel": null,
+          "observed_or_inferred": null,
+          "confidence": null,
+          "tolerance_pixels": null,
+          "model_projected_pixel": null,
+          "residual_pixels": null,
+          "status": "unverified"
+        }
+      ]
+    }
+  ],
+  "critical_3d_features": [
+    {
+      "id": "recess_depth",
+      "target": null,
+      "source": null,
+      "assumption": true,
+      "tolerance": null,
+      "actual": null,
+      "status": "unverified"
+    }
+  ],
+  "iterations": [
+    {
+      "version": "V00",
+      "hypothesis": null,
+      "changed_parameters": [],
+      "affected_patches": [],
+      "metrics": {},
+      "seconds": {
+        "build": null,
+        "checks": null,
+        "images": null
+      },
+      "decision": null
+    }
+  ]
+}

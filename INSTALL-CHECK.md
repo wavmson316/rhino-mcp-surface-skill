@@ -63,10 +63,11 @@ print(result)
 
 ```text
 python scripts/test_outline_metrics.py
+python scripts/test_region_metrics.py
 python scripts/check_release.py
 ```
 
-预期二维17项通过，静态检查通过。当前测试代码与1.0.0几何实现相同；验证范围见 [VALIDATION.md](VALIDATION.md)。
+预期单环21项、多环27项通过，静态检查通过。本候选原生构面封装和二维指标已修订；验证范围见 [VALIDATION.md](VALIDATION.md)。
 
 ## 排错
 
@@ -81,38 +82,5 @@ python scripts/check_release.py
 
 安装和自检不代表实际模型已经通过形体、G2或制造验收。
 
-## ⭐ 本地存档（发布后必做，2026-10-20 补充）
 
-⛔ **发布到 GitHub 不等于本地有存档。** 2026-10-20 才发现仓库建在
-`/tmp/` 里（临时目录，重启即丢）。
-
-**发布完成后必须确认这几处存在：**
-
-```
-1.  ~/.workbuddy/skills/rhino-mcp-surface-skill/   <- 唯一被加载的路径
-2.  <REPO>/                                        <- git 仓库（带 tag）
-3.  <SKILL_DIR>/<version-dir>/                    <- 目录名必须带当前版本号
-4.  ~/.workbuddy/skill-backups/.../packages/*.zip <- 离线安装包
-5.  ~/.workbuddy/skill-backups/.../LOCAL-ARCHIVE.md   <- 存档索引
-```
-
-把 `<REPO>` 和 `<SKILL_DIR>` 换成本机实际路径。
-
-**验证命令：**
-
-```bash
-# 版本号是否一致
-grep -o '"version": "[^"]*"' ~/.workbuddy/skills/rhino-mcp-surface-skill/release-manifest.json | head -1
-cd <REPO> && git log --oneline -1
-
-# 内容是否一致（必须是 0 差异）
-diff -rq --exclude=.git --exclude=.gitignore --exclude=__pycache__ \
-  <REPO> ~/.workbuddy/skills/rhino-mcp-surface-skill/
-```
-
-⛔ **不要在 `/tmp/` 或系统临时目录下建 git 仓库** —— 重启即丢。
-⛔ **目录名带版本号的，改版本后必须同步改名** —— 否则名实不符，
-下次找文件会被误导。
-
-⚠️ 英文包最容易漏同步：`en/rhino-mcp-surface-skill/scripts/` 下的文件
-与中文包是两份，改一处必须 `cp` 两处，再 `diff -rq` 验证。
+安装 v1.8.0 请下载对应语言安装包，保留整个技能目录。当前用例不覆盖真实图片还原质量。

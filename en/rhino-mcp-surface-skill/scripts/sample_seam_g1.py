@@ -5,10 +5,10 @@ Face indices are explicit, especially for edges shared by multiple faces.
 Normal angle is unoriented (tangent planes); overlap/fold checks remain required.
 
 Runtime requirement: this module imports only `math`, so it CAN be imported
-outside Rhino. That is deliberate -- it accepts any object exposing the
-RhinoCommon surface it needs (duck typing), which is what makes it unit-testable
-with fakes. It still REQUIRES real RhinoCommon geometry to produce meaningful
-numbers; passing plain data fails inside the geometry calls, not at import.
+outside Rhino. That is deliberate -- it takes any object exposing the RhinoCommon
+surface it needs (duck typing), which is what makes it unit-testable with fakes.
+It still REQUIRES real RhinoCommon geometry to produce meaningful numbers;
+passing plain data will fail inside the geometry calls, not at import.
 """
 import math
 

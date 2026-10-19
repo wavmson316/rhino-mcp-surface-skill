@@ -1,6 +1,6 @@
 {
-  "passed": 17,
-  "total": 17,
+  "passed": 21,
+  "total": 21,
   "cases": [
     "identical",
     "half overlap",
@@ -18,7 +18,12 @@
     "nonfinite",
     "bad samples",
     "fractional samples",
-    "buffer rejected"
+    "buffer rejected",
+    "nonzero crossing",
+    "self touch",
+    "adjacent retracing",
+    "repeated vertex"
   ],
-  "scope": "Specific simple polygon analytical cases, not arbitrary resolution guarantee"
+  "scope": "Specific simple polygon analytical cases, not arbitrary resolution guarantee",
+  "executed_on": "2026-10-20"
 }

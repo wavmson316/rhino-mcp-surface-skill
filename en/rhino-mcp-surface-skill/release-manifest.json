@@ -1,119 +1,177 @@
 {
-  "version": "1.1.0",
-  "language": "en",
-  "date": "2026-10-19",
-  "checks": {
-    "syntax_and_links": true,
-    "rhino_baseline": "45/45",
-    "outline_baseline": "17/17",
-    "procedural_shell": "12/12"
-  },
-  "note": "Hash list excludes this manifest. See VALIDATION.md for tested scope.",
+  "passed": true,
+  "file_count": 48,
+  "errors": [],
   "files": [
     {
       "path": "CHANGELOG.md",
-      "bytes": 1062,
-      "sha256": "971a8c11ffe8acdd7b2b02925289a098e3764cdd63d5ebbd4b9631928f1b9c78"
+      "bytes": 687,
+      "sha256": "82de2b91baad22d3b428d2c94361c81202fb5ac58188a4c616ec59bc88b24e22"
     },
     {
       "path": "example-test-results.json",
-      "bytes": 825,
-      "sha256": "f7e13ef25427212af542d43af519be0fe4253760b65eeaa217747f56f98b94e8"
+      "bytes": 824,
+      "sha256": "02b56069157d5c47c1d3f5fa6a4f5603ebcfdf40e24e00a71d3cf2602f8d636c"
     },
     {
       "path": "INSTALL-CHECK.md",
-      "bytes": 4377,
-      "sha256": "ad6d3e1d6a60cdbe01c1f53480ae1375d08345ca6266b0b9a7a254fdc45869b7"
+      "bytes": 5428,
+      "sha256": "16ba491bea54e4da6c3fa9123da7d03f8925bfcfec6130424df2c257b7201fc6"
+    },
+    {
+      "path": "native-test-results.json",
+      "bytes": 1510,
+      "sha256": "f7ba137c5dc486192bcee073a91811cc22295cddc7dad2ab3deb89d996bd7733"
     },
     {
       "path": "outline-test-results.json",
-      "bytes": 528,
-      "sha256": "1a6b8f415489bd47dc84870e9d12d89d11cc410e809ba72463407af08f165720"
+      "bytes": 627,
+      "sha256": "86bfb66cfb881f6dbec3cfae6fc28438008ac013328eabef2d81654eb284a4c5"
     },
     {
       "path": "README.md",
-      "bytes": 10725,
-      "sha256": "85cb611d38c182e5104af4cca6fe4fdb74d19e4fcb76edc53ca7831e7838b866"
+      "bytes": 3067,
+      "sha256": "978057a5d9afba517a5a9ab038f7918d538bb19d5c6d98ebf2d16c4ff5c8b59f"
     },
     {
       "path": "references/01-intent-and-reference.md",
-      "bytes": 2980,
-      "sha256": "0e3d5f657ee5768388cd0d4ae87bb2e82c84ff56ce629254f7a3c7fb2c12af99"
+      "bytes": 2938,
+      "sha256": "10b9392fb8b092579b65b47d81a5d4f72387e85df99dc12b122eccfae1c7d543"
     },
     {
       "path": "references/02-patch-layout.md",
-      "bytes": 2869,
-      "sha256": "548c8c3f98438b0eb7d1d02f1498d4936da31a50d0b1b0b3e49a056b927c3016"
+      "bytes": 2836,
+      "sha256": "a544b8e2d7c9206146801d09e22b9f13094455114998dac0924bf9dcf1bd3d83"
     },
     {
       "path": "references/03-construction.md",
-      "bytes": 5395,
-      "sha256": "a0e0e34ef3fef51d8d0101e5dde499c07ec9060bff158aedb992616fe761201c"
+      "bytes": 5875,
+      "sha256": "25990263f2e0af34d7cb78bb9da44344f4de7c5782ee16e7c11e3a04bebc1e93"
     },
     {
       "path": "references/04-continuity-and-validation.md",
-      "bytes": 3514,
-      "sha256": "ff2d6d32110723bb3d3de3360ac4757c982f20934b78d9b73be655faa312b631"
+      "bytes": 3482,
+      "sha256": "09df454a3ede490f3472368f9bf7d3fb9c95e9f01f4961214f4cecd7ad3cd654"
     },
     {
       "path": "references/05-mcp-execution.md",
-      "bytes": 3235,
-      "sha256": "cf7ba6497b5a50a2878712f744f363af8c68feab7aa15e6b2784cf8ded9c4f39"
+      "bytes": 3186,
+      "sha256": "b4f2f01ed90b42d142ee9fe22a2ec2e22d47db2d9579e300debb43e19004dd98"
     },
     {
       "path": "references/06-complex-regions.md",
-      "bytes": 3319,
-      "sha256": "174c2dfa3598b6a72d8299c435f0c0b65ab80032fe921dc122a5852c7c1cf4ae"
+      "bytes": 3282,
+      "sha256": "5bec1387e3bb1f5cb1bceccdb575f4aaeb09793db694f6e9883f5c085bfce3cd"
     },
     {
       "path": "references/07-diagnosis.md",
-      "bytes": 2348,
-      "sha256": "525711db88f2a059b8f871ad9ab7684be740ba9c5f262a80bcaee188cc609af1"
+      "bytes": 2323,
+      "sha256": "70282aa3d5c45f709d482abfe3e0ef2970748d913d09fe73b85f2989cc7d8cef"
     },
     {
       "path": "references/08-source-audit.md",
-      "bytes": 3463,
-      "sha256": "55a642322d228a7086be47244bd1ed8bcb163a99c38162093228ab82e4a9021f"
+      "bytes": 3290,
+      "sha256": "673ab19c47ae3c1fec3e49b9d4d6df5f75900f75d532ae15ba6a1ac9be5ad21b"
     },
     {
       "path": "references/09-worked-examples.md",
-      "bytes": 3758,
-      "sha256": "af585b6bd357c0cd83cd87a6a3b889e5b23e37b02244b9156564a5a3ec204dbc"
+      "bytes": 3744,
+      "sha256": "b1f0070fa208bdee4f31bb19cef2ea366b5b1dfa22f035ca6dbbf5ff46ff8702"
     },
     {
       "path": "references/10-parameters-and-recipes.md",
-      "bytes": 4806,
-      "sha256": "b21c570d438c89f0a0cc1c0ce21ad099224ef4afa50afbc2b2211b87b5a8a9d6"
+      "bytes": 4739,
+      "sha256": "b2d9cbcb4ad82d03aecf11d6542c44d9256ea30ee3dd4c683622e3822d40f55b"
     },
     {
       "path": "references/11-consumer-electronics.md",
-      "bytes": 3258,
-      "sha256": "cdf9059c84a3e71bdb827743bbc58651cb65d50c3fc30ce0181892186ad6a7ec"
+      "bytes": 3227,
+      "sha256": "b2609317153cf1d3e575319de78a3eb7ec5a2582a644aaf0b00bf81db6daf29c"
     },
     {
       "path": "references/12-object-construction-playbooks.md",
-      "bytes": 13409,
-      "sha256": "ebe98852108f955cffd2d3de940878a62c954aafa3f4500d6d927281d7ae16e2"
+      "bytes": 14160,
+      "sha256": "ae9826d218fd0eaf53481d042a3734ccec65ef67a0d3b6d324317b56d722daee"
+    },
+    {
+      "path": "references/13-construction-discipline.md",
+      "bytes": 1520,
+      "sha256": "c10bfc005496cfd696efdf7965d77b13a1e5b132f3545965afc6d09bd967df32"
+    },
+    {
+      "path": "references/14-rhino-python-binding-traps.md",
+      "bytes": 2590,
+      "sha256": "8eb770c09957e2a74d906c63f28ad8f33b523b504b1c0eb12ede182e0dc08b6f"
+    },
+    {
+      "path": "references/15-patch-route-and-curve-retention.md",
+      "bytes": 269,
+      "sha256": "92354875beeccb36fcc5199e09d3c54fa5f835ab265616a1bb45bc6329a4696d"
+    },
+    {
+      "path": "references/15-surface-led-construction.md",
+      "bytes": 6039,
+      "sha256": "e1efdb450eee408a191bd87857f67022886a088e15124596857861b54ad7f98f"
+    },
+    {
+      "path": "references/16-preserve-construction-curves.md",
+      "bytes": 4078,
+      "sha256": "6b6f8d389697133779dad69b380d21eb26968ec8cf67868d394c51e424052986"
+    },
+    {
+      "path": "references/16-repeating-units-and-polar-array.md",
+      "bytes": 172,
+      "sha256": "6670e6edea7131e01a6769c129f04f5194f4fd3e310eb78d9e312e237d48aae5"
+    },
+    {
+      "path": "references/17-reference-to-model-loop.md",
+      "bytes": 5128,
+      "sha256": "e630bb60155eadd898fdcd411ba5748af1580609e37e20efe46c4a978dd0faf4"
+    },
+    {
+      "path": "references/18-repeating-units.md",
+      "bytes": 2050,
+      "sha256": "9a783df0ef93cb0ff5fbba336ef8358467646aa062d53ea7d4ce7ef6904efe5b"
+    },
+    {
+      "path": "references/19-defect-triage.md",
+      "bytes": 2100,
+      "sha256": "b02ae8387d1a0e024351769a308cd2064a85bbd3949039ffb44d091ed5af7f16"
+    },
+    {
+      "path": "region-test-results.json",
+      "bytes": 962,
+      "sha256": "e57486f6dd06a4c5d11f13cee51210fd489f51660bf5e4d9190581f0b913ab3d"
     },
     {
       "path": "rhino-test-results.json",
-      "bytes": 4002,
-      "sha256": "e6c4dc88824d88128f7b0bb901b4dde196cb8e8144ffbf9b92bab8a425a1e17d"
+      "bytes": 3845,
+      "sha256": "e61338e34465b0eecf7bea55baf88b196672ebe92f284b713280ccaf594da694"
     },
     {
       "path": "scripts/audit_geometry.py",
-      "bytes": 2742,
-      "sha256": "79ec59281b3c38f87622d633098c5d1f4772ab2503ab4d76f66316792b93e591"
+      "bytes": 2681,
+      "sha256": "656b44ec738cd944b837cf65542a99eacb4a6582b81f3542543667e454be9686"
+    },
+    {
+      "path": "scripts/check_encoding.py",
+      "bytes": 2490,
+      "sha256": "f8f706db920caa59aeb157ea36557bc8ca785731c1ed3f73613ea89dbfe59232"
     },
     {
       "path": "scripts/check_release.py",
-      "bytes": 2252,
-      "sha256": "b3ca7109c8060fa71dd9292b72d1ccd56e80a021339035e0bcb5975f342f1911"
+      "bytes": 2796,
+      "sha256": "e0e7299b4fea361cedd7a959f94de6f2408c91f5058f00a44b2a69cb02ae1e7c"
     },
     {
       "path": "scripts/example_closed_shell.py",
       "bytes": 5385,
       "sha256": "9667599cd290e8736eac3b7bf2ee9c037b9ae0f06c2f842c695aa8153bd2b192"
+    },
+    {
+      "path": "scripts/native_surface_builders.py",
+      "bytes": 9148,
+      "sha256": "dfd6c7a75cad182e936b79e5fb37daf84a06f959c1bb6ba50d018e19bcfc7c9a"
     },
     {
       "path": "scripts/nbs_geometry.py",
@@ -122,13 +180,23 @@
     },
     {
       "path": "scripts/outline_metrics.py",
-      "bytes": 3680,
-      "sha256": "067f037cf41575aed0dd53099e32182b641751c73ad7ce257a6181491fa5d1d7"
+      "bytes": 9706,
+      "sha256": "483e4c4b3ff40510730628ea7c57ff03f944dc9dde3c3c6495c9a6266c808d50"
+    },
+    {
+      "path": "scripts/patch_with_lines.py",
+      "bytes": 104,
+      "sha256": "1e53780dc381022b58d31bad39418c8996204b47a3dd34ef9dd75e80f8c9231c"
+    },
+    {
+      "path": "scripts/quality_gate.py",
+      "bytes": 1934,
+      "sha256": "1df9a9d2ca73317a51d7329aefcaed47af079d86d6ed576ed1ac970f00c3fbe2"
     },
     {
       "path": "scripts/sample_seam_g1.py",
-      "bytes": 3977,
-      "sha256": "f099aa1ce33906ef1c3844bb09ac459a947118d4bd8501a7890cb6f6d3b4f666"
+      "bytes": 4296,
+      "sha256": "e67c1c02fc3c071c437739ceb779731ad7ac1d679befdad9cb0fdf62856e6454"
     },
     {
       "path": "scripts/smoke_test_rhino.py",
@@ -136,24 +204,39 @@
       "sha256": "160c98897fdfd9b4e26855317edbfbfa0bec77b2b628bb74d6c2889afb569679"
     },
     {
+      "path": "scripts/test_native_builders.py",
+      "bytes": 6748,
+      "sha256": "32fd34d87e290c887c1b7ae4bdc374441d2acac403824e9c1024f97b355d6770"
+    },
+    {
       "path": "scripts/test_outline_metrics.py",
-      "bytes": 2190,
-      "sha256": "d98447ea0e184491692e3c8406ebfa03b73c0c1e48d29158af1079e8baf8a3ac"
+      "bytes": 2520,
+      "sha256": "f4c32f0c1a0c67a54d69cdcc7f294bc3d25f68f8c772ccc274472efc89c62ed9"
+    },
+    {
+      "path": "scripts/test_region_metrics.py",
+      "bytes": 4083,
+      "sha256": "0519de9ba1742ef395b8ee5506b4e3ec108c443ee9fc95fd68b3948a6dd161af"
     },
     {
       "path": "SKILL.md",
-      "bytes": 8428,
-      "sha256": "4f6659f8bb9c462cb800bf7f9b893cf02f219aa9ea0bd28ff4285bca73c0ac81"
+      "bytes": 5213,
+      "sha256": "0b71a5e333c583a2cbc73436342afcc86eee3b73d2487934753d6b59147a6c8d"
     },
     {
       "path": "templates/modeling-plan.md",
-      "bytes": 1469,
-      "sha256": "5cb47b1b9d4e765b7d6e12def14dc4d08f62fb9d6505f2005c48245e74d012b7"
+      "bytes": 2598,
+      "sha256": "2002936c7850f7fb20f936fa746c11a26ac84a58c5094c685ca85efece0c2c7e"
+    },
+    {
+      "path": "templates/reference-fit.json",
+      "bytes": 1177,
+      "sha256": "eda56081a80457cb4b779e5ad47b7f4c10b46c961b29dd03322f76de254a8dfb"
     },
     {
       "path": "VALIDATION.md",
-      "bytes": 4665,
-      "sha256": "d60646d615c5167919f2b0274d3feba2742aa73d2dddc3b507e5db97b8be8d87"
+      "bytes": 2329,
+      "sha256": "eeba3ec65e9ec7d91ed8dd005bafa203a484f94e112faa15d6f086fa9c8a4db5"
     }
   ]
 }

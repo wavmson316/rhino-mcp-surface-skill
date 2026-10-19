@@ -5,8 +5,9 @@ Two entry points:
   region_iou(A, B)       - multi-component shapes with holes
 
 Both require all rings in the SAME coordinate system; no alignment is performed.
-Self-intersecting rings are rejected rather than resolved. Raster estimates are
-not dimension certificates.
+Crossing, touching and retracing rings are rejected, not resolved. Coordinates
+use ordinary floating-point predicates: normalize extreme-scale/near-degenerate
+data first. Raster estimates are not dimension certificates.
 """
 import math
 
@@ -19,6 +20,8 @@ def _ring(points):
         pts.pop()
     if len(set(pts)) < 3:
         raise ValueError('At least three distinct polygon vertices required')
+    if len(set(pts)) != len(pts) or _self_intersects(pts):
+        raise ValueError('Repeated, touching, retracing or self-intersecting ring')
     x0, y0 = pts[0]
     area2 = sum((pts[i][0]-x0)*(pts[(i+1) % len(pts)][1]-y0) -
                 (pts[(i+1) % len(pts)][0]-x0)*(pts[i][1]-y0)
@@ -95,18 +98,17 @@ def _as_component(shape):
     pts = list(shape)
     if not pts:
         raise ValueError('Empty shape')
+    if not pts[0]:
+        raise ValueError('Empty ring or point')
     if isinstance(pts[0][0], (int, float)):   # a bare ring: [(x, y), ...]
         return [pts]
     return pts                              # already [[(x, y), ...], ...]
 
 
 def _rings(rings):
-    """Normalise one component's rings and enforce winding.
+    """Largest-area outer ring with strictly internal, disjoint holes.
 
-    Ring order is meaningful: the largest-|area| ring is the outer boundary,
-    the rest are holes and get REVERSED if needed. Two rings wound the same way
-    do not describe a hole -- under the even-odd rule the inner one fills solid,
-    which silently inflates area. Normalising here removes that trap.
+    Even-odd filling is winding-independent. Nested islands are new components.
     """
     cleaned = [_ring(r) for r in rings]
     if not cleaned:
@@ -117,22 +119,25 @@ def _rings(rings):
     for i, r in enumerate(cleaned):
         if i == outer:
             continue
-        out.append(list(reversed(r)) if _signed_area(r) * _signed_area(cleaned[outer]) > 0 else r)
+        if _rings_intersect(out[0],r) or not _is_inside([out[0]],r[0]):
+            raise ValueError('Hole must be strictly inside outer boundary')
+        if any(_rings_intersect(h,r) or _is_inside([h],r[0]) or _is_inside([r],h[0]) for h in out[1:]):
+            raise ValueError('Holes must be disjoint and not nested; islands are separate components')
+        out.append(r)
     return out
 
 
 def _signed_area(poly):
     n = len(poly)
-    return 0.5*sum(poly[i][0]*poly[(i+1) % n][1] - poly[(i+1) % n][0]*poly[i][1]
+    x0,y0=poly[0]
+    return 0.5*sum((poly[i][0]-x0)*(poly[(i+1) % n][1]-y0) - (poly[(i+1) % n][0]-x0)*(poly[i][1]-y0)
                    for i in range(n))
 
 
 def _is_inside(rings, p):
     """Even-odd fill rule across all rings.
 
-    Works for multi-component outlines and for holes, provided the caller has
-    oriented rings consistently (outer counter-clockwise, holes clockwise).
-    Orientation is auto-detected from signed area, so callers need not care.
+    Ring winding does not affect membership.
     """
     x, y = p
     hits = 0
@@ -149,10 +154,11 @@ def _is_inside(rings, p):
 
 
 def region_iou(shapes_a, shapes_b, samples=400):
-    """IoU between two multi-ring shapes. Each shape is a list of rings.
+    """IoU between two shapes, each a list of components.
 
     shapes_a / shapes_b: [ [ring, ...], ... ] — one entry per connected component.
-    Rings inside one component may include holes; orientation is auto-detected.
+    A component is a bare ring or a list of rings in any order. The largest
+    encloses disjoint holes. Winding does not matter; separate components union.
 
     Raises if the ring sets are self-intersecting: that needs an explicit
     boolean operation, and guessing would silently produce wrong areas.
@@ -164,9 +170,6 @@ def region_iou(shapes_a, shapes_b, samples=400):
     ra = [_rings(_as_component(s)) for s in shapes_a]
     rb = [_rings(_as_component(s)) for s in shapes_b]
     allrings = [r for comp in ra+rb for r in comp]
-    for r in allrings:
-        if _self_intersects(r):
-            raise ValueError('Self-intersecting ring; resolve topology before comparing')
     xs = [p[0] for r in allrings for p in r]
     ys = [p[1] for r in allrings for p in r]
     x0, y0 = min(xs), min(ys)
@@ -176,44 +179,59 @@ def region_iou(shapes_a, shapes_b, samples=400):
     inter = union = 0
     for rr in range(samples):
         py = y0+(rr+0.5)*dy
-        for cc in range(samples):
-            px = x0+(cc+0.5)*dx
-            a = any(_is_inside(comp, (px, py)) for comp in ra)
-            b = any(_is_inside(comp, (px, py)) for comp in rb)
-            if a or b:
-                union += 1
-                if a and b:
-                    inter += 1
+        a,b=[_region_scanline(s,py,x0,dx,samples) for s in (ra,rb)]
+        inter+=sum(x and y for x,y in zip(a,b))
+        union+=sum(x or y for x,y in zip(a,b))
     if union == 0:
         raise ValueError('No occupied cells; increase resolution or inspect rings')
     return {'iou': inter/union, 'grid': samples*samples, 'inter': inter, 'union': union,
             'components_a': len(ra), 'components_b': len(rb),
+            'cell_size': [dx,dy], 'bounds': [x0,y0,max(xs),max(ys)],
             'note': 'Raster estimate over multi-ring regions. Not depth, dimensions or continuity.'}
 
 
+def _region_scanline(components,py,x0,dx,width):
+    out=bytearray(width)
+    for rings in components:
+        comp=bytearray(width)
+        for ring in rings: comp=bytearray(a^b for a,b in zip(comp,_scanline(ring,py,x0,dx,width)))
+        out=bytearray(a|b for a,b in zip(out,comp))
+    return out
+
+
+def _orient(a,b,c):
+    return (b[0]-a[0])*(c[1]-a[1])-(b[1]-a[1])*(c[0]-a[0])
+
+
+def _segments_intersect(a,b,c,d):
+    def on(p,q,r):
+        return min(p[0],q[0])<=r[0]<=max(p[0],q[0]) and min(p[1],q[1])<=r[1]<=max(p[1],q[1])
+    o1,o2,o3,o4=_orient(a,b,c),_orient(a,b,d),_orient(c,d,a),_orient(c,d,b)
+    if ((o1>0 and o2<0) or (o1<0 and o2>0)) and ((o3>0 and o4<0) or (o3<0 and o4>0)): return True
+    return ((o1==0 and on(a,b,c)) or (o2==0 and on(a,b,d)) or
+            (o3==0 and on(c,d,a)) or (o4==0 and on(c,d,b)))
+
+
+def _rings_intersect(a,b):
+    return any(_segments_intersect(p,a[(i+1)%len(a)],q,b[(j+1)%len(b)])
+               for i,p in enumerate(a) for j,q in enumerate(b))
+
+
 def _self_intersects(ring):
-    """O(n^2) proper-crossing test. Adjacent edges may touch at shared vertices."""
+    """Nonadjacent touching/crossing and adjacent collinear retracing test."""
     n = len(ring)
     if n < 4:
         return False
 
-    def seg_cross(p1, p2, p3, p4):
-        d1x, d1y = p2[0]-p1[0], p2[1]-p1[1]
-        d2x, d2y = p4[0]-p3[0], p4[1]-p3[1]
-        den = d1x*d2y - d1y*d2x
-        if den == 0:
-            return None
-        ua = ((p3[0]-p1[0])*d2y - (p3[1]-p1[1])*d2x)/den
-        ub = ((p3[0]-p1[0])*d1y - (p3[1]-p1[1])*d1x)/den
-        if 1e-12 < ua < 1-1e-12 and 1e-12 < ub < 1-1e-12:
-            return True
-        return None
     for i in range(n):
         p1, p2 = ring[i], ring[(i+1) % n]
+        p3=ring[(i+2)%n]
+        if p1==p2: return True
+        if _orient(p1,p2,p3)==0 and (p2[0]-p1[0])*(p3[0]-p2[0])+(p2[1]-p1[1])*(p3[1]-p2[1])<0: return True
         for j in range(i+1, n):
             if j == i or (j+1) % n == i or j == (i+1) % n:
                 continue
             p3, p4 = ring[j], ring[(j+1) % n]
-            if seg_cross(p1, p2, p3, p4):
+            if _segments_intersect(p1, p2, p3, p4):
                 return True
     return False

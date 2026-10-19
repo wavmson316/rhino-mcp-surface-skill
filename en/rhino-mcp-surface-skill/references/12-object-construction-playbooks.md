@@ -19,11 +19,11 @@ P01 top parent
 Extent: visible top region between the front/rear assembly planes, extending slightly beyond the final side trims on both left and right
 U: front→rear; V: left→right
 Edges: T_F, T_B, T_L, T_R; note separately which are natural edges and which are later trimmed edges
-Inputs: five cross sections Q00…Q04; trial Loft in front→rear order
+Inputs: authoritative arch/high-point, width distribution and transverse roundness constraints; compare an editable control-net parent with a boundary trial. Q sections are diagnostic by default, not automatic Loft inputs
 Constraints: back arch height, high point in side view, maximum-width position in top view; do not move an already confirmed primary silhouette for Match
 Seams: the left/right transition bands target G2 only if reflection requires it; if the front is a part separation, do not force continuity across it
 Exit: fixed-camera silhouette/key points and primary sections pass; validity passes; no unintended interior waviness
-Fallback: change sections/parameter distribution first, subdivide the region only if that still fails, and never simply add points to the whole surface
+Fallback: inspect uncontrolled constraints, then reconsider method and partitioning; do not perpetuate a failed approach by adding sections
 ```
 
 ## 1. Complete executable example: a 120×70 double-curved product shell parent form with an actual maximum height of 40
@@ -83,75 +83,17 @@ print(checks)
 # In-memory construction by default; no user document objects are added or removed.
 ```
 
-Only when the task requires placing the example in the document, add one representation in a controlled edit so that coincident parent surfaces and the Solid are not both displayed:
+The example remains an in-memory construction-chain check. Production delivery must also persist each wall's actual upper/lower inputs and the bottom loop under lines with mappings. P01 is directly control-net-driven: preserve its editable parent/parameters rather than inventing original curves. Follow [input preservation](16-preserve-construction-curves.md); AddBrep of the final solid alone does not satisfy editable delivery.
 
-```python
-doc = __rhino_doc__
-record = doc.BeginUndoRecord('Add example parent enclosure')
-try:
-    object_id = doc.Objects.AddBrep(result['solid'])
-    print(str(object_id))
-finally:
-    doc.EndUndoRecord(record)
-    doc.Views.Redraw()
-```
-
-When per-face editing must be preserved, add named parent surfaces to separate layers, hide the recombined result, and never automatically delete the user's originals. The 12/12 test results are in `example-test-results.json`.
+The native patch_with_lines/publish_patch helpers provide explicit registration for their returned inputs. This procedural enclosure remains an in-memory example, not an automatic delivery writer. Its historical12 checks validate only that chain.
 
 ### 1.6 Transferring from the example to a real housing
 
 The client's side-view high point is off-centre → modify the longitudinal sections or the control net coefficients. A waist in top view → change the width of each column, but re-measure the actual maximum width; you cannot keep claiming it equals the input CP width. G2 side edges needed → first revise the layout to reserve transition bands; calling four walls joined by Join "G2" is invalid. Constant thickness needed → perform separate offset/edge-closure and self-intersection checks. Openings needed → derive the trim from an already-passed parent surface. After every change, re-check the dimensions and the related adjacent edges.
 
-## 2. Mouse-style shell: from reference to patch layout
+## 2. Asymmetric mouse shell with a deep side recess
 
-### 2.1 Make five decisions first
-
-Confirm the front/rear direction, where along the length the top high point sits, the position of the maximum width in top view, whether left and right are symmetric, and whether a thumb recess genuinely exists. A dark region in a single oblique view cannot be treated directly as a recess. With no dimensions, start with L=1 and take W/L and H/L as reference-based assumptions; with dimensions, use the measured values.
-
-Compare two layouts first: a shallow recess with an overall rounded form can be sculpted with a single multi-span parent surface; a deep side recess with a stable top highlight requires an independent top face + side faces + wide transitions. This section develops the latter.
-
-### 2.2 The curve scaffold must actually be defined
-
-| Curve | Content / source | Purpose |
-|---|---|---|
-| C00 | Bottom datum plane and the front/rear cutting planes | Scale, ground contact, and assembly extent |
-| C01 | Top arch line in side view, cross-checked against perspective/top view | Determines the high point and the front/rear taper |
-| C02/C03 | Primary left/right silhouettes in top view, with 3D height corrected | Width variation; do not trace shading directly |
-| Q00…Q04 | Cross sections at different x positions | Control the flattened top roundness, shoulder-line position, and belly |
-| C04 | The section passing through the deepest point of the thumb recess | Controls the true recess depth and transition width |
-| C05/C06 | Cross sections where the recess fades out front and rear | Prevents the recess ends from being pinched into sharp points |
-
-Initial cross-section stations may be tried at x/L=0, 0.2, 0.45, 0.72, 1; these are trial positions, and at key changes they should be moved according to the reference. Five CP / Degree 4 per cross section is a candidate, not a fixed standard. If the transverse z coefficients `[shoulder height, shoulder height+q, shoulder height+q, shoulder height+q, shoulder height]` control the centre height, the centre difference is 0.875q; the middle CP cannot be taken directly as the actual arch height.
-
-### 2.3 Patch plan
-
-| ID | Responsibility | Four sides / primary boundaries | Construction candidate |
-|---|---|---|---|
-| P01 | Primary glossy top parent surface | T_F/T_B front/rear, T_L/T_R left/right | Ordered Loft over Q00…Q04, or a four-edge plus inner-section Network |
-| P02 | Right side primary surface | Right shoulder edge / bottom edge / front and rear trim edges | Loft / two-rail; do not drag P01 straight down to the bottom |
-| P03 | Left front side primary surface | Front left shoulder / bottom edge / front trim edge / recess front edge | Low-complexity side surface |
-| P04 | Thumb recess base | Front and rear fades, upper and lower recess edges | C04 as primary, C05/C06 controlling the decay |
-| P05 | Left rear side primary surface | Rear left shoulder / bottom edge / recess rear edge / rear trim edge | Coordinated with the rear volume |
-| P06R | Top → right transition band | P01 right natural/trimmed edge, P02 shoulder edge, front and rear sections | BlendSrf or a true edge-constrained Sweep2 |
-| P06La/b/c | Top → left front / recess / left rear bands | P01 left edge split by region, corresponding edges of P03/04/05, section at the segment ends | Bridged per zone with inter-band continuity checks |
-| P07/P08 | Front/rear end closures or assembly openings | Already-confirmed surrounding boundaries | Construct additional faces per the real design, or leave the opening |
-
-The table above is a patch-region contract; P06L may need multiple four-edge faces, and "one region" must not be mistaken for "one face." If a longitudinal soft transition is needed between the recess base and the front/rear side surfaces, reserve and number separate front/rear transition bands; do not force incompatible edges together with Match.
-
-### 2.4 Step-by-step construction
-
-1. Match the camera with a low-complexity blockout, and first make length/width/height, the high point, and negative space valid. Save V00.
-2. Complete C01–C03 and the Q sections, and cross-check in at least two reliable views; curvature comb changes should agree with the design intent.
-3. Build only P01 and check the longitudinal/transverse sections and the fixed-camera silhouette. On failure, change section stations/shape/parameter correspondence first; do not build buttons yet.
-4. Build the side volumes P02, P03, and P05, leaving room for transitions; do not collapse the top high point just to make them meet. Save V01.
-5. Build the P04 recess base; first pass the deepest-point section, then control the front/rear fading. Where there is no basis for depth, keep the parameters and assumptions adjustable.
-6. Design the widths and cross-band sections of each P06 band. Use Blend for quick trials; if there is a bulge, check correspondence/width/bulge, and where necessary extract a good section and use Sweep2 instead. Only real surface edges give transverse continuity semantics.
-7. Check every E seam: position → tangent plane → the curvature actually required. After modifying one edge, recheck all the older edges and the inter-band edges. Enlarge the region when the centre or corner is incompatible.
-8. Only then handle P07/P08 and the bottom assembly trims; mirror only regions whose symmetry has been proven. Save V02.
-9. After the primary form passes acceptance, derive button seams, the scroll wheel hole, material regions, and the lower shell. A black hole cannot substitute for an inner wall and negative space.
-10. Handle wall thickness, clips, bosses, draft, motion, and assembly clearance only when the engineering requires it, and verify them separately. Save the delivery version.
-
-**Exit condition for this example:** the 3–5 features the client emphasised have corresponding dimensional / section / projection evidence; the patch layout and untrimmed parent surfaces remain editable; if G2 was not measured, do not report it as passing. A high global IoU must not mask an incorrect thumb recess depth or wheel hole.
+See [15 Surface-led decisions, worked route](15-surface-led-construction.md) for the complete revised sequence. The default five-transverse-profile top Loft has been withdrawn. Establish independent top, flank, recess and transition roles; diagnostic sections are not automatic generative inputs. Choose the method from authoritative constraints.
 
 ## 3. Rotational speaker / bottle: prefer the object's real generative relationships
 
@@ -186,3 +128,8 @@ Failure fallback: pinched centre → enlarge the centre or re-define the bridge-
 | Engineering | Contract-based thickness / interference / draft / exchange checks | Appearance pass is not a substitute for engineering |
 
 When image capability is available, actually inspect the fixed-camera output; when the client asks you not to read images or no tool is available, state clearly that only numerical checks were performed. **The fact that the skill is detailed does not guarantee success for any agent with any reference.** A real task benchmark additionally requires the reference, the targets, and the final model, scored item by item; this package's procedural shell validates only the executable construction chain.
+
+
+## Retain construction inputs
+
+Persist production input curves in the document under `lines`, map them to output patches and retain them through cleanup. See [16 Preserve construction curves](16-preserve-construction-curves.md), including Sweep2 input roles.

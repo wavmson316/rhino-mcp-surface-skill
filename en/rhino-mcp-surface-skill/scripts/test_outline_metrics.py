@@ -36,6 +36,11 @@ def run_tests():
         ('fractional samples',lambda:silhouette_iou(square,square,20.5)),
         ('buffer rejected',lambda:silhouette_iou(square,square,tolerance=1))]:
         check(name,lambda action=action:rejects(action))
+    for name,ring in [('nonzero crossing',[(0,0),(4,4),(0,4),(3,0)]),
+       ('self touch',[(0,0),(4,0),(4,4),(2,0),(0,4)]),
+       ('adjacent retracing',[(0,0),(4,0),(2,0),(4,4),(0,4)]),
+       ('repeated vertex',[(0,0),(4,0),(4,4),(0,0),(0,4)])]:
+        check(name,lambda ring=ring:rejects(lambda:silhouette_iou(ring,square)))
     return {'passed':len(tests),'total':len(tests),'cases':tests,
             'scope':'Specific simple polygon analytical cases, not arbitrary resolution guarantee'}
 

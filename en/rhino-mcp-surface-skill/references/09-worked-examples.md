@@ -4,7 +4,7 @@ These are task templates, not claims of completed end-to-end reconstruction from
 
 ## Rounded speaker
 
-Inspect sections, maximum belly, symmetry, grille boundaries. A: Revolve when genuinely axial, moving seams to low-sensitivity areas. B: cross-section Loft or front/back parents with side bands when asymmetric. Normalize unknown height, establish camera/blockout, then details. Validate silhouette, belly location, top/bottom transitions, openings, and reflection. Label unseen ports as completion assumptions.
+Inspect sections, maximum belly, symmetry, grille boundaries. A: Revolve when genuinely axial, moving seams to low-sensitivity areas. B: controlled parents with side bands, or an eligible genuinely section-driven local Loft when asymmetric. Normalize unknown height, establish camera/blockout, then details. Validate silhouette, belly location, top/bottom transitions, openings, and reflection. Label unseen ports as completion assumptions.
 
 ## Glossy mouse with deep thumb recess
 
